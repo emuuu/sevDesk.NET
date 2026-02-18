@@ -1,0 +1,25 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' != ''">true</ContinuousIntegrationBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionSuffix>alpha</VersionSuffix>
+    <Authors>sevDeskNET Contributors</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/sevDeskNET/sevDeskNET</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sevDeskNET/sevDeskNET</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>sevdesk;accounting;invoice;api;client</PackageTags>
+    <Copyright>Copyright (c) sevDeskNET Contributors</Copyright>
+    <Description>A .NET client library for the sevDesk API.</Description>
+  </PropertyGroup>
+</Project>
