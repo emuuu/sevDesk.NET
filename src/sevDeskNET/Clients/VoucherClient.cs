@@ -1,6 +1,7 @@
 using sevDeskNET.Internal;
 using sevDeskNET.Internal.ApiModels;
 using sevDeskNET.Models;
+using sevDeskNET.Models.Enums;
 
 namespace sevDeskNET.Clients;
 
@@ -65,11 +66,11 @@ internal class VoucherClient : IVoucherClient
         }, SevDeskJsonContext.Default.ApiBookAmountRequest, ct);
 
     public Task MarkAsPaidAsync(int id, CancellationToken ct = default) =>
-        _client.PutNoContentAsync($"Voucher/{id}/changeStatus", new ApiChangeStatusRequest { Value = 1000 },
+        _client.PutNoContentAsync($"Voucher/{id}/changeStatus", new ApiChangeStatusRequest { Value = (int)VoucherStatus.Paid },
             SevDeskJsonContext.Default.ApiChangeStatusRequest, ct);
 
     public Task MarkAsOpenAsync(int id, CancellationToken ct = default) =>
-        _client.PutNoContentAsync($"Voucher/{id}/changeStatus", new ApiChangeStatusRequest { Value = 100 },
+        _client.PutNoContentAsync($"Voucher/{id}/changeStatus", new ApiChangeStatusRequest { Value = (int)VoucherStatus.Unpaid },
             SevDeskJsonContext.Default.ApiChangeStatusRequest, ct);
 
     public async Task<Document> UploadFileAsync(Stream stream, string fileName, CancellationToken ct = default)
