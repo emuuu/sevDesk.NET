@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using sevDeskNET.Internal;
 using sevDeskNET.Internal.ApiModels;
@@ -42,9 +43,10 @@ internal class CheckAccountClient : ICheckAccountClient
 
     public async Task<decimal> GetBalanceAsync(int id, DateTime? date = null, CancellationToken ct = default)
     {
-        var path = $"CheckAccount/{id}/getBalanceAtDate";
+        var qb = new QueryBuilder();
         if (date.HasValue)
-            path += $"?date={date.Value:yyyy-MM-dd}";
+            qb.Add("date", date.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+        var path = qb.Build($"CheckAccount/{id}/getBalanceAtDate");
         var json = await _client.GetStringAsync(path, ct).ConfigureAwait(false);
         var response = JsonSerializer.Deserialize(json, SevDeskJsonContext.Default.ApiBalanceResponse);
         return response?.Objects ?? throw new Exceptions.SevDeskApiException("Failed to get check account balance.");
