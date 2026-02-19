@@ -1,6 +1,32 @@
+<p align="center">
+  <img src="logo.svg" alt="sevDesk.NET" width="128" />
+</p>
+
 # sevDesk.NET
 
-A .NET client library for the [sevDesk API](https://my.sevdesk.de/api/v1/).
+A strongly-typed .NET client library for the [sevDesk API](https://my.sevdesk.de/api/v1/). Manage invoices, contacts, vouchers, orders, credit notes, and more — with full async support and dependency injection.
+
+[![NuGet](https://img.shields.io/nuget/v/sevDesk.NET.svg)](https://www.nuget.org/packages/sevDesk.NET)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/sevDesk.NET.svg)](https://www.nuget.org/packages/sevDesk.NET)
+[![CI](https://github.com/sevDesk-NET/sevDesk.NET/actions/workflows/ci.yml/badge.svg)](https://github.com/sevDesk-NET/sevDesk.NET/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Docs](https://img.shields.io/badge/Docs-GitHub%20Pages-blue)](https://sevDesk-NET.github.io/sevDesk.NET/)
+
+**Feature highlights:**
+
+- 20 typed clients covering the entire sevDesk REST API
+- Strongly typed models and enums for all resources
+- Transaction operations: save invoice/order/voucher with positions atomically
+- PDF generation, email sending, status management, and document upload
+- Pagination with `SevDeskListResponse<T>` and filtering
+- Proper exception hierarchy (`SevDeskAuthenticationException`, `SevDeskNotFoundException`, `SevDeskValidationException`)
+- `IHttpClientFactory` integration with automatic auth header injection
+- Dependency injection via `IServiceCollection.AddSevDesk()`
+
+## Prerequisites
+
+- A [sevDesk](https://sevdesk.de/) account and API token
+- .NET 10.0
 
 ## Installation
 
@@ -8,69 +34,241 @@ A .NET client library for the [sevDesk API](https://my.sevdesk.de/api/v1/).
 dotnet add package sevDesk.NET
 ```
 
-## Quick Start
+## Getting Started
+
+### 1. Register services
+
+In `Program.cs`, register sevDesk.NET with your API token:
 
 ```csharp
-using Microsoft.Extensions.DependencyInjection;
-using sevDesk.NET;
-
-var services = new ServiceCollection();
-
-services.AddSevDesk(options =>
+builder.Services.AddSevDesk(options =>
 {
     options.ApiToken = "your-api-token";
 });
-
-await using var provider = services.BuildServiceProvider();
-var client = provider.GetRequiredService<ISevDeskClient>();
-
-// List contacts
-var contacts = await client.Contacts.ListAsync();
-foreach (var contact in contacts.Items)
-{
-    Console.WriteLine($"{contact.Id}: {contact.Surename} {contact.Familyname}");
-}
-
-// Create an invoice
-var invoice = await client.Invoices.SaveInvoiceAsync(
-    new Invoice { /* ... */ },
-    new[] { new InvoicePos { /* ... */ } });
 ```
 
-## Features
+For custom base URLs (e.g. self-hosted or proxy):
 
-- Full coverage of the sevDesk REST API
-- Strongly typed models and enums
-- AOT-compatible via JSON source generation
-- Proper exception hierarchy with typed exceptions
-- Pagination support
-- Dependency injection via `IServiceCollection`
-- `IHttpClientFactory` integration
+```csharp
+builder.Services.AddSevDesk(options =>
+{
+    options.ApiToken = "your-api-token";
+    options.CustomBaseUrl = "https://my-proxy.example.com/api/v1";
+});
+```
 
-## Supported Resources
+### 2. Inject and use the client
 
-| Resource | Client Property |
-|---|---|
-| Contacts | `client.Contacts` |
-| Invoices | `client.Invoices` |
-| Invoice Positions | `client.InvoicePositions` |
-| Orders | `client.Orders` |
-| Order Positions | `client.OrderPositions` |
-| Vouchers | `client.Vouchers` |
-| Voucher Positions | `client.VoucherPositions` |
-| Credit Notes | `client.CreditNotes` |
-| Credit Note Positions | `client.CreditNotePositions` |
-| Parts | `client.Parts` |
-| Check Accounts | `client.CheckAccounts` |
-| Check Account Transactions | `client.CheckAccountTransactions` |
-| Communication Ways | `client.CommunicationWays` |
-| Contact Addresses | `client.ContactAddresses` |
-| Tags | `client.Tags` |
-| Categories | `client.Categories` |
-| Unities | `client.Unities` |
-| Tax Rules | `client.TaxRules` |
-| Currency Exchange Rates | `client.CurrencyExchangeRates` |
-| Documents | `client.Documents` |
+```csharp
+public class InvoiceService
+{
+    private readonly ISevDeskClient _client;
+
+    public InvoiceService(ISevDeskClient client)
+    {
+        _client = client;
+    }
+
+    public async Task ListRecentInvoicesAsync()
+    {
+        var result = await _client.Invoices.ListAsync();
+        foreach (var invoice in result.Items)
+        {
+            Console.WriteLine($"{invoice.InvoiceNumber}: {invoice.SumGross} {invoice.Currency}");
+        }
+    }
+}
+```
+
+### 3. Configuration via appsettings.json
+
+```json
+{
+  "SevDesk": {
+    "ApiToken": "your-api-token"
+  }
+}
+```
+
+```csharp
+builder.Services.AddSevDesk(
+    builder.Configuration.GetSection("SevDesk"));
+```
+
+## Available Clients
+
+### Financial Documents
+
+| Client | Property | Operations |
+|---|---|---|
+| Invoices | `client.Invoices` | CRUD, SaveInvoice, ChangeStatus, GetPdf, SendViaEmail, Duplicate, Cancel, MarkAsSent, BookAmount |
+| Invoice Positions | `client.InvoicePositions` | CRUD, filter by invoice |
+| Orders | `client.Orders` | CRUD, SaveOrder, ChangeStatus, GetPdf, SendViaEmail, Duplicate |
+| Order Positions | `client.OrderPositions` | CRUD, filter by order |
+| Vouchers | `client.Vouchers` | CRUD, SaveVoucher, BookAmount, MarkAsPaid, MarkAsOpen, UploadFile |
+| Voucher Positions | `client.VoucherPositions` | CRUD, filter by voucher |
+| Credit Notes | `client.CreditNotes` | CRUD, SaveCreditNote, CreateFromInvoice, GetPdf, SendViaEmail |
+| Credit Note Positions | `client.CreditNotePositions` | CRUD, filter by credit note |
+
+### Contacts
+
+| Client | Property | Operations |
+|---|---|---|
+| Contacts | `client.Contacts` | CRUD, GetNextCustomerNumber |
+| Contact Addresses | `client.ContactAddresses` | CRUD, filter by contact |
+| Communication Ways | `client.CommunicationWays` | CRUD, filter by contact |
+
+### Banking
+
+| Client | Property | Operations |
+|---|---|---|
+| Check Accounts | `client.CheckAccounts` | CRUD, GetBalance |
+| Check Account Transactions | `client.CheckAccountTransactions` | CRUD, filter by account |
+
+### Products
+
+| Client | Property | Operations |
+|---|---|---|
+| Parts | `client.Parts` | CRUD |
+
+### Organization
+
+| Client | Property | Operations |
+|---|---|---|
+| Tags | `client.Tags` | Create, List, Get, Delete |
+| Categories | `client.Categories` | CRUD, filter by object type |
+| Documents | `client.Documents` | List, Get, Upload, Download |
+
+### Reference Data
+
+| Client | Property | Operations |
+|---|---|---|
+| Unities | `client.Unities` | List, Get |
+| Tax Rules | `client.TaxRules` | List, Get |
+| Currency Exchange Rates | `client.CurrencyExchangeRates` | List, Get |
+
+## Key Operations
+
+### Create an invoice with positions
+
+```csharp
+var invoice = await client.Invoices.SaveInvoiceAsync(
+    new Invoice
+    {
+        Contact = new SevDeskObjectReference { Id = 123, ObjectName = "Contact" },
+        InvoiceDate = DateTime.Today,
+        Header = "Invoice 2024-001",
+        TimeToPay = 14
+    },
+    new[]
+    {
+        new InvoicePos
+        {
+            Name = "Consulting",
+            Quantity = 10,
+            Price = 150.00m,
+            Unity = new SevDeskObjectReference { Id = 1, ObjectName = "Unity" },
+            TaxRate = 19
+        }
+    });
+```
+
+### Get invoice PDF
+
+```csharp
+byte[] pdf = await client.Invoices.GetPdfAsync(invoiceId);
+File.WriteAllBytes("invoice.pdf", pdf);
+```
+
+### Send invoice via email
+
+```csharp
+await client.Invoices.SendViaEmailAsync(
+    invoiceId,
+    email: "customer@example.com",
+    subject: "Your Invoice",
+    text: "Please find your invoice attached.");
+```
+
+### Pagination
+
+```csharp
+var page = await client.Contacts.ListAsync(new PaginationParameters
+{
+    Limit = 50,
+    Offset = 100
+});
+
+Console.WriteLine($"Showing {page.Items.Count} of {page.Total} contacts");
+```
+
+### Upload a voucher with file
+
+```csharp
+await using var stream = File.OpenRead("receipt.pdf");
+var document = await client.Vouchers.UploadFileAsync(stream, "receipt.pdf");
+```
+
+### Check account balance
+
+```csharp
+decimal balance = await client.CheckAccounts.GetBalanceAsync(
+    accountId,
+    date: DateTime.Today);
+```
+
+## Error Handling
+
+sevDesk.NET uses a typed exception hierarchy:
+
+```csharp
+try
+{
+    var invoice = await client.Invoices.GetAsync(id);
+}
+catch (SevDeskNotFoundException)
+{
+    // 404 — invoice not found
+}
+catch (SevDeskAuthenticationException)
+{
+    // 401 — invalid API token
+}
+catch (SevDeskValidationException ex)
+{
+    // 422 — validation error
+    Console.WriteLine(ex.RawResponse);
+}
+catch (SevDeskApiException ex)
+{
+    // Other API errors
+    Console.WriteLine($"{ex.StatusCode}: {ex.Message}");
+}
+```
+
+| Exception | HTTP Status | When |
+|---|---|---|
+| `SevDeskAuthenticationException` | 401 | Invalid or missing API token |
+| `SevDeskNotFoundException` | 404 | Resource not found |
+| `SevDeskValidationException` | 422 | Invalid request data |
+| `SevDeskApiException` | Various | Other API errors |
+| `SevDeskException` | — | Base exception (network errors, etc.) |
+
+## Configuration
+
+### SevDeskOptions
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `ApiToken` | `string` | *(required)* | 32-character API token from sevDesk |
+| `CustomBaseUrl` | `string?` | `null` | Override the default API base URL |
+| `BaseUrl` | `string` | `https://my.sevdesk.de/api/v1` | Computed base URL (uses CustomBaseUrl if set) |
+
+### Validation
+
+`AddSevDesk()` validates options on registration:
+- `ApiToken` must not be empty
+- `CustomBaseUrl` (if set) must use HTTPS or be localhost
 
 ## License
 
