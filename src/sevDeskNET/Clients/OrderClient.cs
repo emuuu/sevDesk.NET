@@ -1,5 +1,3 @@
-using System.Globalization;
-using System.Text.Json;
 using sevDeskNET.Internal;
 using sevDeskNET.Internal.ApiModels;
 using sevDeskNET.Models;
@@ -53,9 +51,8 @@ internal class OrderClient : IOrderClient
         };
         var json = await _client.PostAndReadStringAsync("Order/Factory/saveOrder", request,
             SevDeskJsonContext.Default.ApiSaveOrderRequest, ct).ConfigureAwait(false);
-        using var doc = JsonDocument.Parse(json);
-        var idStr = doc.RootElement.GetProperty("objects").GetProperty("order").GetProperty("id").GetString();
-        return await GetAsync(int.Parse(idStr!, CultureInfo.InvariantCulture), ct: ct).ConfigureAwait(false);
+        var id = BaseClient.ParseFactoryResponseId(json, "order");
+        return await GetAsync(id, ct: ct).ConfigureAwait(false);
     }
 
     public Task ChangeStatusAsync(int id, OrderStatus status, CancellationToken ct = default) =>

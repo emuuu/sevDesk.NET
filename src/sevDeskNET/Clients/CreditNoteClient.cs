@@ -1,5 +1,3 @@
-using System.Globalization;
-using System.Text.Json;
 using sevDeskNET.Internal;
 using sevDeskNET.Internal.ApiModels;
 using sevDeskNET.Models;
@@ -52,18 +50,16 @@ internal class CreditNoteClient : ICreditNoteClient
         };
         var json = await _client.PostAndReadStringAsync("CreditNote/Factory/saveCreditNote", request,
             SevDeskJsonContext.Default.ApiSaveCreditNoteRequest, ct).ConfigureAwait(false);
-        using var doc = JsonDocument.Parse(json);
-        var idStr = doc.RootElement.GetProperty("objects").GetProperty("creditNote").GetProperty("id").GetString();
-        return await GetAsync(int.Parse(idStr!, CultureInfo.InvariantCulture), ct: ct).ConfigureAwait(false);
+        var id = BaseClient.ParseFactoryResponseId(json, "creditNote");
+        return await GetAsync(id, ct: ct).ConfigureAwait(false);
     }
 
     public async Task<CreditNote> CreateFromInvoiceAsync(int invoiceId, CancellationToken ct = default)
     {
         var body = $"{{\"invoice\":{{\"id\":{invoiceId},\"objectName\":\"Invoice\"}}}}";
         var json = await _client.PostStringContentAsync("CreditNote/Factory/createFromInvoice", body, ct).ConfigureAwait(false);
-        using var doc = JsonDocument.Parse(json);
-        var idStr = doc.RootElement.GetProperty("objects").GetProperty("creditNote").GetProperty("id").GetString();
-        return await GetAsync(int.Parse(idStr!, CultureInfo.InvariantCulture), ct: ct).ConfigureAwait(false);
+        var id = BaseClient.ParseFactoryResponseId(json, "creditNote");
+        return await GetAsync(id, ct: ct).ConfigureAwait(false);
     }
 
     public Task<byte[]> GetPdfAsync(int id, CancellationToken ct = default) =>

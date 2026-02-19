@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -177,6 +178,23 @@ internal class BaseClient
 
         return await response.Content.ReadFromJsonAsync(responseTypeInfo, ct).ConfigureAwait(false)
             ?? throw new SevDeskApiException("Failed to deserialize sevDesk response.");
+    }
+
+    internal static int ParseFactoryResponseId(string json, string entityName)
+    {
+        using var doc = JsonDocument.Parse(json);
+        if (!doc.RootElement.TryGetProperty("objects", out var objects) ||
+            !objects.TryGetProperty(entityName, out var entity) ||
+            !entity.TryGetProperty("id", out var idElement))
+        {
+            throw new SevDeskApiException($"Unexpected response format: missing objects.{entityName}.id");
+        }
+
+        return idElement.ValueKind == JsonValueKind.Number
+            ? idElement.GetInt32()
+            : int.TryParse(idElement.GetString(), CultureInfo.InvariantCulture, out var id)
+                ? id
+                : throw new SevDeskApiException($"Could not parse ID from factory response for {entityName}.");
     }
 
     private static async Task EnsureSuccessAsync(HttpResponseMessage response, CancellationToken ct)

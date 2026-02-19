@@ -1,5 +1,3 @@
-using System.Globalization;
-using System.Text.Json;
 using sevDeskNET.Internal;
 using sevDeskNET.Internal.ApiModels;
 using sevDeskNET.Models;
@@ -53,9 +51,8 @@ internal class VoucherClient : IVoucherClient
         };
         var json = await _client.PostAndReadStringAsync("Voucher/Factory/saveVoucher", request,
             SevDeskJsonContext.Default.ApiSaveVoucherRequest, ct).ConfigureAwait(false);
-        using var doc = JsonDocument.Parse(json);
-        var idStr = doc.RootElement.GetProperty("objects").GetProperty("voucher").GetProperty("id").GetString();
-        return await GetAsync(int.Parse(idStr!, CultureInfo.InvariantCulture), ct: ct).ConfigureAwait(false);
+        var id = BaseClient.ParseFactoryResponseId(json, "voucher");
+        return await GetAsync(id, ct: ct).ConfigureAwait(false);
     }
 
     public Task BookAmountAsync(int id, decimal amount, int checkAccountId, DateTime date, CancellationToken ct = default) =>
