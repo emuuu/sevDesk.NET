@@ -17,10 +17,11 @@ internal static class ModelMapper
     // --- DateTime Parsing ---
 
     internal static DateTime? ParseDateTime(string? value) =>
-        value is not null && DateTime.TryParse(value, out var dt) ? dt : null;
+        value is not null && DateTime.TryParse(value, System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.None, out var dt) ? dt : null;
 
     internal static string? FormatDateTime(DateTime? value) =>
-        value?.ToString("yyyy-MM-dd HH:mm:ss");
+        value?.ToString("yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
 
     internal static decimal? ParseDecimal(string? value) =>
         value is not null && decimal.TryParse(value, System.Globalization.CultureInfo.InvariantCulture, out var d) ? d : null;
