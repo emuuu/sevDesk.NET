@@ -41,6 +41,15 @@ public class OrderPos
     /// <summary>Gets or sets whether this is optional.</summary>
     public bool? Optional { get; init; }
 
+    /// <summary>Gets or sets the total net amount for this position.</summary>
+    public decimal? SumNet { get; init; }
+
+    /// <summary>Gets or sets the total gross amount for this position.</summary>
+    public decimal? SumGross { get; init; }
+
+    /// <summary>Gets or sets the total tax for this position.</summary>
+    public decimal? SumTax { get; init; }
+
     /// <summary>Gets the creation date.</summary>
     public DateTime? Create { get; init; }
 

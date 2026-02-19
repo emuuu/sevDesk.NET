@@ -121,6 +121,15 @@ internal class ApiOrderPos
     [JsonPropertyName("optional")]
     public bool? Optional { get; set; }
 
+    [JsonPropertyName("sumNet")]
+    public string? SumNet { get; set; }
+
+    [JsonPropertyName("sumGross")]
+    public string? SumGross { get; set; }
+
+    [JsonPropertyName("sumTax")]
+    public string? SumTax { get; set; }
+
     [JsonPropertyName("create")]
     public string? Create { get; set; }
 

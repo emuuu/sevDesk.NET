@@ -260,6 +260,9 @@ internal static class ModelMapper
         Text = api.Text,
         Discount = api.Discount,
         Optional = api.Optional,
+        SumNet = ParseDecimal(api.SumNet),
+        SumGross = ParseDecimal(api.SumGross),
+        SumTax = ParseDecimal(api.SumTax),
         Create = ParseDateTime(api.Create),
         Update = ParseDateTime(api.Update)
     };
@@ -420,6 +423,9 @@ internal static class ModelMapper
         Text = api.Text,
         Discount = api.Discount,
         Optional = api.Optional,
+        SumNet = ParseDecimal(api.SumNet),
+        SumGross = ParseDecimal(api.SumGross),
+        SumTax = ParseDecimal(api.SumTax),
         Create = ParseDateTime(api.Create),
         Update = ParseDateTime(api.Update)
     };
