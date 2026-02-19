@@ -35,8 +35,10 @@ internal sealed class QueryBuilder
     internal QueryBuilder AddPagination(PaginationParameters? pagination)
     {
         var p = pagination ?? new PaginationParameters();
-        Add("limit", p.Limit.ToString());
-        Add("offset", p.Offset.ToString());
+        var limit = Math.Clamp(p.Limit, 1, 1000);
+        var offset = Math.Max(p.Offset, 0);
+        Add("limit", limit.ToString());
+        Add("offset", offset.ToString());
         Add("countAll", "true");
         return this;
     }

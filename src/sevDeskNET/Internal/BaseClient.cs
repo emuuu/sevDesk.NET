@@ -14,6 +14,7 @@ internal class BaseClient
 
     internal BaseClient(HttpClient httpClient)
     {
+        ArgumentNullException.ThrowIfNull(httpClient);
         _httpClient = httpClient;
     }
 
