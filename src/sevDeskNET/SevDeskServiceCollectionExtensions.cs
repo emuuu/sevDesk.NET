@@ -20,7 +20,9 @@ public static class SevDeskServiceCollectionExtensions
 
         services.AddOptionsWithValidateOnStart<SevDeskOptions>()
             .Configure(configure)
-            .Validate(o => !string.IsNullOrWhiteSpace(o.ApiToken), "sevDesk ApiToken is required.");
+            .Validate(o => !string.IsNullOrWhiteSpace(o.ApiToken), "sevDesk ApiToken is required.")
+            .Validate(o => o.CustomBaseUrl is null || IsHttpsOrLocalhost(o.CustomBaseUrl),
+                "CustomBaseUrl must use HTTPS.");
 
         services.AddTransient<SevDeskAuthHandler>();
 
@@ -33,5 +35,12 @@ public static class SevDeskServiceCollectionExtensions
         .RedactLoggedHeaders(["Authorization"]);
 
         return services;
+    }
+
+    private static bool IsHttpsOrLocalhost(string url)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri)) return false;
+        if (uri.Scheme == Uri.UriSchemeHttps) return true;
+        return uri.Host is "localhost" or "127.0.0.1" or "::1";
     }
 }
