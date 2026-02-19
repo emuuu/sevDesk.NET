@@ -56,8 +56,12 @@ internal class CreditNoteClient : ICreditNoteClient
 
     public async Task<CreditNote> CreateFromInvoiceAsync(int invoiceId, CancellationToken ct = default)
     {
-        var body = $"{{\"invoice\":{{\"id\":{invoiceId},\"objectName\":\"Invoice\"}}}}";
-        var json = await _client.PostStringContentAsync("CreditNote/Factory/createFromInvoice", body, ct).ConfigureAwait(false);
+        var request = new ApiCreateFromInvoiceRequest
+        {
+            Invoice = new ApiObjectReference { Id = invoiceId, ObjectName = "Invoice" }
+        };
+        var json = await _client.PostAndReadStringAsync("CreditNote/Factory/createFromInvoice", request,
+            SevDeskJsonContext.Default.ApiCreateFromInvoiceRequest, ct).ConfigureAwait(false);
         var id = BaseClient.ParseFactoryResponseId(json, "creditNote");
         return await GetAsync(id, ct: ct).ConfigureAwait(false);
     }

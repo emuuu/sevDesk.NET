@@ -83,6 +83,12 @@ internal class ApiBookAmountRequest
     public ApiObjectReference? CheckAccount { get; set; }
 }
 
+internal class ApiCreateFromInvoiceRequest
+{
+    [JsonPropertyName("invoice")]
+    public required ApiObjectReference Invoice { get; set; }
+}
+
 internal class ApiGetNextNumberResponse
 {
     [JsonPropertyName("objects")]

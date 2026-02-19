@@ -50,6 +50,7 @@ namespace sevDeskNET.Internal;
 [JsonSerializable(typeof(ApiChangeStatusRequest))]
 [JsonSerializable(typeof(ApiSendEmailRequest))]
 [JsonSerializable(typeof(ApiBookAmountRequest))]
+[JsonSerializable(typeof(ApiCreateFromInvoiceRequest))]
 [JsonSerializable(typeof(ApiGetNextNumberResponse))]
 [JsonSerializable(typeof(ApiBalanceResponse))]
 [JsonSerializable(typeof(ApiContact))]
