@@ -8,4 +8,8 @@
   <Folder Name="/samples/">
     <Project Path="samples/sevDesk.NET.Samples.Console/sevDesk.NET.Samples.Console.csproj" />
   </Folder>
+  <Folder Name="/docs/">
+    <Project Path="docs/sevDesk.NET.Docs.Generator/sevDesk.NET.Docs.Generator.csproj" />
+    <Project Path="docs/sevDesk.NET.Docs/sevDesk.NET.Docs.csproj" />
+  </Folder>
 </Solution>

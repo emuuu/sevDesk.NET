@@ -1,0 +1,48 @@
+@page "/api"
+@inject IRestApiDocService DocService
+
+<PageTitle>API Explorer — sevDesk.NET Docs</PageTitle>
+
+<HeadContent>
+    <meta name="description" content="Browse all 20 sevDesk.NET typed clients with interactive documentation and Try It panels." />
+</HeadContent>
+
+<div class="doc-content">
+    <h1>API Explorer</h1>
+    <p class="lead">
+        sevDesk.NET provides 20 strongly-typed clients covering the full sevDesk API surface.
+        Each client is accessible via <code>ISevDeskClient</code> and supports async operations with cancellation.
+    </p>
+
+    @foreach (var group in ClientDefinitions.GroupOrder)
+    {
+        var clients = ClientDefinitions.All.Where(c => c.Group == group).ToList();
+        if (clients.Count == 0) continue;
+
+        <h4 class="mt-4 mb-3 text-muted" style="border-bottom:2px solid #dee2e6;padding-bottom:.4rem;">@group</h4>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+            @foreach (var client in clients)
+            {
+                <div class="col">
+                    <a href="@client.Href" class="text-decoration-none">
+                        <div class="card h-100 service-card">
+                            <div class="card-body">
+                                <h5 class="card-title">@client.Title</h5>
+                                <p class="card-text text-muted small">@client.Description</p>
+                                <code class="small">@client.InterfaceName</code>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await DocService.InitializeAsync();
+    }
+}

@@ -1,0 +1,169 @@
+@page "/api/{ClientSlug}"
+@inject IRestApiDocService DocService
+@inject ISevDeskClient SevDeskClient
+
+<PageTitle>@(_definition?.Title ?? "Client") — sevDesk.NET Docs</PageTitle>
+
+@if (_definition is null)
+{
+    <div class="text-center py-5">
+        <h2>Client Not Found</h2>
+        <p class="text-muted">The client <code>@ClientSlug</code> could not be found.</p>
+        <a href="api" class="btn btn-primary">Back to API Explorer</a>
+    </div>
+}
+else
+{
+    <div class="doc-content">
+        <h1>@_definition.InterfaceName</h1>
+        <p class="lead">@(_clientDoc?.Description ?? _definition.Description)</p>
+        <p><a href="api" class="text-decoration-none">&larr; Back to API Explorer</a></p>
+
+        <ApiKeyWarning />
+
+        @if (_clientDoc is not null)
+        {
+            @foreach (var method in _clientDoc.Methods)
+            {
+                <h2 id="@method.Name">@method.Name</h2>
+                @if (!string.IsNullOrEmpty(method.Description))
+                {
+                    <p>@method.Description</p>
+                }
+                <p><code>@method.ReturnType</code></p>
+
+                var methodParams = DocService.GetMethodParams(_definition.InterfaceName, method.Name);
+                <ParamTable Parameters="methodParams" />
+
+                @* Try It for ListAsync and GetAsync *@
+                @if (method.Name == "ListAsync" && _listExecutor is not null)
+                {
+                    <TryItPanel TResult="object" OnExecute="_listExecutor">
+                        <FormContent>
+                            <div class="row g-2">
+                                <div class="col-md-3">
+                                    <label class="form-label">Limit</label>
+                                    <input type="number" class="form-control form-control-sm" @bind="_limit" min="1" max="1000" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Offset</label>
+                                    <input type="number" class="form-control form-control-sm" @bind="_offset" min="0" />
+                                </div>
+                            </div>
+                        </FormContent>
+                    </TryItPanel>
+                }
+                else if (method.Name == "GetAsync" && _getExecutor is not null)
+                {
+                    <TryItPanel TResult="object" OnExecute="_getExecutor">
+                        <FormContent>
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <label class="form-label">ID</label>
+                                    <input type="number" class="form-control form-control-sm" @bind="_getId" />
+                                </div>
+                            </div>
+                        </FormContent>
+                    </TryItPanel>
+                }
+            }
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public string ClientSlug { get; set; } = "";
+
+    private ClientDefinition? _definition;
+    private ClientDoc? _clientDoc;
+    private int _limit = 10;
+    private int _offset;
+    private int _getId = 1;
+    private Func<Task<object>>? _listExecutor;
+    private Func<Task<object>>? _getExecutor;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _definition = ClientDefinitions.All.FirstOrDefault(c => c.Href == $"api/{ClientSlug}");
+        if (_definition is null) return;
+
+        await DocService.InitializeAsync();
+        _clientDoc = DocService.GetClient(_definition.InterfaceName);
+
+        SetupExecutors();
+    }
+
+    private void SetupExecutors()
+    {
+        if (_definition is null) return;
+
+        // Map interface name to the actual client property on ISevDeskClient
+        // and set up List/Get executors dynamically
+        var pagination = () => new PaginationParameters { Limit = _limit, Offset = _offset };
+
+        (_listExecutor, _getExecutor) = _definition.InterfaceName switch
+        {
+            "IContactClient" => (
+                (Func<Task<object>>)(async () => await SevDeskClient.Contacts.ListAsync(pagination())),
+                (Func<Task<object>>)(async () => await SevDeskClient.Contacts.GetAsync(_getId))),
+            "IInvoiceClient" => (
+                (Func<Task<object>>)(async () => await SevDeskClient.Invoices.ListAsync(pagination())),
+                (Func<Task<object>>)(async () => await SevDeskClient.Invoices.GetAsync(_getId))),
+            "IInvoicePosClient" => (
+                (Func<Task<object>>)(async () => await SevDeskClient.InvoicePositions.ListAsync(pagination())),
+                (Func<Task<object>>)(async () => await SevDeskClient.InvoicePositions.GetAsync(_getId))),
+            "IOrderClient" => (
+                (Func<Task<object>>)(async () => await SevDeskClient.Orders.ListAsync(pagination())),
+                (Func<Task<object>>)(async () => await SevDeskClient.Orders.GetAsync(_getId))),
+            "IOrderPosClient" => (
+                (Func<Task<object>>)(async () => await SevDeskClient.OrderPositions.ListAsync(pagination())),
+                (Func<Task<object>>)(async () => await SevDeskClient.OrderPositions.GetAsync(_getId))),
+            "IVoucherClient" => (
+                (Func<Task<object>>)(async () => await SevDeskClient.Vouchers.ListAsync(pagination())),
+                (Func<Task<object>>)(async () => await SevDeskClient.Vouchers.GetAsync(_getId))),
+            "IVoucherPosClient" => (
+                (Func<Task<object>>)(async () => await SevDeskClient.VoucherPositions.ListAsync(pagination())),
+                (Func<Task<object>>)(async () => await SevDeskClient.VoucherPositions.GetAsync(_getId))),
+            "ICreditNoteClient" => (
+                (Func<Task<object>>)(async () => await SevDeskClient.CreditNotes.ListAsync(pagination())),
+                (Func<Task<object>>)(async () => await SevDeskClient.CreditNotes.GetAsync(_getId))),
+            "ICreditNotePosClient" => (
+                (Func<Task<object>>)(async () => await SevDeskClient.CreditNotePositions.ListAsync(pagination())),
+                (Func<Task<object>>)(async () => await SevDeskClient.CreditNotePositions.GetAsync(_getId))),
+            "IPartClient" => (
+                (Func<Task<object>>)(async () => await SevDeskClient.Parts.ListAsync(pagination())),
+                (Func<Task<object>>)(async () => await SevDeskClient.Parts.GetAsync(_getId))),
+            "ICheckAccountClient" => (
+                (Func<Task<object>>)(async () => await SevDeskClient.CheckAccounts.ListAsync(pagination())),
+                (Func<Task<object>>)(async () => await SevDeskClient.CheckAccounts.GetAsync(_getId))),
+            "ICheckAccountTransactionClient" => (
+                (Func<Task<object>>)(async () => await SevDeskClient.CheckAccountTransactions.ListAsync(pagination())),
+                (Func<Task<object>>)(async () => await SevDeskClient.CheckAccountTransactions.GetAsync(_getId))),
+            "ICommunicationWayClient" => (
+                (Func<Task<object>>)(async () => await SevDeskClient.CommunicationWays.ListAsync(pagination())),
+                (Func<Task<object>>)(async () => await SevDeskClient.CommunicationWays.GetAsync(_getId))),
+            "IContactAddressClient" => (
+                (Func<Task<object>>)(async () => await SevDeskClient.ContactAddresses.ListAsync(pagination())),
+                (Func<Task<object>>)(async () => await SevDeskClient.ContactAddresses.GetAsync(_getId))),
+            "ITagClient" => (
+                (Func<Task<object>>)(async () => await SevDeskClient.Tags.ListAsync(pagination())),
+                (Func<Task<object>>)(async () => await SevDeskClient.Tags.GetAsync(_getId))),
+            "ICategoryClient" => (
+                (Func<Task<object>>)(async () => await SevDeskClient.Categories.ListAsync(pagination())),
+                (Func<Task<object>>)(async () => await SevDeskClient.Categories.GetAsync(_getId))),
+            "IUnityClient" => (
+                (Func<Task<object>>)(async () => await SevDeskClient.Unities.ListAsync(pagination())),
+                (Func<Task<object>>)(async () => await SevDeskClient.Unities.GetAsync(_getId))),
+            "ITaxRuleClient" => (
+                (Func<Task<object>>)(async () => await SevDeskClient.TaxRules.ListAsync(pagination())),
+                (Func<Task<object>>)(async () => await SevDeskClient.TaxRules.GetAsync(_getId))),
+            "ICurrencyExchangeRateClient" => (
+                (Func<Task<object>>)(async () => await SevDeskClient.CurrencyExchangeRates.ListAsync(pagination())),
+                (Func<Task<object>>)(async () => await SevDeskClient.CurrencyExchangeRates.GetAsync(_getId))),
+            "IDocumentClient" => (
+                (Func<Task<object>>)(async () => await SevDeskClient.Documents.ListAsync(pagination())),
+                (Func<Task<object>>)(async () => await SevDeskClient.Documents.GetAsync(_getId))),
+            _ => (null, null)
+        };
+    }
+}

@@ -1,0 +1,103 @@
+[
+  {
+    "slug": "getting-started/installation",
+    "title": "Installation",
+    "category": "Getting Started",
+    "order": 1,
+    "description": "Install sevDesk.NET and configure your project.",
+    "headings": [
+      "NuGet Package",
+      "Requirements",
+      "Project Setup",
+      "Next Steps"
+    ],
+    "searchText": "NuGet Package Install the sevDesk.NET package via the .NET CLI: Or via the NuGet Package Manager: Requirements - .NET 10.0 or later - A sevDesk account with an API token Project Setup Add the sevDesk.NET namespace to your project: Next Steps - Quick Start \u2014 Make your first API call - Configuration \u2014 Customize the client behavior - Authentication \u2014 Learn about API token management"
+  },
+  {
+    "slug": "getting-started/quick-start",
+    "title": "Quick Start",
+    "category": "Getting Started",
+    "order": 2,
+    "description": "Register services and make your first sevDesk API call.",
+    "headings": [
+      "Register Services",
+      "Inject and Use",
+      "Available Clients"
+    ],
+    "searchText": "Register Services In your Program.cs or startup configuration, register sevDesk.NET with dependency injection: This registers ISevDeskClient and all sub-clients with the DI container, including the HTTP client with authentication. Inject and Use Inject ISevDeskClient anywhere in your application: Available Clients ISevDeskClient provides access to 20 typed sub-clients: | Property | Interface | Description | |---|---|---| | Contacts | IContactClient | Manage customers, suppliers, and partners | |"
+  },
+  {
+    "slug": "getting-started/configuration",
+    "title": "Configuration",
+    "category": "Getting Started",
+    "order": 3,
+    "description": "Configure SevDeskOptions for API token, base URL, and more.",
+    "headings": [
+      "SevDeskOptions",
+      "Configuration Properties",
+      "Validation",
+      "Using appsettings.json",
+      "Environment Variables"
+    ],
+    "searchText": "SevDeskOptions The SevDeskOptions class controls how sevDesk.NET connects to the API: Configuration Properties | Property | Type | Required | Default | Description | |---|---|---|---|---| | ApiToken | string | Yes | \u2014 | Your 32-character sevDesk API token | | CustomBaseUrl | string? | No | null | Custom base URL (must be HTTPS or localhost) | | BaseUrl | string | \u2014 | https://my.sevdesk.de/api/v1 | Resolved base URL (uses CustomBaseUrl if set) | Validation AddSevDesk validates your configuration "
+  },
+  {
+    "slug": "getting-started/authentication",
+    "title": "Authentication",
+    "category": "Getting Started",
+    "order": 4,
+    "description": "How sevDesk.NET handles API token authentication.",
+    "headings": [
+      "API Token",
+      "How It Works",
+      "Security Best Practices",
+      "Token Permissions"
+    ],
+    "searchText": "API Token sevDesk uses a simple API token for authentication. You can find your token in the sevDesk web app under Settings \u003E Users \u003E API Token. The token is a 32-character hexadecimal string that looks like: How It Works sevDesk.NET uses a DelegatingHandler called SevDeskAuthHandler to automatically add the API token to every HTTP request: The handler is registered automatically when you call AddSevDesk(). Security Best Practices 1. Never commit tokens to source control \u2014 Use environment variab"
+  },
+  {
+    "slug": "guides/pagination",
+    "title": "Pagination",
+    "category": "Guides",
+    "order": 1,
+    "description": "How to paginate through large result sets with PaginationParameters.",
+    "headings": [
+      "PaginationParameters",
+      "SevDeskListResponse",
+      "Paginating Through All Results",
+      "Filtering"
+    ],
+    "searchText": "PaginationParameters All ListAsync methods accept an optional PaginationParameters object: SevDeskListResponse List methods return a SevDeskListResponse\u003CT\u003E containing the items and total count: - Items \u2014 The page of results - Total \u2014 The total number of matching records (for calculating total pages) Paginating Through All Results Filtering Some clients support filtering in their ListAsync methods:"
+  },
+  {
+    "slug": "guides/error-handling",
+    "title": "Error Handling",
+    "category": "Guides",
+    "order": 2,
+    "description": "Exception hierarchy and error handling patterns in sevDesk.NET.",
+    "headings": [
+      "Exception Hierarchy",
+      "SevDeskException",
+      "Handling Errors",
+      "Common Error Scenarios"
+    ],
+    "searchText": "Exception Hierarchy sevDesk.NET uses a typed exception hierarchy for API errors: SevDeskException All exceptions inherit from SevDeskException, which provides: Handling Errors Common Error Scenarios | Exception | HTTP Status | Common Causes | |---|---|---| | SevDeskAuthenticationException | 401 | Invalid or expired API token | | SevDeskNotFoundException | 404 | Resource does not exist or was deleted | | SevDeskValidationException | 422 | Invalid data (missing required fields, wrong format) | | S"
+  },
+  {
+    "slug": "guides/models-and-enums",
+    "title": "Models \u0026 Enums",
+    "category": "Guides",
+    "order": 3,
+    "description": "Overview of all model types and enums in sevDesk.NET.",
+    "headings": [
+      "Model Types",
+      "Core Documents",
+      "Supporting Types",
+      "Object References",
+      "Enums",
+      "Document Status Enums",
+      "Type Enums"
+    ],
+    "searchText": "Model Types sevDesk.NET provides strongly-typed models for all API entities. All model properties use init accessors for immutability. Core Documents | Model | Description | |---|---| | Invoice | Full invoice with contact, dates, amounts, and tax details | | InvoicePos | Invoice line item with quantity, price, and tax | | Order | Offers, order confirmations, and delivery notes | | OrderPos | Order line item | | Voucher | Expense or revenue record | | VoucherPos | Voucher accounting line item | |"
+  }
+]

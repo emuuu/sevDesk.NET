@@ -1,0 +1,21 @@
+@inject DocsApiTokenService TokenService
+@implements IDisposable
+
+@if (!TokenService.HasToken)
+{
+    <div class="alert alert-warning d-flex align-items-center" role="alert">
+        <strong class="me-2">No API Token configured.</strong>
+        <span>Enter your sevDesk API Token in the header to enable the Try It panels.</span>
+    </div>
+}
+
+<div class="alert alert-info small mt-2" role="alert">
+    <strong>CORS Notice:</strong> The sevDesk API does not support Cross-Origin requests.
+    Try It panels only work when running locally via <code>dotnet run</code> or through a CORS proxy.
+</div>
+
+@code {
+    protected override void OnInitialized() => TokenService.ApiTokenChanged += OnTokenChanged;
+    private void OnTokenChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => TokenService.ApiTokenChanged -= OnTokenChanged;
+}

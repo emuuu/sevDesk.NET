@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Models &amp; Enums - sevDesk.NET Docs</title>
+    <base href="/" />
+    <meta name="description" content="Overview of all model types and enums in sevDesk.NET." />
+    <link rel="canonical" href="https://sevDesk-NET.github.io/sevDesk.NET/docs/guides/models-and-enums" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Models &amp; Enums - sevDesk.NET" />
+    <meta property="og:description" content="Overview of all model types and enums in sevDesk.NET." />
+    <meta property="og:url" content="https://sevDesk-NET.github.io/sevDesk.NET/docs/guides/models-and-enums" />
+    <meta property="og:site_name" content="sevDesk.NET Docs" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Models &amp; Enums - sevDesk.NET" />
+    <meta name="twitter:description" content="Overview of all model types and enums in sevDesk.NET." />
+    <script type="application/ld+json">[{"context":"https://schema.org","type":"TechArticle","headline":"Models \u0026 Enums","description":"Overview of all model types and enums in sevDesk.NET.","url":"https://sevDesk-NET.github.io/sevDesk.NET/docs/guides/models-and-enums","publisher":{"type":"Organization","name":"sevDesk.NET"}},{"context":"https://schema.org","type":"BreadcrumbList","itemListElement":[{"type":"ListItem","position":1,"name":"Docs","item":"https://sevDesk-NET.github.io/sevDesk.NET/"},{"type":"ListItem","position":2,"name":"Guides","item":"https://sevDesk-NET.github.io/sevDesk.NET/docs/guides"},{"type":"ListItem","position":3,"name":"Models \u0026 Enums","item":"https://sevDesk-NET.github.io/sevDesk.NET/docs/guides/models-and-enums"}]}]</script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <link href="lib/prismjs/prism.css" rel="stylesheet" />
+    <link href="css/app.css" rel="stylesheet" />
+    <link href="sevDesk.NET.Docs.styles.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="app">
+        <article style="max-width:800px;margin:2rem auto;padding:0 1rem;">
+            <h1>Models &amp; Enums</h1>
+            <p class="lead text-muted">Overview of all model types and enums in sevDesk.NET.</p>
+            <h2 id="model-types">Model Types</h2>
+<p>sevDesk.NET provides strongly-typed models for all API entities. All model properties use <code>init</code> accessors for immutability.</p>
+<h3 id="core-documents">Core Documents</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Invoice</code></td>
+<td>Full invoice with contact, dates, amounts, and tax details</td>
+</tr>
+<tr>
+<td><code>InvoicePos</code></td>
+<td>Invoice line item with quantity, price, and tax</td>
+</tr>
+<tr>
+<td><code>Order</code></td>
+<td>Offers, order confirmations, and delivery notes</td>
+</tr>
+<tr>
+<td><code>OrderPos</code></td>
+<td>Order line item</td>
+</tr>
+<tr>
+<td><code>Voucher</code></td>
+<td>Expense or revenue record</td>
+</tr>
+<tr>
+<td><code>VoucherPos</code></td>
+<td>Voucher accounting line item</td>
+</tr>
+<tr>
+<td><code>CreditNote</code></td>
+<td>Credit memo</td>
+</tr>
+<tr>
+<td><code>CreditNotePos</code></td>
+<td>Credit note line item</td>
+</tr>
+</tbody>
+</table>
+<h3 id="supporting-types">Supporting Types</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Contact</code></td>
+<td>Customer, supplier, or partner</td>
+</tr>
+<tr>
+<td><code>ContactAddress</code></td>
+<td>Postal address for a contact</td>
+</tr>
+<tr>
+<td><code>CommunicationWay</code></td>
+<td>Email, phone, or other contact method</td>
+</tr>
+<tr>
+<td><code>Part</code></td>
+<td>Product or service with pricing</td>
+</tr>
+<tr>
+<td><code>CheckAccount</code></td>
+<td>Bank account (online or offline)</td>
+</tr>
+<tr>
+<td><code>CheckAccountTransaction</code></td>
+<td>Bank transaction</td>
+</tr>
+<tr>
+<td><code>Tag</code></td>
+<td>Label for categorizing records</td>
+</tr>
+<tr>
+<td><code>Category</code></td>
+<td>Category for organizing documents</td>
+</tr>
+<tr>
+<td><code>Document</code></td>
+<td>Uploaded file</td>
+</tr>
+<tr>
+<td><code>Unity</code></td>
+<td>Unit of measure</td>
+</tr>
+<tr>
+<td><code>TaxRule</code></td>
+<td>Tax rate definition</td>
+</tr>
+<tr>
+<td><code>CurrencyExchangeRate</code></td>
+<td>Exchange rate record</td>
+</tr>
+</tbody>
+</table>
+<h3 id="object-references">Object References</h3>
+<p>Related entities use <code>SevDeskObjectReference</code> instead of full objects:</p>
+<pre><code class="language-csharp">public class SevDeskObjectReference
+{
+    public int Id { get; init; }
+    public string ObjectName { get; init; }
+}
+</code></pre>
+<h2 id="enums">Enums</h2>
+<h3 id="document-status-enums">Document Status Enums</h3>
+<table>
+<thead>
+<tr>
+<th>Enum</th>
+<th>Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>InvoiceStatus</code></td>
+<td><code>Draft (100)</code>, <code>Open (200)</code>, <code>Paid (1000)</code></td>
+</tr>
+<tr>
+<td><code>OrderStatus</code></td>
+<td><code>Draft (100)</code>, <code>Delivered (200)</code>, <code>Rejected (300)</code>, <code>Accepted (500)</code>, <code>Calculated (1000)</code></td>
+</tr>
+<tr>
+<td><code>VoucherStatus</code></td>
+<td><code>Draft (50)</code>, <code>Unpaid (100)</code>, <code>Paid (1000)</code></td>
+</tr>
+<tr>
+<td><code>CreditNoteStatus</code></td>
+<td><code>Draft (100)</code>, <code>Open (200)</code>, <code>Paid (1000)</code></td>
+</tr>
+<tr>
+<td><code>ContactStatus</code></td>
+<td><code>Inactive (0)</code>, <code>Active (100)</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="type-enums">Type Enums</h3>
+<table>
+<thead>
+<tr>
+<th>Enum</th>
+<th>Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>InvoiceType</code></td>
+<td><code>RE</code>, <code>WKR</code>, <code>SR</code>, <code>TR</code>, <code>ER</code>, <code>AR</code></td>
+</tr>
+<tr>
+<td><code>OrderType</code></td>
+<td><code>AN</code> (Offer), <code>AB</code> (Order confirmation), <code>LI</code> (Delivery note)</td>
+</tr>
+<tr>
+<td><code>VoucherType</code></td>
+<td><code>VOU</code> (Purchase), <code>RV</code> (Revenue)</td>
+</tr>
+<tr>
+<td><code>CheckAccountType</code></td>
+<td><code>Online (0)</code>, <code>Offline (1)</code></td>
+</tr>
+<tr>
+<td><code>CommunicationWayType</code></td>
+<td><code>EMAIL</code>, <code>PHONE</code>, <code>WEB</code>, <code>MOBILE</code></td>
+</tr>
+<tr>
+<td><code>CommunicationWayKey</code></td>
+<td><code>Work (1)</code>, <code>Private (2)</code>, <code>Fax (3)</code>, <code>Mobile (4)</code>, <code>InvoiceEmail (5)</code>, <code>Autobox (6)</code>, <code>Newsletter (7)</code>, <code>Empty (8)</code></td>
+</tr>
+</tbody>
+</table>
+
+        </article>
+    </div>
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">X</a>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="lib/prismjs/prism.js"></script>
+    <script src="js/docs.js"></script>
+    <script src="_framework/blazor.webassembly.js"></script>
+</body>
+</html>

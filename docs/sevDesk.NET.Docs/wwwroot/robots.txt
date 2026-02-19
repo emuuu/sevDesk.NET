@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://sevDesk-NET.github.io/sevDesk.NET/sitemap.xml

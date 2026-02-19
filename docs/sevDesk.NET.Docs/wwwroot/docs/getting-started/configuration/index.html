@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configuration - sevDesk.NET Docs</title>
+    <base href="/" />
+    <meta name="description" content="Configure SevDeskOptions for API token, base URL, and more." />
+    <link rel="canonical" href="https://sevDesk-NET.github.io/sevDesk.NET/docs/getting-started/configuration" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Configuration - sevDesk.NET" />
+    <meta property="og:description" content="Configure SevDeskOptions for API token, base URL, and more." />
+    <meta property="og:url" content="https://sevDesk-NET.github.io/sevDesk.NET/docs/getting-started/configuration" />
+    <meta property="og:site_name" content="sevDesk.NET Docs" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Configuration - sevDesk.NET" />
+    <meta name="twitter:description" content="Configure SevDeskOptions for API token, base URL, and more." />
+    <script type="application/ld+json">[{"context":"https://schema.org","type":"TechArticle","headline":"Configuration","description":"Configure SevDeskOptions for API token, base URL, and more.","url":"https://sevDesk-NET.github.io/sevDesk.NET/docs/getting-started/configuration","publisher":{"type":"Organization","name":"sevDesk.NET"}},{"context":"https://schema.org","type":"BreadcrumbList","itemListElement":[{"type":"ListItem","position":1,"name":"Docs","item":"https://sevDesk-NET.github.io/sevDesk.NET/"},{"type":"ListItem","position":2,"name":"Getting Started","item":"https://sevDesk-NET.github.io/sevDesk.NET/docs/getting-started"},{"type":"ListItem","position":3,"name":"Configuration","item":"https://sevDesk-NET.github.io/sevDesk.NET/docs/getting-started/configuration"}]}]</script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <link href="lib/prismjs/prism.css" rel="stylesheet" />
+    <link href="css/app.css" rel="stylesheet" />
+    <link href="sevDesk.NET.Docs.styles.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="app">
+        <article style="max-width:800px;margin:2rem auto;padding:0 1rem;">
+            <h1>Configuration</h1>
+            <p class="lead text-muted">Configure SevDeskOptions for API token, base URL, and more.</p>
+            <h2 id="sevdeskoptions">SevDeskOptions</h2>
+<p>The <code>SevDeskOptions</code> class controls how sevDesk.NET connects to the API:</p>
+<pre><code class="language-csharp">builder.Services.AddSevDesk(options =&gt;
+{
+    // Required: your sevDesk API token (32-character hex string)
+    options.ApiToken = &quot;your-api-token-here&quot;;
+
+    // Optional: override the base URL (default: https://my.sevdesk.de/api/v1)
+    options.CustomBaseUrl = &quot;https://my.sevdesk.de/api/v1&quot;;
+});
+</code></pre>
+<h2 id="configuration-properties">Configuration Properties</h2>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ApiToken</code></td>
+<td><code>string</code></td>
+<td>Yes</td>
+<td>—</td>
+<td>Your 32-character sevDesk API token</td>
+</tr>
+<tr>
+<td><code>CustomBaseUrl</code></td>
+<td><code>string?</code></td>
+<td>No</td>
+<td><code>null</code></td>
+<td>Custom base URL (must be HTTPS or localhost)</td>
+</tr>
+<tr>
+<td><code>BaseUrl</code></td>
+<td><code>string</code></td>
+<td>—</td>
+<td><code>https://my.sevdesk.de/api/v1</code></td>
+<td>Resolved base URL (uses CustomBaseUrl if set)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="validation">Validation</h2>
+<p><code>AddSevDesk</code> validates your configuration at startup:</p>
+<ul>
+<li><code>ApiToken</code> is required and must not be empty</li>
+<li><code>CustomBaseUrl</code>, if set, must use HTTPS (or <code>http://localhost</code> for development)</li>
+</ul>
+<h2 id="using-appsettings.json">Using appsettings.json</h2>
+<p>You can bind options from configuration:</p>
+<pre><code class="language-json">{
+  &quot;SevDesk&quot;: {
+    &quot;ApiToken&quot;: &quot;your-api-token-here&quot;
+  }
+}
+</code></pre>
+<pre><code class="language-csharp">builder.Services.AddSevDesk(options =&gt;
+{
+    builder.Configuration.GetSection(&quot;SevDesk&quot;).Bind(options);
+});
+</code></pre>
+<h2 id="environment-variables">Environment Variables</h2>
+<p>For production, use environment variables or a secret manager:</p>
+<pre><code class="language-csharp">builder.Services.AddSevDesk(options =&gt;
+{
+    options.ApiToken = builder.Configuration[&quot;SEVDESK_API_TOKEN&quot;]
+        ?? throw new InvalidOperationException(&quot;SEVDESK_API_TOKEN not configured&quot;);
+});
+</code></pre>
+
+        </article>
+    </div>
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">X</a>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="lib/prismjs/prism.js"></script>
+    <script src="js/docs.js"></script>
+    <script src="_framework/blazor.webassembly.js"></script>
+</body>
+</html>
