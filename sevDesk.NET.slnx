@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/sevDesk.NET/sevDesk.NET.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/sevDesk.NET.Tests/sevDesk.NET.Tests.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/sevDesk.NET.Samples.Console/sevDesk.NET.Samples.Console.csproj" />
+  </Folder>
+</Solution>

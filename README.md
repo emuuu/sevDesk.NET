@@ -1,18 +1,18 @@
-# sevDeskNET
+# sevDesk.NET
 
 A .NET client library for the [sevDesk API](https://my.sevdesk.de/api/v1/).
 
 ## Installation
 
 ```bash
-dotnet add package sevDeskNET
+dotnet add package sevDesk.NET
 ```
 
 ## Quick Start
 
 ```csharp
 using Microsoft.Extensions.DependencyInjection;
-using sevDeskNET;
+using sevDesk.NET;
 
 var services = new ServiceCollection();
 
