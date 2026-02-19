@@ -25,7 +25,7 @@ internal class ApiContact
     [JsonPropertyName("status")]
     public int? Status { get; set; }
 
-    [JsonPropertyName("title")]
+    [JsonPropertyName("titel")]
     public string? Title { get; set; }
 
     [JsonPropertyName("academicTitle")]
@@ -63,6 +63,18 @@ internal class ApiContact
 
     [JsonPropertyName("taxOffice")]
     public string? TaxOffice { get; set; }
+
+    [JsonPropertyName("exemptVat")]
+    public string? ExemptVat { get; set; }
+
+    [JsonPropertyName("birthday")]
+    public string? Birthday { get; set; }
+
+    [JsonPropertyName("defaultDiscountPercentage")]
+    public string? DefaultDiscountPercentage { get; set; }
+
+    [JsonPropertyName("governmentAgency")]
+    public string? GovernmentAgency { get; set; }
 
     [JsonPropertyName("create")]
     public string? Create { get; set; }

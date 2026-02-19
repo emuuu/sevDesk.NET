@@ -35,7 +35,7 @@ internal class ApiPart
     public string? InternalComment { get; set; }
 
     [JsonPropertyName("stockEnabled")]
-    public bool? StockEnabled { get; set; }
+    public string? StockEnabled { get; set; }
 
     [JsonPropertyName("stock")]
     public decimal? Stock { get; set; }
@@ -68,7 +68,7 @@ internal class ApiCommunicationWay
     public ApiObjectReference? Key { get; set; }
 
     [JsonPropertyName("main")]
-    public bool? Main { get; set; }
+    public string? Main { get; set; }
 
     [JsonPropertyName("create")]
     public string? Create { get; set; }
@@ -130,6 +130,9 @@ internal class ApiTag
     [JsonPropertyName("object")]
     public ApiObjectReference? Object { get; set; }
 
+    [JsonPropertyName("objectType")]
+    public string? ObjectType { get; set; }
+
     [JsonPropertyName("create")]
     public string? Create { get; set; }
 }
@@ -147,6 +150,12 @@ internal class ApiCategory
 
     [JsonPropertyName("priority")]
     public int? Priority { get; set; }
+
+    [JsonPropertyName("code")]
+    public string? Code { get; set; }
+
+    [JsonPropertyName("type")]
+    public string? Type { get; set; }
 
     [JsonPropertyName("color")]
     public string? Color { get; set; }
@@ -175,6 +184,12 @@ internal class ApiUnity
     [JsonPropertyName("translationCode")]
     public string? TranslationCode { get; set; }
 
+    [JsonPropertyName("unitySystem")]
+    public string? UnitySystem { get; set; }
+
+    [JsonPropertyName("uneceTradeUnitCode")]
+    public string? UneceTradeUnitCode { get; set; }
+
     [JsonPropertyName("create")]
     public string? Create { get; set; }
 
@@ -187,20 +202,23 @@ internal class ApiTaxRule
     [JsonPropertyName("id")]
     public int Id { get; set; }
 
+    [JsonPropertyName("objectName")]
+    public string? ObjectName { get; set; }
+
     [JsonPropertyName("name")]
     public string? Name { get; set; }
 
-    [JsonPropertyName("taxRate")]
-    public decimal? TaxRate { get; set; }
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
 
-    [JsonPropertyName("isDefault")]
-    public bool? IsDefault { get; set; }
+    [JsonPropertyName("code")]
+    public string? Code { get; set; }
 
-    [JsonPropertyName("create")]
-    public string? Create { get; set; }
+    [JsonPropertyName("countryClient")]
+    public ApiObjectReference? CountryClient { get; set; }
 
-    [JsonPropertyName("update")]
-    public string? Update { get; set; }
+    [JsonPropertyName("countryContactType")]
+    public string? CountryContactType { get; set; }
 }
 
 internal class ApiCurrencyExchangeRate
@@ -208,23 +226,17 @@ internal class ApiCurrencyExchangeRate
     [JsonPropertyName("id")]
     public int Id { get; set; }
 
-    [JsonPropertyName("currencyFrom")]
-    public string? CurrencyFrom { get; set; }
+    [JsonPropertyName("objectName")]
+    public string? ObjectName { get; set; }
 
-    [JsonPropertyName("currencyTo")]
-    public string? CurrencyTo { get; set; }
+    [JsonPropertyName("currency")]
+    public string? Currency { get; set; }
 
     [JsonPropertyName("rate")]
     public decimal? Rate { get; set; }
 
     [JsonPropertyName("date")]
     public string? Date { get; set; }
-
-    [JsonPropertyName("create")]
-    public string? Create { get; set; }
-
-    [JsonPropertyName("update")]
-    public string? Update { get; set; }
 }
 
 internal class ApiDocument

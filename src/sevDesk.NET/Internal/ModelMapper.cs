@@ -26,6 +26,14 @@ internal static class ModelMapper
     internal static decimal? ParseDecimal(string? value) =>
         value is not null && decimal.TryParse(value, System.Globalization.CultureInfo.InvariantCulture, out var d) ? d : null;
 
+    // --- Bool Parsing (API returns "0"/"1" strings) ---
+
+    internal static bool? ParseBool(string? value) =>
+        value is "1" or "true" ? true : value is "0" or "false" ? false : null;
+
+    internal static string? FormatBool(bool? value) =>
+        value.HasValue ? (value.Value ? "1" : "0") : null;
+
     // --- Contact ---
 
     internal static Contact ToPublic(ApiContact api) => new()
@@ -50,6 +58,10 @@ internal static class ModelMapper
         DefaultTimeToPay = api.DefaultTimeToPay,
         TaxNumber = api.TaxNumber,
         TaxOffice = api.TaxOffice,
+        ExemptVat = ParseBool(api.ExemptVat),
+        Birthday = ParseDateTime(api.Birthday),
+        DefaultDiscountPercentage = ParseDecimal(api.DefaultDiscountPercentage),
+        GovernmentAgency = ParseBool(api.GovernmentAgency),
         Create = ParseDateTime(api.Create),
         Update = ParseDateTime(api.Update)
     };
@@ -75,7 +87,11 @@ internal static class ModelMapper
         DefaultCashbackPercent = model.DefaultCashbackPercent,
         DefaultTimeToPay = model.DefaultTimeToPay,
         TaxNumber = model.TaxNumber,
-        TaxOffice = model.TaxOffice
+        TaxOffice = model.TaxOffice,
+        ExemptVat = FormatBool(model.ExemptVat),
+        Birthday = FormatDateTime(model.Birthday),
+        DefaultDiscountPercentage = model.DefaultDiscountPercentage?.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        GovernmentAgency = FormatBool(model.GovernmentAgency)
     };
 
     // --- Invoice ---
@@ -110,7 +126,7 @@ internal static class ModelMapper
         SendType = api.SendType,
         Origin = ToPublic(api.Origin),
         CustomerInternalNote = api.CustomerInternalNote,
-        SmallSettlement = api.SmallSettlement,
+        SmallSettlement = ParseBool(api.SmallSettlement),
         TaxSet = ToPublic(api.TaxSet),
         Create = ParseDateTime(api.Create),
         Update = ParseDateTime(api.Update)
@@ -143,7 +159,7 @@ internal static class ModelMapper
         SendType = model.SendType,
         Origin = ToApi(model.Origin),
         CustomerInternalNote = model.CustomerInternalNote,
-        SmallSettlement = model.SmallSettlement,
+        SmallSettlement = FormatBool(model.SmallSettlement),
         TaxSet = ToApi(model.TaxSet)
     };
 
@@ -162,7 +178,7 @@ internal static class ModelMapper
         PositionNumber = api.PositionNumber,
         Text = api.Text,
         Discount = api.Discount,
-        Optional = api.Optional,
+        Optional = ParseBool(api.Optional),
         SumNet = ParseDecimal(api.SumNet),
         SumGross = ParseDecimal(api.SumGross),
         SumTax = ParseDecimal(api.SumTax),
@@ -183,7 +199,7 @@ internal static class ModelMapper
         PositionNumber = model.PositionNumber,
         Text = model.Text,
         Discount = model.Discount,
-        Optional = model.Optional,
+        Optional = FormatBool(model.Optional),
         MapAll = true
     };
 
@@ -211,7 +227,7 @@ internal static class ModelMapper
         TaxText = api.TaxText,
         SendDate = ParseDateTime(api.SendDate),
         DeliveryDate = ParseDateTime(api.DeliveryDate),
-        SmallSettlement = api.SmallSettlement,
+        SmallSettlement = ParseBool(api.SmallSettlement),
         TaxSet = ToPublic(api.TaxSet),
         Origin = ToPublic(api.Origin),
         CustomerInternalNote = api.CustomerInternalNote,
@@ -238,7 +254,7 @@ internal static class ModelMapper
         TaxText = model.TaxText,
         SendDate = FormatDateTime(model.SendDate),
         DeliveryDate = FormatDateTime(model.DeliveryDate),
-        SmallSettlement = model.SmallSettlement,
+        SmallSettlement = FormatBool(model.SmallSettlement),
         TaxSet = ToApi(model.TaxSet),
         Origin = ToApi(model.Origin),
         CustomerInternalNote = model.CustomerInternalNote
@@ -259,7 +275,7 @@ internal static class ModelMapper
         PositionNumber = api.PositionNumber,
         Text = api.Text,
         Discount = api.Discount,
-        Optional = api.Optional,
+        Optional = ParseBool(api.Optional),
         SumNet = ParseDecimal(api.SumNet),
         SumGross = ParseDecimal(api.SumGross),
         SumTax = ParseDecimal(api.SumTax),
@@ -280,7 +296,7 @@ internal static class ModelMapper
         PositionNumber = model.PositionNumber,
         Text = model.Text,
         Discount = model.Discount,
-        Optional = model.Optional,
+        Optional = FormatBool(model.Optional),
         MapAll = true
     };
 
@@ -336,7 +352,7 @@ internal static class ModelMapper
         EstimatedAccountingType = ToPublic(api.EstimatedAccountingType),
         Net = api.Net,
         TaxRate = api.TaxRate,
-        IsAsset = api.IsAsset,
+        IsAsset = ParseBool(api.IsAsset),
         SumNet = ParseDecimal(api.SumNet),
         SumGross = ParseDecimal(api.SumGross),
         SumTax = ParseDecimal(api.SumTax),
@@ -353,7 +369,7 @@ internal static class ModelMapper
         EstimatedAccountingType = ToApi(model.EstimatedAccountingType),
         Net = model.Net,
         TaxRate = model.TaxRate,
-        IsAsset = model.IsAsset,
+        IsAsset = FormatBool(model.IsAsset),
         Comment = model.Comment,
         MapAll = true
     };
@@ -381,7 +397,7 @@ internal static class ModelMapper
         TaxText = api.TaxText,
         TaxSet = ToPublic(api.TaxSet),
         SendDate = ParseDateTime(api.SendDate),
-        SmallSettlement = api.SmallSettlement,
+        SmallSettlement = ParseBool(api.SmallSettlement),
         Create = ParseDateTime(api.Create),
         Update = ParseDateTime(api.Update)
     };
@@ -404,7 +420,7 @@ internal static class ModelMapper
         TaxText = model.TaxText,
         TaxSet = ToApi(model.TaxSet),
         SendDate = FormatDateTime(model.SendDate),
-        SmallSettlement = model.SmallSettlement
+        SmallSettlement = FormatBool(model.SmallSettlement)
     };
 
     // --- CreditNotePos ---
@@ -422,7 +438,7 @@ internal static class ModelMapper
         PositionNumber = api.PositionNumber,
         Text = api.Text,
         Discount = api.Discount,
-        Optional = api.Optional,
+        Optional = ParseBool(api.Optional),
         SumNet = ParseDecimal(api.SumNet),
         SumGross = ParseDecimal(api.SumGross),
         SumTax = ParseDecimal(api.SumTax),
@@ -443,7 +459,7 @@ internal static class ModelMapper
         PositionNumber = model.PositionNumber,
         Text = model.Text,
         Discount = model.Discount,
-        Optional = model.Optional,
+        Optional = FormatBool(model.Optional),
         MapAll = true
     };
 
@@ -461,7 +477,7 @@ internal static class ModelMapper
         PriceNet = api.PriceNet,
         TaxRate = api.TaxRate,
         InternalComment = api.InternalComment,
-        StockEnabled = api.StockEnabled,
+        StockEnabled = ParseBool(api.StockEnabled),
         Stock = api.Stock,
         Category = ToPublic(api.Category),
         Create = ParseDateTime(api.Create),
@@ -480,7 +496,7 @@ internal static class ModelMapper
         PriceNet = model.PriceNet,
         TaxRate = model.TaxRate,
         InternalComment = model.InternalComment,
-        StockEnabled = model.StockEnabled,
+        StockEnabled = FormatBool(model.StockEnabled),
         Stock = model.Stock,
         Category = ToApi(model.Category)
     };
@@ -491,12 +507,12 @@ internal static class ModelMapper
     {
         Id = api.Id,
         Name = api.Name,
-        Type = api.Type.HasValue ? (CheckAccountType)api.Type.Value : null,
+        Type = api.Type switch { "online" => CheckAccountType.Online, "offline" => CheckAccountType.Offline, _ => null },
         Iban = api.Iban,
         Bic = api.Bic,
         BankName = api.BankName,
         Currency = api.Currency,
-        DefaultAccount = api.DefaultAccount,
+        DefaultAccount = ParseBool(api.DefaultAccount),
         Status = api.Status,
         Create = ParseDateTime(api.Create),
         Update = ParseDateTime(api.Update)
@@ -506,12 +522,12 @@ internal static class ModelMapper
     {
         Id = model.Id,
         Name = model.Name,
-        Type = model.Type.HasValue ? (int)model.Type.Value : null,
+        Type = model.Type switch { CheckAccountType.Online => "online", CheckAccountType.Offline => "offline", _ => null },
         Iban = model.Iban,
         Bic = model.Bic,
         BankName = model.BankName,
         Currency = model.Currency,
-        DefaultAccount = model.DefaultAccount,
+        DefaultAccount = FormatBool(model.DefaultAccount),
         Status = model.Status
     };
 
@@ -524,8 +540,8 @@ internal static class ModelMapper
         ValueDate = ParseDateTime(api.ValueDate),
         EntryDate = ParseDateTime(api.EntryDate),
         Amount = api.Amount,
-        PayeeName = api.PayeeName,
-        Purpose = api.Purpose,
+        PayeeName = api.PayeePayerName,
+        Purpose = api.PaymtPurpose,
         Status = api.Status,
         Create = ParseDateTime(api.Create),
         Update = ParseDateTime(api.Update)
@@ -538,8 +554,8 @@ internal static class ModelMapper
         ValueDate = FormatDateTime(model.ValueDate),
         EntryDate = FormatDateTime(model.EntryDate),
         Amount = model.Amount,
-        PayeeName = model.PayeeName,
-        Purpose = model.Purpose,
+        PayeePayerName = model.PayeeName,
+        PaymtPurpose = model.Purpose,
         Status = model.Status
     };
 
@@ -552,7 +568,7 @@ internal static class ModelMapper
         Type = api.Type is not null && Enum.TryParse<CommunicationWayType>(api.Type, out var cwt) ? cwt : null,
         Value = api.Value,
         Key = ToPublic(api.Key),
-        Main = api.Main,
+        Main = ParseBool(api.Main),
         Create = ParseDateTime(api.Create),
         Update = ParseDateTime(api.Update)
     };
@@ -564,7 +580,7 @@ internal static class ModelMapper
         Type = model.Type?.ToString(),
         Value = model.Value,
         Key = ToApi(model.Key),
-        Main = model.Main
+        Main = FormatBool(model.Main)
     };
 
     // --- ContactAddress ---
@@ -608,6 +624,7 @@ internal static class ModelMapper
         Id = api.Id,
         Name = api.Name,
         Object = ToPublic(api.Object),
+        ObjectType = api.ObjectType,
         Create = ParseDateTime(api.Create)
     };
 
@@ -626,6 +643,8 @@ internal static class ModelMapper
         Name = api.Name,
         ObjectType = api.ObjectType,
         Priority = api.Priority,
+        Code = api.Code,
+        Type = api.Type,
         Color = api.Color,
         PostingAccount = api.PostingAccount,
         TranslationCode = api.TranslationCode,
@@ -639,6 +658,8 @@ internal static class ModelMapper
         Name = model.Name,
         ObjectType = model.ObjectType,
         Priority = model.Priority,
+        Code = model.Code,
+        Type = model.Type,
         Color = model.Color,
         PostingAccount = model.PostingAccount,
         TranslationCode = model.TranslationCode
@@ -651,6 +672,8 @@ internal static class ModelMapper
         Id = api.Id,
         Name = api.Name,
         TranslationCode = api.TranslationCode,
+        UnitySystem = api.UnitySystem,
+        UneceTradeUnitCode = api.UneceTradeUnitCode,
         Create = ParseDateTime(api.Create),
         Update = ParseDateTime(api.Update)
     };
@@ -661,10 +684,10 @@ internal static class ModelMapper
     {
         Id = api.Id,
         Name = api.Name,
-        TaxRate = api.TaxRate,
-        IsDefault = api.IsDefault,
-        Create = ParseDateTime(api.Create),
-        Update = ParseDateTime(api.Update)
+        Description = api.Description,
+        Code = api.Code,
+        CountryClient = ToPublic(api.CountryClient),
+        CountryContactType = api.CountryContactType
     };
 
     // --- CurrencyExchangeRate ---
@@ -672,12 +695,9 @@ internal static class ModelMapper
     internal static CurrencyExchangeRate ToPublic(ApiCurrencyExchangeRate api) => new()
     {
         Id = api.Id,
-        CurrencyFrom = api.CurrencyFrom,
-        CurrencyTo = api.CurrencyTo,
+        Currency = api.Currency,
         Rate = api.Rate,
-        Date = ParseDateTime(api.Date),
-        Create = ParseDateTime(api.Create),
-        Update = ParseDateTime(api.Update)
+        Date = ParseDateTime(api.Date)
     };
 
     // --- Document ---

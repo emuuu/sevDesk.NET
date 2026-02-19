@@ -83,7 +83,7 @@ internal class ApiVoucherPos
     public decimal? TaxRate { get; set; }
 
     [JsonPropertyName("isAsset")]
-    public bool? IsAsset { get; set; }
+    public string? IsAsset { get; set; }
 
     [JsonPropertyName("sumNet")]
     public string? SumNet { get; set; }

@@ -13,7 +13,7 @@ internal class ContactClient : IContactClient
     public async Task<SevDeskListResponse<Contact>> ListAsync(PaginationParameters? pagination = null, string? embed = null, CancellationToken ct = default)
     {
         var (items, total) = await _client.GetListAsync("Contact", pagination, SevDeskJsonContext.Default.SevDeskApiListResponseApiContact,
-            qb => qb.AddIfNotNull("embed", embed), ct).ConfigureAwait(false);
+            qb => { qb.Add("depth", "1"); qb.AddIfNotNull("embed", embed); }, ct).ConfigureAwait(false);
         return new SevDeskListResponse<Contact> { Items = items.Select(ModelMapper.ToPublic).ToList(), Total = total };
     }
 

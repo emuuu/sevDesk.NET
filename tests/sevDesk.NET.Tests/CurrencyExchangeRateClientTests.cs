@@ -21,7 +21,7 @@ public class CurrencyExchangeRateClientTests
         {
             objects = new[]
             {
-                new { id = 1, currencyFrom = "USD", currencyTo = "EUR", rate = 0.92m }
+                new { id = 1, currency = "USD", rate = 0.92m }
             },
             total = 1
         };
@@ -34,8 +34,8 @@ public class CurrencyExchangeRateClientTests
         var result = await client.CurrencyExchangeRates.ListAsync();
 
         result.Items.Count.ShouldBe(1);
-        result.Items[0].CurrencyFrom.ShouldBe("USD");
-        result.Items[0].CurrencyTo.ShouldBe("EUR");
+        result.Items[0].Currency.ShouldBe("USD");
+        result.Items[0].Rate.ShouldBe(0.92m);
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public class CurrencyExchangeRateClientTests
     {
         var responseBody = new
         {
-            objects = new { id = 5, currencyFrom = "GBP", currencyTo = "EUR", rate = 1.17m }
+            objects = new { id = 5, currency = "GBP", rate = 1.17m }
         };
 
         var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
@@ -54,7 +54,7 @@ public class CurrencyExchangeRateClientTests
         var result = await client.CurrencyExchangeRates.GetAsync(5);
 
         result.Id.ShouldBe(5);
-        result.CurrencyFrom.ShouldBe("GBP");
+        result.Currency.ShouldBe("GBP");
         result.Rate.ShouldBe(1.17m);
     }
 }

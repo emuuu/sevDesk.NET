@@ -22,7 +22,7 @@ public class CheckAccountClientTests
         {
             objects = new[]
             {
-                new { id = 1, name = "Girokonto", iban = "DE89370400440532013000", currency = "EUR", type = 0 }
+                new { id = 1, name = "Girokonto", iban = "DE89370400440532013000", currency = "EUR", type = "online" }
             },
             total = 1
         };
@@ -45,7 +45,7 @@ public class CheckAccountClientTests
     {
         var responseBody = new
         {
-            objects = new { id = 5, name = "Sparkasse", type = 1, currency = "EUR" }
+            objects = new { id = 5, name = "Sparkasse", type = "offline", currency = "EUR" }
         };
 
         var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
@@ -65,7 +65,7 @@ public class CheckAccountClientTests
     {
         var responseBody = new
         {
-            objects = new { id = 10, name = "Neues Konto", type = 0, currency = "EUR", iban = "DE123" }
+            objects = new { id = 10, name = "Neues Konto", type = "online", currency = "EUR", iban = "DE123" }
         };
 
         var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
@@ -88,7 +88,7 @@ public class CheckAccountClientTests
     {
         var responseBody = new
         {
-            objects = new { id = 5, name = "Sparkasse Updated", type = 1, currency = "EUR" }
+            objects = new { id = 5, name = "Sparkasse Updated", type = "offline", currency = "EUR" }
         };
 
         var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)

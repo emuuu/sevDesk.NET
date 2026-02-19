@@ -14,6 +14,9 @@ public class Tag
     /// <summary>Gets or sets the object reference this tag is attached to.</summary>
     public SevDeskObjectReference? Object { get; init; }
 
+    /// <summary>Gets or sets the object type.</summary>
+    public string? ObjectType { get; init; }
+
     /// <summary>Gets the creation date.</summary>
     public DateTime? Create { get; init; }
 }

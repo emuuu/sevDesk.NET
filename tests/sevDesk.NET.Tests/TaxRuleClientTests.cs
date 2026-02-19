@@ -21,7 +21,7 @@ public class TaxRuleClientTests
         {
             objects = new[]
             {
-                new { id = 1, name = "Regelbesteuerung", taxRate = 19.0m, isDefault = true }
+                new { id = 1, name = "Regelbesteuerung", description = "Standard tax rule", code = "1", countryContactType = "domestic" }
             },
             total = 1
         };
@@ -35,7 +35,8 @@ public class TaxRuleClientTests
 
         result.Items.Count.ShouldBe(1);
         result.Items[0].Name.ShouldBe("Regelbesteuerung");
-        result.Items[0].TaxRate.ShouldBe(19.0m);
+        result.Items[0].Description.ShouldBe("Standard tax rule");
+        result.Items[0].Code.ShouldBe("1");
     }
 
     [Fact]
@@ -43,7 +44,7 @@ public class TaxRuleClientTests
     {
         var responseBody = new
         {
-            objects = new { id = 5, name = "Ermäßigt", taxRate = 7.0m, isDefault = false }
+            objects = new { id = 5, name = "Ermäßigt", description = "Reduced rate", code = "2", countryContactType = "domestic" }
         };
 
         var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
@@ -55,6 +56,6 @@ public class TaxRuleClientTests
 
         result.Id.ShouldBe(5);
         result.Name.ShouldBe("Ermäßigt");
-        result.TaxRate.ShouldBe(7.0m);
+        result.Description.ShouldBe("Reduced rate");
     }
 }

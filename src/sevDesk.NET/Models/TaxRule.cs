@@ -11,15 +11,15 @@ public class TaxRule
     /// <summary>Gets or sets the tax rule name.</summary>
     public string? Name { get; init; }
 
-    /// <summary>Gets or sets the tax rate percentage.</summary>
-    public decimal? TaxRate { get; init; }
+    /// <summary>Gets or sets the description.</summary>
+    public string? Description { get; init; }
 
-    /// <summary>Gets or sets whether this is a system default tax rule.</summary>
-    public bool? IsDefault { get; init; }
+    /// <summary>Gets or sets the tax rule code.</summary>
+    public string? Code { get; init; }
 
-    /// <summary>Gets the creation date.</summary>
-    public DateTime? Create { get; init; }
+    /// <summary>Gets or sets the country client reference (StaticCountry).</summary>
+    public SevDeskObjectReference? CountryClient { get; init; }
 
-    /// <summary>Gets the last update date.</summary>
-    public DateTime? Update { get; init; }
+    /// <summary>Gets or sets the country contact type.</summary>
+    public string? CountryContactType { get; init; }
 }

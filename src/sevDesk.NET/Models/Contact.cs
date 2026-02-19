@@ -67,6 +67,18 @@ public class Contact
     /// <summary>Gets or sets the tax office.</summary>
     public string? TaxOffice { get; init; }
 
+    /// <summary>Gets or sets whether the contact is exempt from VAT.</summary>
+    public bool? ExemptVat { get; init; }
+
+    /// <summary>Gets or sets the birthday.</summary>
+    public DateTime? Birthday { get; init; }
+
+    /// <summary>Gets or sets the default discount percentage.</summary>
+    public decimal? DefaultDiscountPercentage { get; init; }
+
+    /// <summary>Gets or sets whether this is a government agency.</summary>
+    public bool? GovernmentAgency { get; init; }
+
     /// <summary>Gets the creation date.</summary>
     public DateTime? Create { get; init; }
 

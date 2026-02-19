@@ -62,7 +62,7 @@ internal class ApiCreditNote
     public string? SendDate { get; set; }
 
     [JsonPropertyName("smallSettlement")]
-    public bool? SmallSettlement { get; set; }
+    public string? SmallSettlement { get; set; }
 
     [JsonPropertyName("create")]
     public string? Create { get; set; }
@@ -107,7 +107,7 @@ internal class ApiCreditNotePos
     public decimal? Discount { get; set; }
 
     [JsonPropertyName("optional")]
-    public bool? Optional { get; set; }
+    public string? Optional { get; set; }
 
     [JsonPropertyName("sumNet")]
     public string? SumNet { get; set; }

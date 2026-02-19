@@ -93,6 +93,20 @@
                   "default": "null"
                 },
                 {
+                  "name": "Code",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the category code.",
+                  "default": "null"
+                },
+                {
+                  "name": "Type",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the category type.",
+                  "default": "null"
+                },
+                {
                   "name": "Color",
                   "type": "string?",
                   "required": false,
@@ -174,6 +188,20 @@
                   "type": "int?",
                   "required": false,
                   "description": "Gets or sets the priority.",
+                  "default": "null"
+                },
+                {
+                  "name": "Code",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the category code.",
+                  "default": "null"
+                },
+                {
+                  "name": "Type",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the category type.",
                   "default": "null"
                 },
                 {
@@ -1654,6 +1682,34 @@
                   "default": "null"
                 },
                 {
+                  "name": "ExemptVat",
+                  "type": "bool?",
+                  "required": false,
+                  "description": "Gets or sets whether the contact is exempt from VAT.",
+                  "default": "null"
+                },
+                {
+                  "name": "Birthday",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets or sets the birthday.",
+                  "default": "null"
+                },
+                {
+                  "name": "DefaultDiscountPercentage",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets or sets the default discount percentage.",
+                  "default": "null"
+                },
+                {
+                  "name": "GovernmentAgency",
+                  "type": "bool?",
+                  "required": false,
+                  "description": "Gets or sets whether this is a government agency.",
+                  "default": "null"
+                },
+                {
                   "name": "Create",
                   "type": "DateTime?",
                   "required": false,
@@ -1841,6 +1897,34 @@
                   "type": "string?",
                   "required": false,
                   "description": "Gets or sets the tax office.",
+                  "default": "null"
+                },
+                {
+                  "name": "ExemptVat",
+                  "type": "bool?",
+                  "required": false,
+                  "description": "Gets or sets whether the contact is exempt from VAT.",
+                  "default": "null"
+                },
+                {
+                  "name": "Birthday",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets or sets the birthday.",
+                  "default": "null"
+                },
+                {
+                  "name": "DefaultDiscountPercentage",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets or sets the default discount percentage.",
+                  "default": "null"
+                },
+                {
+                  "name": "GovernmentAgency",
+                  "type": "bool?",
+                  "required": false,
+                  "description": "Gets or sets whether this is a government agency.",
                   "default": "null"
                 },
                 {
@@ -6651,6 +6735,13 @@
                   ]
                 },
                 {
+                  "name": "ObjectType",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the object type.",
+                  "default": "null"
+                },
+                {
                   "name": "Create",
                   "type": "DateTime?",
                   "required": false,
@@ -8173,6 +8264,16 @@
           "description": "Gets or sets the priority."
         },
         {
+          "name": "Code",
+          "type": "string?",
+          "description": "Gets or sets the category code."
+        },
+        {
+          "name": "Type",
+          "type": "string?",
+          "description": "Gets or sets the category type."
+        },
+        {
           "name": "Color",
           "type": "string?",
           "description": "Gets or sets the color hex code."
@@ -8469,6 +8570,26 @@
           "name": "TaxOffice",
           "type": "string?",
           "description": "Gets or sets the tax office."
+        },
+        {
+          "name": "ExemptVat",
+          "type": "bool?",
+          "description": "Gets or sets whether the contact is exempt from VAT."
+        },
+        {
+          "name": "Birthday",
+          "type": "DateTime?",
+          "description": "Gets or sets the birthday."
+        },
+        {
+          "name": "DefaultDiscountPercentage",
+          "type": "decimal?",
+          "description": "Gets or sets the default discount percentage."
+        },
+        {
+          "name": "GovernmentAgency",
+          "type": "bool?",
+          "description": "Gets or sets whether this is a government agency."
         },
         {
           "name": "Create",
@@ -8779,14 +8900,9 @@
           "description": "Gets the exchange rate ID."
         },
         {
-          "name": "CurrencyFrom",
+          "name": "Currency",
           "type": "string?",
-          "description": "Gets or sets the source currency (ISO 4217)."
-        },
-        {
-          "name": "CurrencyTo",
-          "type": "string?",
-          "description": "Gets or sets the target currency (ISO 4217)."
+          "description": "Gets or sets the currency (ISO 4217)."
         },
         {
           "name": "Rate",
@@ -8797,16 +8913,6 @@
           "name": "Date",
           "type": "DateTime?",
           "description": "Gets or sets the date of the exchange rate."
-        },
-        {
-          "name": "Create",
-          "type": "DateTime?",
-          "description": "Gets the creation date."
-        },
-        {
-          "name": "Update",
-          "type": "DateTime?",
-          "description": "Gets the last update date."
         }
       ]
     },
@@ -9487,6 +9593,11 @@
           "nestedType": "SevDeskObjectReference"
         },
         {
+          "name": "ObjectType",
+          "type": "string?",
+          "description": "Gets or sets the object type."
+        },
+        {
           "name": "Create",
           "type": "DateTime?",
           "description": "Gets the creation date."
@@ -9508,24 +9619,25 @@
           "description": "Gets or sets the tax rule name."
         },
         {
-          "name": "TaxRate",
-          "type": "decimal?",
-          "description": "Gets or sets the tax rate percentage."
+          "name": "Description",
+          "type": "string?",
+          "description": "Gets or sets the description."
         },
         {
-          "name": "IsDefault",
-          "type": "bool?",
-          "description": "Gets or sets whether this is a system default tax rule."
+          "name": "Code",
+          "type": "string?",
+          "description": "Gets or sets the tax rule code."
         },
         {
-          "name": "Create",
-          "type": "DateTime?",
-          "description": "Gets the creation date."
+          "name": "CountryClient",
+          "type": "SevDeskObjectReference?",
+          "description": "Gets or sets the country client reference (StaticCountry).",
+          "nestedType": "SevDeskObjectReference"
         },
         {
-          "name": "Update",
-          "type": "DateTime?",
-          "description": "Gets the last update date."
+          "name": "CountryContactType",
+          "type": "string?",
+          "description": "Gets or sets the country contact type."
         }
       ]
     },
@@ -9547,6 +9659,16 @@
           "name": "TranslationCode",
           "type": "string?",
           "description": "Gets or sets the translation code."
+        },
+        {
+          "name": "UnitySystem",
+          "type": "string?",
+          "description": "Gets or sets the unity system."
+        },
+        {
+          "name": "UneceTradeUnitCode",
+          "type": "string?",
+          "description": "Gets or sets the UN/ECE trade unit code."
         },
         {
           "name": "Create",

@@ -22,7 +22,7 @@ public class CheckAccountTransactionClientTests
         {
             objects = new[]
             {
-                new { id = 1, amount = 500.00m, payeeName = "Max Mustermann", purpose = "Miete" }
+                new { id = 1, amount = 500.00m, payeePayerName = "Max Mustermann", paymtPurpose = "Miete" }
             },
             total = 1
         };
@@ -44,7 +44,7 @@ public class CheckAccountTransactionClientTests
     {
         var responseBody = new
         {
-            objects = new { id = 5, amount = 250.50m, payeeName = "Test", purpose = "Payment" }
+            objects = new { id = 5, amount = 250.50m, payeePayerName = "Test", paymtPurpose = "Payment" }
         };
 
         var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
@@ -63,7 +63,7 @@ public class CheckAccountTransactionClientTests
     {
         var responseBody = new
         {
-            objects = new { id = 10, amount = 100.00m, payeeName = "New Payee" }
+            objects = new { id = 10, amount = 100.00m, payeePayerName = "New Payee" }
         };
 
         var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
@@ -86,7 +86,7 @@ public class CheckAccountTransactionClientTests
     {
         var responseBody = new
         {
-            objects = new { id = 5, amount = 300.00m, payeeName = "Updated Payee" }
+            objects = new { id = 5, amount = 300.00m, payeePayerName = "Updated Payee" }
         };
 
         var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)

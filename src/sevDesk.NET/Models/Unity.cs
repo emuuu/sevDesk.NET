@@ -14,6 +14,12 @@ public class Unity
     /// <summary>Gets or sets the translation code.</summary>
     public string? TranslationCode { get; init; }
 
+    /// <summary>Gets or sets the unity system.</summary>
+    public string? UnitySystem { get; init; }
+
+    /// <summary>Gets or sets the UN/ECE trade unit code.</summary>
+    public string? UneceTradeUnitCode { get; init; }
+
     /// <summary>Gets the creation date.</summary>
     public DateTime? Create { get; init; }
 

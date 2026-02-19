@@ -65,7 +65,7 @@ internal class ApiOrder
     public string? DeliveryDate { get; set; }
 
     [JsonPropertyName("smallSettlement")]
-    public bool? SmallSettlement { get; set; }
+    public string? SmallSettlement { get; set; }
 
     [JsonPropertyName("taxSet")]
     public ApiObjectReference? TaxSet { get; set; }
@@ -119,7 +119,7 @@ internal class ApiOrderPos
     public decimal? Discount { get; set; }
 
     [JsonPropertyName("optional")]
-    public bool? Optional { get; set; }
+    public string? Optional { get; set; }
 
     [JsonPropertyName("sumNet")]
     public string? SumNet { get; set; }

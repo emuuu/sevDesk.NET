@@ -75,5 +75,6 @@ namespace sevDesk.NET.Internal;
 [JsonSerializable(typeof(ApiDocument))]
 [JsonSourceGenerationOptions(
     PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
-    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    NumberHandling = JsonNumberHandling.AllowReadingFromString)]
 internal partial class SevDeskJsonContext : JsonSerializerContext;

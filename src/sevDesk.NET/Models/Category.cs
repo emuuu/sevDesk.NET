@@ -17,6 +17,12 @@ public class Category
     /// <summary>Gets or sets the priority.</summary>
     public int? Priority { get; init; }
 
+    /// <summary>Gets or sets the category code.</summary>
+    public string? Code { get; init; }
+
+    /// <summary>Gets or sets the category type.</summary>
+    public string? Type { get; init; }
+
     /// <summary>Gets or sets the color hex code.</summary>
     public string? Color { get; init; }
 

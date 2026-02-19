@@ -11,7 +11,7 @@ internal class ApiCheckAccount
     public string? Name { get; set; }
 
     [JsonPropertyName("type")]
-    public int? Type { get; set; }
+    public string? Type { get; set; }
 
     [JsonPropertyName("iban")]
     public string? Iban { get; set; }
@@ -26,7 +26,7 @@ internal class ApiCheckAccount
     public string? Currency { get; set; }
 
     [JsonPropertyName("defaultAccount")]
-    public bool? DefaultAccount { get; set; }
+    public string? DefaultAccount { get; set; }
 
     [JsonPropertyName("status")]
     public int? Status { get; set; }
@@ -55,11 +55,11 @@ internal class ApiCheckAccountTransaction
     [JsonPropertyName("amount")]
     public decimal? Amount { get; set; }
 
-    [JsonPropertyName("payeeName")]
-    public string? PayeeName { get; set; }
+    [JsonPropertyName("payeePayerName")]
+    public string? PayeePayerName { get; set; }
 
-    [JsonPropertyName("purpose")]
-    public string? Purpose { get; set; }
+    [JsonPropertyName("paymtPurpose")]
+    public string? PaymtPurpose { get; set; }
 
     [JsonPropertyName("status")]
     public int? Status { get; set; }
