@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
-using sevDeskNET.Clients;
 using sevDeskNET.Exceptions;
+using sevDeskNET.Models;
 using sevDeskNET.Tests.Helpers;
 using Shouldly;
 using Xunit;
@@ -91,6 +91,20 @@ public class ContactClientTests
     }
 
     [Fact]
+    public async Task GetAsync_UnprocessableEntity_ThrowsValidationException()
+    {
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.UnprocessableEntity)
+        {
+            Content = new StringContent("""{"error":"Validation failed"}""", System.Text.Encoding.UTF8, "application/json")
+        });
+
+        var ex = await Should.ThrowAsync<SevDeskValidationException>(
+            () => client.Contacts.GetAsync(1));
+
+        ex.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
+    }
+
+    [Fact]
     public async Task CreateAsync_ReturnsCreatedContact()
     {
         var responseBody = new
@@ -103,7 +117,7 @@ public class ContactClientTests
             Content = JsonContent.Create(responseBody)
         });
 
-        var result = await client.Contacts.CreateAsync(new Models.Contact
+        var result = await client.Contacts.CreateAsync(new Contact
         {
             Surename = "Neu",
             Familyname = "Kontakt"
@@ -114,9 +128,45 @@ public class ContactClientTests
     }
 
     [Fact]
+    public async Task UpdateAsync_ReturnsUpdatedContact()
+    {
+        var responseBody = new
+        {
+            objects = new { id = 42, surename = "Updated", familyname = "Contact", status = 100 }
+        };
+
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        var result = await client.Contacts.UpdateAsync(42, new Contact
+        {
+            Surename = "Updated",
+            Familyname = "Contact"
+        });
+
+        result.Id.ShouldBe(42);
+        result.Surename.ShouldBe("Updated");
+    }
+
+    [Fact]
     public async Task DeleteAsync_NoError()
     {
         var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK));
         await client.Contacts.DeleteAsync(1);
+    }
+
+    [Fact]
+    public async Task GetNextCustomerNumberAsync_ReturnsNumber()
+    {
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent("""{"objects":"10042"}""", System.Text.Encoding.UTF8, "application/json")
+        });
+
+        var result = await client.Contacts.GetNextCustomerNumberAsync();
+
+        result.ShouldBe("10042");
     }
 }

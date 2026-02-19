@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using sevDeskNET.Models;
 using sevDeskNET.Tests.Helpers;
 using Shouldly;
 using Xunit;
@@ -57,5 +58,70 @@ public class CheckAccountClientTests
         result.Id.ShouldBe(5);
         result.Name.ShouldBe("Sparkasse");
         result.Type.ShouldBe(Models.Enums.CheckAccountType.Offline);
+    }
+
+    [Fact]
+    public async Task CreateAsync_ReturnsCreatedCheckAccount()
+    {
+        var responseBody = new
+        {
+            objects = new { id = 10, name = "Neues Konto", type = 0, currency = "EUR", iban = "DE123" }
+        };
+
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        var result = await client.CheckAccounts.CreateAsync(new CheckAccount
+        {
+            Name = "Neues Konto",
+            Currency = "EUR"
+        });
+
+        result.Id.ShouldBe(10);
+        result.Name.ShouldBe("Neues Konto");
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ReturnsUpdatedCheckAccount()
+    {
+        var responseBody = new
+        {
+            objects = new { id = 5, name = "Sparkasse Updated", type = 1, currency = "EUR" }
+        };
+
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        var result = await client.CheckAccounts.UpdateAsync(5, new CheckAccount
+        {
+            Name = "Sparkasse Updated"
+        });
+
+        result.Id.ShouldBe(5);
+        result.Name.ShouldBe("Sparkasse Updated");
+    }
+
+    [Fact]
+    public async Task DeleteAsync_NoError()
+    {
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK));
+        await client.CheckAccounts.DeleteAsync(1);
+    }
+
+    [Fact]
+    public async Task GetBalanceAsync_ReturnsBalance()
+    {
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent("""{"objects":1234.56}""", System.Text.Encoding.UTF8, "application/json")
+        });
+
+        var result = await client.CheckAccounts.GetBalanceAsync(5);
+
+        result.ShouldBe(1234.56m);
     }
 }

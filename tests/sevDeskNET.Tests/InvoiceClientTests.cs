@@ -16,6 +16,12 @@ public class InvoiceClientTests
             BaseAddress = new Uri("https://my.sevdesk.de/api/v1/")
         });
 
+    private static SevDeskClient CreateSequentialClient(params HttpResponseMessage[] responses) =>
+        new(new HttpClient(new SequentialMockHttpMessageHandler(responses))
+        {
+            BaseAddress = new Uri("https://my.sevdesk.de/api/v1/")
+        });
+
     [Fact]
     public async Task ListAsync_ReturnsInvoices()
     {
@@ -91,5 +97,144 @@ public class InvoiceClientTests
     {
         var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK));
         await client.Invoices.DeleteAsync(1);
+    }
+
+    [Fact]
+    public async Task CreateAsync_ReturnsCreatedInvoice()
+    {
+        var responseBody = new
+        {
+            objects = new { id = 50, invoiceNumber = "RE-050", status = 100, currency = "EUR" }
+        };
+
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        var result = await client.Invoices.CreateAsync(new Invoice
+        {
+            InvoiceNumber = "RE-050",
+            Currency = "EUR"
+        });
+
+        result.Id.ShouldBe(50);
+        result.InvoiceNumber.ShouldBe("RE-050");
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ReturnsUpdatedInvoice()
+    {
+        var responseBody = new
+        {
+            objects = new { id = 42, invoiceNumber = "RE-042-Updated", status = 100 }
+        };
+
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        var result = await client.Invoices.UpdateAsync(42, new Invoice
+        {
+            InvoiceNumber = "RE-042-Updated"
+        });
+
+        result.Id.ShouldBe(42);
+        result.InvoiceNumber.ShouldBe("RE-042-Updated");
+    }
+
+    [Fact]
+    public async Task SaveInvoiceAsync_ReturnsInvoice()
+    {
+        var factoryResponse = new StringContent(
+            """{"objects":{"invoice":{"id":99}}}""",
+            System.Text.Encoding.UTF8, "application/json");
+
+        var getResponse = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(new
+            {
+                objects = new { id = 99, invoiceNumber = "RE-099", status = 100 }
+            })
+        };
+
+        var client = CreateSequentialClient(
+            new HttpResponseMessage(HttpStatusCode.OK) { Content = factoryResponse },
+            getResponse);
+
+        var result = await client.Invoices.SaveInvoiceAsync(
+            new Invoice { InvoiceNumber = "RE-099" },
+            [new InvoicePos { Name = "Position 1", Quantity = 1, Price = 100 }]);
+
+        result.Id.ShouldBe(99);
+        result.InvoiceNumber.ShouldBe("RE-099");
+    }
+
+    [Fact]
+    public async Task ChangeStatusAsync_NoError()
+    {
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK));
+        await client.Invoices.ChangeStatusAsync(1, Models.Enums.InvoiceStatus.Open);
+    }
+
+    [Fact]
+    public async Task GetPdfAsync_ReturnsPdfBytes()
+    {
+        var pdfBytes = new byte[] { 0x25, 0x50, 0x44, 0x46 };
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new ByteArrayContent(pdfBytes)
+        });
+
+        var result = await client.Invoices.GetPdfAsync(1);
+
+        result.ShouldBe(pdfBytes);
+    }
+
+    [Fact]
+    public async Task SendViaEmailAsync_NoError()
+    {
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK));
+        await client.Invoices.SendViaEmailAsync(1, "test@example.com", "Invoice", "Please find attached");
+    }
+
+    [Fact]
+    public async Task BookAmountAsync_NoError()
+    {
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK));
+        await client.Invoices.BookAmountAsync(1, 119.00m, 5, DateTime.Today);
+    }
+
+    [Fact]
+    public async Task CancelAsync_NoError()
+    {
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK));
+        await client.Invoices.CancelAsync(1);
+    }
+
+    [Fact]
+    public async Task DuplicateAsync_ReturnsDuplicatedInvoice()
+    {
+        var responseBody = new
+        {
+            objects = new { id = 51, invoiceNumber = "RE-051", status = 100 }
+        };
+
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        var result = await client.Invoices.DuplicateAsync(50);
+
+        result.Id.ShouldBe(51);
+    }
+
+    [Fact]
+    public async Task MarkAsSentAsync_NoError()
+    {
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK));
+        await client.Invoices.MarkAsSentAsync(1);
     }
 }
