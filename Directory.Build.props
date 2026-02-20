@@ -11,12 +11,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <VersionPrefix>0.1.0</VersionPrefix>
-    <VersionSuffix>alpha</VersionSuffix>
+    <VersionPrefix>1.0.0</VersionPrefix>
     <Authors>sevDesk.NET Contributors</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/sevDesk.NET/sevDesk.NET</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/sevDesk.NET/sevDesk.NET</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/emuuu/sevDesk.NET</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/emuuu/sevDesk.NET</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>sevdesk;accounting;invoice;api;client</PackageTags>
     <Copyright>Copyright (c) sevDesk.NET Contributors</Copyright>
