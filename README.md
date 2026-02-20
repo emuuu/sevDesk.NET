@@ -8,9 +8,9 @@ A strongly-typed .NET client library for the [sevDesk API](https://my.sevdesk.de
 
 [![NuGet](https://img.shields.io/nuget/v/sevDesk.NET.svg)](https://www.nuget.org/packages/sevDesk.NET)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/sevDesk.NET.svg)](https://www.nuget.org/packages/sevDesk.NET)
-[![CI](https://github.com/sevDesk-NET/sevDesk.NET/actions/workflows/ci.yml/badge.svg)](https://github.com/sevDesk-NET/sevDesk.NET/actions/workflows/ci.yml)
+[![CI](https://github.com/emuuu/sevDesk.NET/actions/workflows/ci.yml/badge.svg)](https://github.com/emuuu/sevDesk.NET/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Docs](https://img.shields.io/badge/Docs-GitHub%20Pages-blue)](https://sevDesk-NET.github.io/sevDesk.NET/)
+[![Docs](https://img.shields.io/badge/Docs-GitHub%20Pages-blue)](https://emuuu.github.io/sevDesk.NET/)
 
 **Feature highlights:**
 
