@@ -4,7 +4,7 @@
 
 | Version | Target Framework | Supported |
 |---------|-----------------|-----------|
-| 0.1.x   | net10.0         | Yes       |
+| 1.x     | net10.0         | Yes       |
 
 ## Reporting a Vulnerability
 
