@@ -48,7 +48,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           PRERELEASE_FLAG=""
-          if [[ "$VERSION" == *"-preview"* ]]; then
+          if [[ "$VERSION" == *"-"* ]]; then
             PRERELEASE_FLAG="--prerelease"
           fi
           gh release create ${{ github.ref_name }} ./artifacts/*.nupkg \
