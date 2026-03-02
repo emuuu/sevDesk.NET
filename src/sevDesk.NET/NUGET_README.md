@@ -1,0 +1,81 @@
+# sevDesk.NET
+
+A strongly-typed .NET client library for the [sevDesk API](https://my.sevdesk.de/api/v1/). Manage invoices, contacts, vouchers, orders, credit notes, and more — with full async support and dependency injection.
+
+## Quick Start
+
+```bash
+dotnet add package sevDesk.NET
+```
+
+Register the client in your DI container:
+
+```csharp
+builder.Services.AddSevDesk(options =>
+{
+    options.ApiToken = "your-api-token";
+});
+```
+
+Or bind from configuration:
+
+```csharp
+builder.Services.AddSevDesk(
+    builder.Configuration.GetSection("SevDesk"));
+```
+
+Inject and use:
+
+```csharp
+public class InvoiceService(ISevDeskClient client)
+{
+    public async Task ListRecentInvoicesAsync()
+    {
+        var result = await client.Invoices.ListAsync();
+        foreach (var invoice in result.Items)
+            Console.WriteLine($"{invoice.InvoiceNumber}: {invoice.SumGross} {invoice.Currency}");
+    }
+}
+```
+
+## Features
+
+- **20 typed clients** covering the entire sevDesk REST API
+- **Strongly typed models and enums** for all resources
+- **Transaction operations** — save invoice/order/voucher with positions atomically
+- **PDF generation**, email sending, status management, and document upload
+- **Pagination** with `SevDeskListResponse<T>` and filtering
+- **Typed exception hierarchy** — `SevDeskAuthenticationException`, `SevDeskNotFoundException`, `SevDeskValidationException`
+- **`IHttpClientFactory`** integration with automatic auth header injection
+
+## Available Clients
+
+| Area | Clients |
+|---|---|
+| Financial Documents | `Invoices`, `InvoicePositions`, `Orders`, `OrderPositions`, `Vouchers`, `VoucherPositions`, `CreditNotes`, `CreditNotePositions` |
+| Contacts | `Contacts`, `ContactAddresses`, `CommunicationWays` |
+| Banking | `CheckAccounts`, `CheckAccountTransactions` |
+| Products | `Parts` |
+| Organization | `Tags`, `Categories`, `Documents` |
+| Reference Data | `Unities`, `TaxRules`, `CurrencyExchangeRates` |
+
+All clients are accessible via `ISevDeskClient` (e.g. `client.Invoices`, `client.Contacts`).
+
+## Error Handling
+
+```csharp
+try
+{
+    var invoice = await client.Invoices.GetAsync(id);
+}
+catch (SevDeskNotFoundException) { /* 404 */ }
+catch (SevDeskAuthenticationException) { /* 401 */ }
+catch (SevDeskValidationException ex) { /* 422 */ }
+catch (SevDeskApiException ex) { /* other API errors */ }
+```
+
+## Documentation
+
+For full documentation, examples, and API reference visit the [project site](https://emuuu.github.io/sevDesk.NET/).
+
+Source code and issue tracker: [GitHub](https://github.com/emuuu/sevDesk.NET)

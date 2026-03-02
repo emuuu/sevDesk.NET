@@ -1,6 +1,8 @@
-![sevDesk.NET](https://raw.githubusercontent.com/emuuu/sevDesk.NET/main/icon.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/emuuu/sevDesk.NET/main/icon.png" alt="sevDesk.NET" width="128" />
+</p>
 
-# sevDesk.NET
+<h1 align="center">sevDesk.NET</h1>
 
 A strongly-typed .NET client library for the [sevDesk API](https://my.sevdesk.de/api/v1/). Manage invoices, contacts, vouchers, orders, credit notes, and more — with full async support and dependency injection.
 
