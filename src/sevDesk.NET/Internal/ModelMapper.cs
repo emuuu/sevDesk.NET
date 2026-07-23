@@ -114,14 +114,14 @@ internal static class ModelMapper
         ContactPerson = ToPublic(api.ContactPerson),
         Address = api.Address,
         Currency = api.Currency,
-        SumNet = ParseDecimal(api.SumNet),
-        SumGross = ParseDecimal(api.SumGross),
-        SumTax = ParseDecimal(api.SumTax),
+        SumNet = api.SumNet,
+        SumGross = api.SumGross,
+        SumTax = api.SumTax,
         TaxType = api.TaxType,
         TaxRate = api.TaxRate,
         TaxText = api.TaxText,
         SendDate = ParseDateTime(api.SendDate),
-        PaymentMethod = api.PaymentMethod,
+        PaymentMethod = ToPublic(api.PaymentMethod),
         CostCentre = ToPublic(api.CostCentre),
         SendType = api.SendType,
         Origin = ToPublic(api.Origin),
@@ -129,7 +129,8 @@ internal static class ModelMapper
         SmallSettlement = ParseBool(api.SmallSettlement),
         TaxSet = ToPublic(api.TaxSet),
         Create = ParseDateTime(api.Create),
-        Update = ParseDateTime(api.Update)
+        Update = ParseDateTime(api.Update),
+        TaxRule = ToPublic(api.TaxRule)
     };
 
     internal static ApiInvoice ToApi(Invoice model) => new()
@@ -154,13 +155,14 @@ internal static class ModelMapper
         TaxRate = model.TaxRate,
         TaxText = model.TaxText,
         SendDate = FormatDateTime(model.SendDate),
-        PaymentMethod = model.PaymentMethod,
+        PaymentMethod = ToApi(model.PaymentMethod),
         CostCentre = ToApi(model.CostCentre),
         SendType = model.SendType,
         Origin = ToApi(model.Origin),
         CustomerInternalNote = model.CustomerInternalNote,
         SmallSettlement = FormatBool(model.SmallSettlement),
-        TaxSet = ToApi(model.TaxSet)
+        TaxSet = ToApi(model.TaxSet),
+        TaxRule = ToApi(model.TaxRule)
     };
 
     // --- InvoicePos ---

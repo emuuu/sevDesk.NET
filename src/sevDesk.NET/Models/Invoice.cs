@@ -76,8 +76,8 @@ public class Invoice
     /// <summary>Gets or sets the send date.</summary>
     public DateTime? SendDate { get; init; }
 
-    /// <summary>Gets or sets the payment method.</summary>
-    public string? PaymentMethod { get; init; }
+    /// <summary>Gets or sets the payment method reference.</summary>
+    public SevDeskObjectReference? PaymentMethod { get; init; }
 
     /// <summary>Gets or sets the cost centre reference.</summary>
     public SevDeskObjectReference? CostCentre { get; init; }
@@ -102,4 +102,7 @@ public class Invoice
 
     /// <summary>Gets the last update date.</summary>
     public DateTime? Update { get; init; }
+
+    /// <summary>Gets or sets the tax rule reference.</summary>
+    public SevDeskObjectReference? TaxRule { get; init; }
 }

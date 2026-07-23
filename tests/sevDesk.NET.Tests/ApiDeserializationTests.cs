@@ -90,7 +90,7 @@ public class ApiDeserializationTests
             "objects": [{
                 "id": "98765432",
                 "invoiceNumber": "RE-2026-0042",
-                "contact": {"id": "125718421", "objectName": "Contact"},
+                "contact": {"id": "12345678", "objectName": "Contact"},
                 "invoiceDate": "2026-02-19T00:00:00+01:00",
                 "deliveryDate": "2026-02-19T00:00:00+01:00",
                 "status": "100",
@@ -112,6 +112,8 @@ public class ApiDeserializationTests
                 "taxText": "Umsatzsteuer 19%",
                 "smallSettlement": "0",
                 "taxSet": {"id": "1", "objectName": "TaxSet"},
+                "paymentMethod": {"id": "42", "objectName": "PaymentMethod"},
+                "taxRule": {"id": "1", "objectName": "TaxRule"},
                 "create": "2026-02-19T14:13:11+01:00",
                 "update": "2026-02-19T14:13:11+01:00"
             }],
@@ -130,7 +132,7 @@ public class ApiDeserializationTests
         invoice.Id.ShouldBe(98765432);
         invoice.InvoiceNumber.ShouldBe("RE-2026-0042");
         invoice.Contact.ShouldNotBeNull();
-        invoice.Contact!.Id.ShouldBe(125718421);
+        invoice.Contact!.Id.ShouldBe(12345678);
         invoice.InvoiceDate.ShouldNotBeNull();
         invoice.Status.ShouldBe(InvoiceStatus.Draft); // 100 = Draft
         invoice.InvoiceType.ShouldBe(InvoiceType.RE);
@@ -139,7 +141,7 @@ public class ApiDeserializationTests
         invoice.DiscountTime.ShouldBe(7);
         invoice.Discount.ShouldBe(0m); // string "0" → decimal
         invoice.Currency.ShouldBe("EUR");
-        invoice.SumNet.ShouldBe(84.02m); // string "84.02" → decimal
+        invoice.SumNet.ShouldBe(84.02m); // string "84.02" → decimal via AllowReadingFromString
         invoice.SumGross.ShouldBe(99.98m);
         invoice.SumTax.ShouldBe(15.96m);
         invoice.TaxType.ShouldBe("default");
@@ -147,7 +149,41 @@ public class ApiDeserializationTests
         invoice.SmallSettlement.ShouldBe(false); // "0" → false
         invoice.TaxSet.ShouldNotBeNull();
         invoice.TaxSet!.Id.ShouldBe(1);
+        invoice.PaymentMethod.ShouldNotBeNull(); // paymentMethod object reference, not a plain string
+        invoice.PaymentMethod!.Id.ShouldBe(42);
+        invoice.PaymentMethod.ObjectName.ShouldBe("PaymentMethod");
+        invoice.TaxRule.ShouldNotBeNull();
+        invoice.TaxRule!.Id.ShouldBe(1);
         invoice.Create.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void Invoice_DeserializesNumericSumsFromPostResponse()
+    {
+        // POST/PUT responses return sumNet/sumGross/sumTax as JSON numbers instead of strings.
+        var json = """
+        {
+            "objects": [{
+                "id": "98765432",
+                "invoiceNumber": "RE-2026-0042",
+                "sumNet": 84.02,
+                "sumGross": 99.98,
+                "sumTax": 15.96
+            }],
+            "total": "1"
+        }
+        """;
+
+        var response = JsonSerializer.Deserialize(json, SevDeskJsonContext.Default.SevDeskApiListResponseApiInvoice);
+
+        response.ShouldNotBeNull();
+        response.Objects.ShouldNotBeNull();
+
+        var invoice = ModelMapper.ToPublic(response.Objects![0]);
+
+        invoice.SumNet.ShouldBe(84.02m); // JSON number → decimal
+        invoice.SumGross.ShouldBe(99.98m);
+        invoice.SumTax.ShouldBe(15.96m);
     }
 
     [Fact]

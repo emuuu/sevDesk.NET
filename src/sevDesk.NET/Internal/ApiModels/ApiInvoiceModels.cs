@@ -53,13 +53,13 @@ internal class ApiInvoice
     public string? Currency { get; set; }
 
     [JsonPropertyName("sumNet")]
-    public string? SumNet { get; set; }
+    public decimal? SumNet { get; set; }
 
     [JsonPropertyName("sumGross")]
-    public string? SumGross { get; set; }
+    public decimal? SumGross { get; set; }
 
     [JsonPropertyName("sumTax")]
-    public string? SumTax { get; set; }
+    public decimal? SumTax { get; set; }
 
     [JsonPropertyName("taxType")]
     public string? TaxType { get; set; }
@@ -74,7 +74,7 @@ internal class ApiInvoice
     public string? SendDate { get; set; }
 
     [JsonPropertyName("paymentMethod")]
-    public string? PaymentMethod { get; set; }
+    public ApiObjectReference? PaymentMethod { get; set; }
 
     [JsonPropertyName("costCentre")]
     public ApiObjectReference? CostCentre { get; set; }
@@ -99,6 +99,9 @@ internal class ApiInvoice
 
     [JsonPropertyName("update")]
     public string? Update { get; set; }
+
+    [JsonPropertyName("taxRule")]
+    public ApiObjectReference? TaxRule { get; set; }
 }
 
 internal class ApiInvoicePos
