@@ -84,4 +84,7 @@ public class Contact
 
     /// <summary>Gets the last update date.</summary>
     public DateTime? Update { get; init; }
+
+    /// <summary>Gets or sets the buyer reference (Leitweg-ID) used for e-invoicing.</summary>
+    public string? BuyerReference { get; init; }
 }

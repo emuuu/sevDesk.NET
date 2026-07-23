@@ -61,6 +61,30 @@ public class QueryBuilderTests
     }
 
     [Fact]
+    public void AddPagination_ClampsLimitAboveMaxTo2000()
+    {
+        var qb = new QueryBuilder();
+        qb.AddPagination(new PaginationParameters { Limit = 5000 });
+        qb.Build("/Invoice").ShouldContain("limit=2000");
+    }
+
+    [Fact]
+    public void AddPagination_AllowsLimitUpTo2000()
+    {
+        var qb = new QueryBuilder();
+        qb.AddPagination(new PaginationParameters { Limit = 2000 });
+        qb.Build("/Invoice").ShouldContain("limit=2000");
+    }
+
+    [Fact]
+    public void AddPagination_ClampsLimitBelowMinTo1()
+    {
+        var qb = new QueryBuilder();
+        qb.AddPagination(new PaginationParameters { Limit = 0 });
+        qb.Build("/Invoice").ShouldContain("limit=1");
+    }
+
+    [Fact]
     public void Build_EscapesSpecialCharacters()
     {
         var qb = new QueryBuilder();

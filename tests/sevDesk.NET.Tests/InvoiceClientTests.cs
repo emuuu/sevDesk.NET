@@ -16,6 +16,16 @@ public class InvoiceClientTests
             BaseAddress = new Uri("https://my.sevdesk.de/api/v1/")
         });
 
+    private static (SevDeskClient Client, MockHttpMessageHandler Handler) CreateClientWithHandler(HttpResponseMessage response)
+    {
+        var handler = new MockHttpMessageHandler(response);
+        var client = new SevDeskClient(new HttpClient(handler)
+        {
+            BaseAddress = new Uri("https://my.sevdesk.de/api/v1/")
+        });
+        return (client, handler);
+    }
+
     private static SevDeskClient CreateSequentialClient(params HttpResponseMessage[] responses) =>
         new(new HttpClient(new SequentialMockHttpMessageHandler(responses))
         {
@@ -123,6 +133,41 @@ public class InvoiceClientTests
     }
 
     [Fact]
+    public async Task CreateAsync_SingleObjectEnvelope_DeserializesNumericSums()
+    {
+        // Real POST responses wrap the created object in a single-object "objects" envelope
+        // (not a list) and return sumNet/sumGross/sumTax as JSON numbers rather than strings.
+        var responseBody = new
+        {
+            objects = new
+            {
+                id = 50,
+                invoiceNumber = "RE-050",
+                status = 100,
+                currency = "EUR",
+                sumNet = 84.02m,
+                sumGross = 99.98m,
+                sumTax = 15.96m
+            }
+        };
+
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        var result = await client.Invoices.CreateAsync(new Invoice
+        {
+            InvoiceNumber = "RE-050",
+            Currency = "EUR"
+        });
+
+        result.SumNet.ShouldBe(84.02m);
+        result.SumGross.ShouldBe(99.98m);
+        result.SumTax.ShouldBe(15.96m);
+    }
+
+    [Fact]
     public async Task UpdateAsync_ReturnsUpdatedInvoice()
     {
         var responseBody = new
@@ -142,6 +187,39 @@ public class InvoiceClientTests
 
         result.Id.ShouldBe(42);
         result.InvoiceNumber.ShouldBe("RE-042-Updated");
+    }
+
+    [Fact]
+    public async Task UpdateAsync_SingleObjectEnvelope_DeserializesNumericSums()
+    {
+        // Real PUT responses wrap the updated object in a single-object "objects" envelope
+        // (not a list) and return sumNet/sumGross/sumTax as JSON numbers rather than strings.
+        var responseBody = new
+        {
+            objects = new
+            {
+                id = 42,
+                invoiceNumber = "RE-042-Updated",
+                status = 100,
+                sumNet = 84.02m,
+                sumGross = 99.98m,
+                sumTax = 15.96m
+            }
+        };
+
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        var result = await client.Invoices.UpdateAsync(42, new Invoice
+        {
+            InvoiceNumber = "RE-042-Updated"
+        });
+
+        result.SumNet.ShouldBe(84.02m);
+        result.SumGross.ShouldBe(99.98m);
+        result.SumTax.ShouldBe(15.96m);
     }
 
     [Fact]
@@ -236,5 +314,214 @@ public class InvoiceClientTests
     {
         var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK));
         await client.Invoices.MarkAsSentAsync(1);
+    }
+
+    [Fact]
+    public async Task CreateAsync_SendsPaymentMethodAndTaxRuleAsObjectReferences()
+    {
+        var responseBody = new
+        {
+            objects = new { id = 50, invoiceNumber = "RE-050", status = 100, currency = "EUR" }
+        };
+
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.CreateAsync(new Invoice
+        {
+            InvoiceNumber = "RE-050",
+            Currency = "EUR",
+            PaymentMethod = new SevDeskObjectReference { Id = 42, ObjectName = "PaymentMethod" },
+            TaxRule = new SevDeskObjectReference { Id = 1, ObjectName = "TaxRule" }
+        });
+
+        var requestBody = await handler.LastRequest!.Content!.ReadAsStringAsync();
+        requestBody.ShouldContain("\"paymentMethod\":{\"id\":42,\"objectName\":\"PaymentMethod\"}");
+        requestBody.ShouldContain("\"taxRule\":{\"id\":1,\"objectName\":\"TaxRule\"}");
+    }
+
+    [Fact]
+    public async Task CreateAsync_PropertyIsEInvoiceTrue_SendsPropertyIsEInvoiceAsOne()
+    {
+        var responseBody = new
+        {
+            objects = new { id = 50, invoiceNumber = "RE-050", status = 100, currency = "EUR" }
+        };
+
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.CreateAsync(new Invoice
+        {
+            InvoiceNumber = "RE-050",
+            Currency = "EUR",
+            PropertyIsEInvoice = true
+        });
+
+        var requestBody = await handler.LastRequest!.Content!.ReadAsStringAsync();
+        requestBody.ShouldContain("\"propertyIsEInvoice\":\"1\"");
+    }
+
+    [Fact]
+    public async Task CreateAsync_PropertyIsEInvoiceFalse_SendsPropertyIsEInvoiceAsZero()
+    {
+        var responseBody = new
+        {
+            objects = new { id = 50, invoiceNumber = "RE-050", status = 100, currency = "EUR" }
+        };
+
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.CreateAsync(new Invoice
+        {
+            InvoiceNumber = "RE-050",
+            Currency = "EUR",
+            PropertyIsEInvoice = false
+        });
+
+        var requestBody = await handler.LastRequest!.Content!.ReadAsStringAsync();
+        requestBody.ShouldContain("\"propertyIsEInvoice\":\"0\"");
+    }
+
+    [Fact]
+    public async Task CreateAsync_PropertyIsEInvoiceNull_OmitsPropertyFromRequestBody()
+    {
+        var responseBody = new
+        {
+            objects = new { id = 50, invoiceNumber = "RE-050", status = 100, currency = "EUR" }
+        };
+
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.CreateAsync(new Invoice
+        {
+            InvoiceNumber = "RE-050",
+            Currency = "EUR",
+            PropertyIsEInvoice = null
+        });
+
+        var requestBody = await handler.LastRequest!.Content!.ReadAsStringAsync();
+        requestBody.ShouldNotContain("propertyIsEInvoice");
+    }
+
+    [Fact]
+    public async Task CreateAsync_SendsEinvoiceReferenceAsIs()
+    {
+        var responseBody = new
+        {
+            objects = new { id = 50, invoiceNumber = "RE-050", status = 100, currency = "EUR" }
+        };
+
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.CreateAsync(new Invoice
+        {
+            InvoiceNumber = "RE-050",
+            Currency = "EUR",
+            EinvoiceReference = "991-33333TEST-33"
+        });
+
+        var requestBody = await handler.LastRequest!.Content!.ReadAsStringAsync();
+        requestBody.ShouldContain("\"einvoiceReference\":\"991-33333TEST-33\"");
+    }
+
+    [Fact]
+    public async Task ListAsync_WithUpdateAfterFilter_AddsUpdateAfterToQuery()
+    {
+        var responseBody = new { objects = Array.Empty<object>(), total = 0 };
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.ListAsync(filter: new InvoiceListFilter
+        {
+            UpdateAfter = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero)
+        });
+
+        handler.LastRequest!.RequestUri!.Query.ShouldContain("updateAfter=1767225600");
+    }
+
+    [Fact]
+    public async Task ListAsync_WithStatusFilter_AddsStatusToQuery()
+    {
+        var responseBody = new { objects = Array.Empty<object>(), total = 0 };
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.ListAsync(filter: new InvoiceListFilter { Status = Models.Enums.InvoiceStatus.Open });
+
+        handler.LastRequest!.RequestUri!.Query.ShouldContain("status=200");
+    }
+
+    [Fact]
+    public async Task ListAsync_WithContactIdFilter_AddsContactIdAndObjectNameToQuery()
+    {
+        var responseBody = new { objects = Array.Empty<object>(), total = 0 };
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.ListAsync(filter: new InvoiceListFilter { ContactId = 12345678 });
+
+        var query = handler.LastRequest!.RequestUri!.Query;
+        query.ShouldContain("contact%5Bid%5D=12345678");
+        query.ShouldContain("contact%5BobjectName%5D=Contact");
+    }
+
+    [Fact]
+    public async Task ListAsync_WithCombinedFilter_AddsAllQueryParameters()
+    {
+        var responseBody = new { objects = Array.Empty<object>(), total = 0 };
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.ListAsync(filter: new InvoiceListFilter
+        {
+            UpdateAfter = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
+            Status = Models.Enums.InvoiceStatus.Open,
+            ContactId = 12345678
+        });
+
+        var query = handler.LastRequest!.RequestUri!.Query;
+        query.ShouldContain("updateAfter=1767225600");
+        query.ShouldContain("status=200");
+        query.ShouldContain("contact%5Bid%5D=12345678");
+        query.ShouldContain("contact%5BobjectName%5D=Contact");
+    }
+
+    [Fact]
+    public async Task ListAsync_WithoutFilter_OmitsFilterQueryParameters()
+    {
+        var responseBody = new { objects = Array.Empty<object>(), total = 0 };
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.ListAsync();
+
+        var query = handler.LastRequest!.RequestUri!.Query;
+        query.ShouldNotContain("updateAfter");
+        query.ShouldNotContain("status");
+        query.ShouldNotContain("contact%5Bid%5D");
     }
 }

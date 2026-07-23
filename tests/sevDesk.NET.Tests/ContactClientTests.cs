@@ -16,6 +16,16 @@ public class ContactClientTests
             BaseAddress = new Uri("https://my.sevdesk.de/api/v1/")
         });
 
+    private static (SevDeskClient Client, MockHttpMessageHandler Handler) CreateClientWithHandler(HttpResponseMessage response)
+    {
+        var handler = new MockHttpMessageHandler(response);
+        var client = new SevDeskClient(new HttpClient(handler)
+        {
+            BaseAddress = new Uri("https://my.sevdesk.de/api/v1/")
+        });
+        return (client, handler);
+    }
+
     [Fact]
     public async Task ListAsync_ReturnsContacts()
     {
@@ -148,6 +158,54 @@ public class ContactClientTests
 
         result.Id.ShouldBe(42);
         result.Surename.ShouldBe("Updated");
+    }
+
+    [Fact]
+    public async Task CreateAsync_SendsBuyerReferenceAsIs()
+    {
+        var responseBody = new
+        {
+            objects = new { id = 100, surename = "Neu", familyname = "Kontakt", status = 100 }
+        };
+
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Contacts.CreateAsync(new Contact
+        {
+            Surename = "Neu",
+            Familyname = "Kontakt",
+            BuyerReference = "991-33333TEST-33"
+        });
+
+        var requestBody = await handler.LastRequest!.Content!.ReadAsStringAsync();
+        requestBody.ShouldContain("\"buyerReference\":\"991-33333TEST-33\"");
+    }
+
+    [Fact]
+    public async Task UpdateAsync_SendsBuyerReferenceAsIs()
+    {
+        var responseBody = new
+        {
+            objects = new { id = 42, surename = "Updated", familyname = "Contact", status = 100 }
+        };
+
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Contacts.UpdateAsync(42, new Contact
+        {
+            Surename = "Updated",
+            Familyname = "Contact",
+            BuyerReference = "991-33333TEST-33"
+        });
+
+        var requestBody = await handler.LastRequest!.Content!.ReadAsStringAsync();
+        requestBody.ShouldContain("\"buyerReference\":\"991-33333TEST-33\"");
     }
 
     [Fact]
