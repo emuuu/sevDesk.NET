@@ -19,7 +19,7 @@
                   "name": "Limit",
                   "type": "int",
                   "required": false,
-                  "description": "Gets or sets the maximum number of items to return (1-1000). Defaults to 100.",
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
                   "default": "100"
                 },
                 {
@@ -277,7 +277,7 @@
                   "name": "Limit",
                   "type": "int",
                   "required": false,
-                  "description": "Gets or sets the maximum number of items to return (1-1000). Defaults to 100.",
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
                   "default": "100"
                 },
                 {
@@ -548,7 +548,7 @@
                   "name": "Limit",
                   "type": "int",
                   "required": false,
-                  "description": "Gets or sets the maximum number of items to return (1-1000). Defaults to 100.",
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
                   "default": "100"
                 },
                 {
@@ -822,7 +822,7 @@
                   "name": "Limit",
                   "type": "int",
                   "required": false,
-                  "description": "Gets or sets the maximum number of items to return (1-1000). Defaults to 100.",
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
                   "default": "100"
                 },
                 {
@@ -1098,7 +1098,7 @@
                   "name": "Limit",
                   "type": "int",
                   "required": false,
-                  "description": "Gets or sets the maximum number of items to return (1-1000). Defaults to 100.",
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
                   "default": "100"
                 },
                 {
@@ -1474,7 +1474,7 @@
                   "name": "Limit",
                   "type": "int",
                   "required": false,
-                  "description": "Gets or sets the maximum number of items to return (1-1000). Defaults to 100.",
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
                   "default": "100"
                 },
                 {
@@ -1722,6 +1722,13 @@
                   "required": false,
                   "description": "Gets the last update date.",
                   "default": "null"
+                },
+                {
+                  "name": "BuyerReference",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the buyer reference (Leitweg-ID) used for e-invoicing.",
+                  "default": "null"
                 }
               ]
             }
@@ -1940,6 +1947,13 @@
                   "required": false,
                   "description": "Gets the last update date.",
                   "default": "null"
+                },
+                {
+                  "name": "BuyerReference",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the buyer reference (Leitweg-ID) used for e-invoicing.",
+                  "default": "null"
                 }
               ]
             }
@@ -1985,7 +1999,7 @@
                   "name": "Limit",
                   "type": "int",
                   "required": false,
-                  "description": "Gets or sets the maximum number of items to return (1-1000). Defaults to 100.",
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
                   "default": "100"
                 },
                 {
@@ -2771,7 +2785,7 @@
                   "name": "Limit",
                   "type": "int",
                   "required": false,
-                  "description": "Gets or sets the maximum number of items to return (1-1000). Defaults to 100.",
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
                   "default": "100"
                 },
                 {
@@ -3203,7 +3217,7 @@
                   "name": "Limit",
                   "type": "int",
                   "required": false,
-                  "description": "Gets or sets the maximum number of items to return (1-1000). Defaults to 100.",
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
                   "default": "100"
                 },
                 {
@@ -3251,7 +3265,7 @@
                   "name": "Limit",
                   "type": "int",
                   "required": false,
-                  "description": "Gets or sets the maximum number of items to return (1-1000). Defaults to 100.",
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
                   "default": "100"
                 },
                 {
@@ -3331,7 +3345,7 @@
                   "name": "Limit",
                   "type": "int",
                   "required": false,
-                  "description": "Gets or sets the maximum number of items to return (1-1000). Defaults to 100.",
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
                   "default": "100"
                 },
                 {
@@ -3349,6 +3363,35 @@
               "required": false,
               "description": "Optional comma-separated list of related objects to embed in the response.",
               "default": "null"
+            },
+            {
+              "name": "filter",
+              "type": "InvoiceListFilter?",
+              "required": false,
+              "description": "Optional server-side filters (update timestamp, status, contact).",
+              "properties": [
+                {
+                  "name": "UpdateAfter",
+                  "type": "DateTimeOffset?",
+                  "required": false,
+                  "description": "Gets or sets a server-side delta filter on the invoice\u0027s update timestamp. Only invoices updated after this point in time are returned. Sent to the API as Unix seconds.",
+                  "default": "null"
+                },
+                {
+                  "name": "Status",
+                  "type": "InvoiceStatus?",
+                  "required": false,
+                  "description": "Gets or sets the invoice status to filter by.",
+                  "default": "null"
+                },
+                {
+                  "name": "ContactId",
+                  "type": "int?",
+                  "required": false,
+                  "description": "Gets or sets the contact ID to filter by.",
+                  "default": "null"
+                }
+              ]
             }
           ]
         },
@@ -3576,10 +3619,25 @@
                 },
                 {
                   "name": "PaymentMethod",
-                  "type": "string?",
+                  "type": "SevDeskObjectReference?",
                   "required": false,
-                  "description": "Gets or sets the payment method.",
-                  "default": "null"
+                  "description": "Gets or sets the payment method reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
                 },
                 {
                   "name": "CostCentre",
@@ -3680,6 +3738,42 @@
                   "type": "DateTime?",
                   "required": false,
                   "description": "Gets the last update date.",
+                  "default": "null"
+                },
+                {
+                  "name": "TaxRule",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the tax rule reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "EinvoiceReference",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the e-invoice (XRechnung/ZUGFeRD) reference identifier.",
+                  "default": "null"
+                },
+                {
+                  "name": "PropertyIsEInvoice",
+                  "type": "bool?",
+                  "required": false,
+                  "description": "Gets or sets whether this invoice is an e-invoice.",
                   "default": "null"
                 }
               ]
@@ -3896,10 +3990,25 @@
                 },
                 {
                   "name": "PaymentMethod",
-                  "type": "string?",
+                  "type": "SevDeskObjectReference?",
                   "required": false,
-                  "description": "Gets or sets the payment method.",
-                  "default": "null"
+                  "description": "Gets or sets the payment method reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
                 },
                 {
                   "name": "CostCentre",
@@ -4000,6 +4109,42 @@
                   "type": "DateTime?",
                   "required": false,
                   "description": "Gets the last update date.",
+                  "default": "null"
+                },
+                {
+                  "name": "TaxRule",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the tax rule reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "EinvoiceReference",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the e-invoice (XRechnung/ZUGFeRD) reference identifier.",
+                  "default": "null"
+                },
+                {
+                  "name": "PropertyIsEInvoice",
+                  "type": "bool?",
+                  "required": false,
+                  "description": "Gets or sets whether this invoice is an e-invoice.",
                   "default": "null"
                 }
               ]
@@ -4223,10 +4368,25 @@
                 },
                 {
                   "name": "PaymentMethod",
-                  "type": "string?",
+                  "type": "SevDeskObjectReference?",
                   "required": false,
-                  "description": "Gets or sets the payment method.",
-                  "default": "null"
+                  "description": "Gets or sets the payment method reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
                 },
                 {
                   "name": "CostCentre",
@@ -4327,6 +4487,42 @@
                   "type": "DateTime?",
                   "required": false,
                   "description": "Gets the last update date.",
+                  "default": "null"
+                },
+                {
+                  "name": "TaxRule",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the tax rule reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "EinvoiceReference",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the e-invoice (XRechnung/ZUGFeRD) reference identifier.",
+                  "default": "null"
+                },
+                {
+                  "name": "PropertyIsEInvoice",
+                  "type": "bool?",
+                  "required": false,
+                  "description": "Gets or sets whether this invoice is an e-invoice.",
                   "default": "null"
                 }
               ]
@@ -4494,7 +4690,7 @@
                   "name": "Limit",
                   "type": "int",
                   "required": false,
-                  "description": "Gets or sets the maximum number of items to return (1-1000). Defaults to 100.",
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
                   "default": "100"
                 },
                 {
@@ -4926,7 +5122,7 @@
                   "name": "Limit",
                   "type": "int",
                   "required": false,
-                  "description": "Gets or sets the maximum number of items to return (1-1000). Defaults to 100.",
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
                   "default": "100"
                 },
                 {
@@ -5861,7 +6057,7 @@
                   "name": "Limit",
                   "type": "int",
                   "required": false,
-                  "description": "Gets or sets the maximum number of items to return (1-1000). Defaults to 100.",
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
                   "default": "100"
                 },
                 {
@@ -6293,7 +6489,7 @@
                   "name": "Limit",
                   "type": "int",
                   "required": false,
-                  "description": "Gets or sets the maximum number of items to return (1-1000). Defaults to 100.",
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
                   "default": "100"
                 },
                 {
@@ -6660,7 +6856,7 @@
                   "name": "Limit",
                   "type": "int",
                   "required": false,
-                  "description": "Gets or sets the maximum number of items to return (1-1000). Defaults to 100.",
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
                   "default": "100"
                 },
                 {
@@ -6786,7 +6982,7 @@
                   "name": "Limit",
                   "type": "int",
                   "required": false,
-                  "description": "Gets or sets the maximum number of items to return (1-1000). Defaults to 100.",
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
                   "default": "100"
                 },
                 {
@@ -6834,7 +7030,7 @@
                   "name": "Limit",
                   "type": "int",
                   "required": false,
-                  "description": "Gets or sets the maximum number of items to return (1-1000). Defaults to 100.",
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
                   "default": "100"
                 },
                 {
@@ -6882,7 +7078,7 @@
                   "name": "Limit",
                   "type": "int",
                   "required": false,
-                  "description": "Gets or sets the maximum number of items to return (1-1000). Defaults to 100.",
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
                   "default": "100"
                 },
                 {
@@ -7676,7 +7872,7 @@
                   "name": "Limit",
                   "type": "int",
                   "required": false,
-                  "description": "Gets or sets the maximum number of items to return (1-1000). Defaults to 100.",
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
                   "default": "100"
                 },
                 {
@@ -8600,6 +8796,11 @@
           "name": "Update",
           "type": "DateTime?",
           "description": "Gets the last update date."
+        },
+        {
+          "name": "BuyerReference",
+          "type": "string?",
+          "description": "Gets or sets the buyer reference (Leitweg-ID) used for e-invoicing."
         }
       ]
     },
@@ -9097,8 +9298,9 @@
         },
         {
           "name": "PaymentMethod",
-          "type": "string?",
-          "description": "Gets or sets the payment method."
+          "type": "SevDeskObjectReference?",
+          "description": "Gets or sets the payment method reference.",
+          "nestedType": "SevDeskObjectReference"
         },
         {
           "name": "CostCentre",
@@ -9142,6 +9344,22 @@
           "name": "Update",
           "type": "DateTime?",
           "description": "Gets the last update date."
+        },
+        {
+          "name": "TaxRule",
+          "type": "SevDeskObjectReference?",
+          "description": "Gets or sets the tax rule reference.",
+          "nestedType": "SevDeskObjectReference"
+        },
+        {
+          "name": "EinvoiceReference",
+          "type": "string?",
+          "description": "Gets or sets the e-invoice (XRechnung/ZUGFeRD) reference identifier."
+        },
+        {
+          "name": "PropertyIsEInvoice",
+          "type": "bool?",
+          "description": "Gets or sets whether this invoice is an e-invoice."
         }
       ]
     },
