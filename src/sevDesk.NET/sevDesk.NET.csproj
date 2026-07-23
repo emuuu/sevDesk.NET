@@ -5,6 +5,7 @@
     <Description>A .NET client library for the sevDesk API.</Description>
     <PackageTags>sevdesk;accounting;invoice;voucher;api;client</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <UseRepoReadmeInPackage>false</UseRepoReadmeInPackage>
   </PropertyGroup>
 
   <ItemGroup>

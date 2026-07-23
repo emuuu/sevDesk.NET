@@ -11,7 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(IsPackable)' != 'false'">
-    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="/" />
+    <!-- Projects providing their own package README (e.g. via NUGET_README.md) opt out with UseRepoReadmeInPackage=false -->
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="/" Condition="'$(UseRepoReadmeInPackage)' != 'false'" />
     <None Include="$(MSBuildThisFileDirectory)icon.png" Pack="true" PackagePath="/" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
   </ItemGroup>
