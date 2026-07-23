@@ -12,7 +12,7 @@ All `ListAsync` methods accept an optional `PaginationParameters` object:
 ```csharp
 var result = await client.Contacts.ListAsync(new PaginationParameters
 {
-    Limit = 50,   // Number of items per page (1-1000, default: 100)
+    Limit = 50,   // Number of items per page (1-2000, default: 100)
     Offset = 0    // Number of items to skip
 });
 ```
@@ -63,4 +63,15 @@ var comms = await client.CommunicationWays.ListAsync(contactId: 67890);
 
 // Categories for a specific object type
 var categories = await client.Categories.ListAsync(objectType: "Invoice");
+```
+
+Invoices support an additional `InvoiceListFilter` for server-side filtering by update timestamp, status, and contact:
+
+```csharp
+var recentOpenInvoices = await client.Invoices.ListAsync(filter: new InvoiceListFilter
+{
+    UpdateAfter = DateTimeOffset.UtcNow.AddDays(-7),
+    Status = InvoiceStatus.Open,
+    ContactId = 12345678
+});
 ```

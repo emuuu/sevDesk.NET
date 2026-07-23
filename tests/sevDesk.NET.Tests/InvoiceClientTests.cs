@@ -437,4 +437,91 @@ public class InvoiceClientTests
         var requestBody = await handler.LastRequest!.Content!.ReadAsStringAsync();
         requestBody.ShouldContain("\"einvoiceReference\":\"991-33333TEST-33\"");
     }
+
+    [Fact]
+    public async Task ListAsync_WithUpdateAfterFilter_AddsUpdateAfterToQuery()
+    {
+        var responseBody = new { objects = Array.Empty<object>(), total = 0 };
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.ListAsync(filter: new InvoiceListFilter
+        {
+            UpdateAfter = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero)
+        });
+
+        handler.LastRequest!.RequestUri!.Query.ShouldContain("updateAfter=1767225600");
+    }
+
+    [Fact]
+    public async Task ListAsync_WithStatusFilter_AddsStatusToQuery()
+    {
+        var responseBody = new { objects = Array.Empty<object>(), total = 0 };
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.ListAsync(filter: new InvoiceListFilter { Status = Models.Enums.InvoiceStatus.Open });
+
+        handler.LastRequest!.RequestUri!.Query.ShouldContain("status=200");
+    }
+
+    [Fact]
+    public async Task ListAsync_WithContactIdFilter_AddsContactIdAndObjectNameToQuery()
+    {
+        var responseBody = new { objects = Array.Empty<object>(), total = 0 };
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.ListAsync(filter: new InvoiceListFilter { ContactId = 12345678 });
+
+        var query = handler.LastRequest!.RequestUri!.Query;
+        query.ShouldContain("contact%5Bid%5D=12345678");
+        query.ShouldContain("contact%5BobjectName%5D=Contact");
+    }
+
+    [Fact]
+    public async Task ListAsync_WithCombinedFilter_AddsAllQueryParameters()
+    {
+        var responseBody = new { objects = Array.Empty<object>(), total = 0 };
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.ListAsync(filter: new InvoiceListFilter
+        {
+            UpdateAfter = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
+            Status = Models.Enums.InvoiceStatus.Open,
+            ContactId = 12345678
+        });
+
+        var query = handler.LastRequest!.RequestUri!.Query;
+        query.ShouldContain("updateAfter=1767225600");
+        query.ShouldContain("status=200");
+        query.ShouldContain("contact%5Bid%5D=12345678");
+        query.ShouldContain("contact%5BobjectName%5D=Contact");
+    }
+
+    [Fact]
+    public async Task ListAsync_WithoutFilter_OmitsFilterQueryParameters()
+    {
+        var responseBody = new { objects = Array.Empty<object>(), total = 0 };
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.ListAsync();
+
+        var query = handler.LastRequest!.RequestUri!.Query;
+        query.ShouldNotContain("updateAfter");
+        query.ShouldNotContain("status");
+        query.ShouldNotContain("contact%5Bid%5D");
+    }
 }

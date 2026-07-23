@@ -35,7 +35,7 @@ internal sealed class QueryBuilder
     internal QueryBuilder AddPagination(PaginationParameters? pagination)
     {
         var p = pagination ?? new PaginationParameters();
-        var limit = Math.Clamp(p.Limit, 1, 1000);
+        var limit = Math.Clamp(p.Limit, 1, 2000);
         var offset = Math.Max(p.Offset, 0);
         Add("limit", limit.ToString());
         Add("offset", offset.ToString());

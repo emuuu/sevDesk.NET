@@ -11,10 +11,28 @@ internal class InvoiceClient : IInvoiceClient
 
     internal InvoiceClient(BaseClient client) => _client = client;
 
-    public async Task<SevDeskListResponse<Invoice>> ListAsync(PaginationParameters? pagination = null, string? embed = null, CancellationToken ct = default)
+    public async Task<SevDeskListResponse<Invoice>> ListAsync(PaginationParameters? pagination = null, string? embed = null, InvoiceListFilter? filter = null, CancellationToken ct = default)
     {
         var (items, total) = await _client.GetListAsync("Invoice", pagination, SevDeskJsonContext.Default.SevDeskApiListResponseApiInvoice,
-            qb => qb.AddIfNotNull("embed", embed), ct).ConfigureAwait(false);
+            qb =>
+            {
+                qb.AddIfNotNull("embed", embed);
+                if (filter is not null)
+                {
+                    if (filter.UpdateAfter.HasValue)
+                    {
+                        qb.Add("updateAfter", filter.UpdateAfter.Value.ToUnixTimeSeconds().ToString());
+                    }
+
+                    qb.AddIfNotNull("status", (int?)filter.Status);
+
+                    if (filter.ContactId.HasValue)
+                    {
+                        qb.Add("contact[id]", filter.ContactId.Value.ToString());
+                        qb.Add("contact[objectName]", "Contact");
+                    }
+                }
+            }, ct).ConfigureAwait(false);
         return new SevDeskListResponse<Invoice> { Items = items.Select(ModelMapper.ToPublic).ToList(), Total = total };
     }
 

@@ -6,7 +6,7 @@ namespace sevDesk.NET;
 public class PaginationParameters
 {
     /// <summary>
-    /// Gets or sets the maximum number of items to return (1-1000). Defaults to 100.
+    /// Gets or sets the maximum number of items to return (1-2000). Defaults to 100.
     /// </summary>
     public int Limit { get; set; } = 100;
 
