@@ -62,6 +62,7 @@ internal static class ModelMapper
         Birthday = ParseDateTime(api.Birthday),
         DefaultDiscountPercentage = ParseDecimal(api.DefaultDiscountPercentage),
         GovernmentAgency = ParseBool(api.GovernmentAgency),
+        BuyerReference = api.BuyerReference,
         Create = ParseDateTime(api.Create),
         Update = ParseDateTime(api.Update)
     };
@@ -91,7 +92,8 @@ internal static class ModelMapper
         ExemptVat = FormatBool(model.ExemptVat),
         Birthday = FormatDateTime(model.Birthday),
         DefaultDiscountPercentage = model.DefaultDiscountPercentage?.ToString(System.Globalization.CultureInfo.InvariantCulture),
-        GovernmentAgency = FormatBool(model.GovernmentAgency)
+        GovernmentAgency = FormatBool(model.GovernmentAgency),
+        BuyerReference = model.BuyerReference
     };
 
     // --- Invoice ---
@@ -130,7 +132,9 @@ internal static class ModelMapper
         TaxSet = ToPublic(api.TaxSet),
         Create = ParseDateTime(api.Create),
         Update = ParseDateTime(api.Update),
-        TaxRule = ToPublic(api.TaxRule)
+        TaxRule = ToPublic(api.TaxRule),
+        EinvoiceReference = api.EinvoiceReference,
+        PropertyIsEInvoice = ParseBool(api.PropertyIsEInvoice)
     };
 
     internal static ApiInvoice ToApi(Invoice model) => new()
@@ -162,7 +166,9 @@ internal static class ModelMapper
         CustomerInternalNote = model.CustomerInternalNote,
         SmallSettlement = FormatBool(model.SmallSettlement),
         TaxSet = ToApi(model.TaxSet),
-        TaxRule = ToApi(model.TaxRule)
+        TaxRule = ToApi(model.TaxRule),
+        EinvoiceReference = model.EinvoiceReference,
+        PropertyIsEInvoice = FormatBool(model.PropertyIsEInvoice)
     };
 
     // --- InvoicePos ---

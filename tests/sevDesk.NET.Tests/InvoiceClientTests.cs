@@ -341,4 +341,100 @@ public class InvoiceClientTests
         requestBody.ShouldContain("\"paymentMethod\":{\"id\":42,\"objectName\":\"PaymentMethod\"}");
         requestBody.ShouldContain("\"taxRule\":{\"id\":1,\"objectName\":\"TaxRule\"}");
     }
+
+    [Fact]
+    public async Task CreateAsync_PropertyIsEInvoiceTrue_SendsPropertyIsEInvoiceAsOne()
+    {
+        var responseBody = new
+        {
+            objects = new { id = 50, invoiceNumber = "RE-050", status = 100, currency = "EUR" }
+        };
+
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.CreateAsync(new Invoice
+        {
+            InvoiceNumber = "RE-050",
+            Currency = "EUR",
+            PropertyIsEInvoice = true
+        });
+
+        var requestBody = await handler.LastRequest!.Content!.ReadAsStringAsync();
+        requestBody.ShouldContain("\"propertyIsEInvoice\":\"1\"");
+    }
+
+    [Fact]
+    public async Task CreateAsync_PropertyIsEInvoiceFalse_SendsPropertyIsEInvoiceAsZero()
+    {
+        var responseBody = new
+        {
+            objects = new { id = 50, invoiceNumber = "RE-050", status = 100, currency = "EUR" }
+        };
+
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.CreateAsync(new Invoice
+        {
+            InvoiceNumber = "RE-050",
+            Currency = "EUR",
+            PropertyIsEInvoice = false
+        });
+
+        var requestBody = await handler.LastRequest!.Content!.ReadAsStringAsync();
+        requestBody.ShouldContain("\"propertyIsEInvoice\":\"0\"");
+    }
+
+    [Fact]
+    public async Task CreateAsync_PropertyIsEInvoiceNull_OmitsPropertyFromRequestBody()
+    {
+        var responseBody = new
+        {
+            objects = new { id = 50, invoiceNumber = "RE-050", status = 100, currency = "EUR" }
+        };
+
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.CreateAsync(new Invoice
+        {
+            InvoiceNumber = "RE-050",
+            Currency = "EUR",
+            PropertyIsEInvoice = null
+        });
+
+        var requestBody = await handler.LastRequest!.Content!.ReadAsStringAsync();
+        requestBody.ShouldNotContain("propertyIsEInvoice");
+    }
+
+    [Fact]
+    public async Task CreateAsync_SendsEinvoiceReferenceAsIs()
+    {
+        var responseBody = new
+        {
+            objects = new { id = 50, invoiceNumber = "RE-050", status = 100, currency = "EUR" }
+        };
+
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.CreateAsync(new Invoice
+        {
+            InvoiceNumber = "RE-050",
+            Currency = "EUR",
+            EinvoiceReference = "991-33333TEST-33"
+        });
+
+        var requestBody = await handler.LastRequest!.Content!.ReadAsStringAsync();
+        requestBody.ShouldContain("\"einvoiceReference\":\"991-33333TEST-33\"");
+    }
 }

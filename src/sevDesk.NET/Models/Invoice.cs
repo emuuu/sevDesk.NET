@@ -105,4 +105,10 @@ public class Invoice
 
     /// <summary>Gets or sets the tax rule reference.</summary>
     public SevDeskObjectReference? TaxRule { get; init; }
+
+    /// <summary>Gets or sets the e-invoice (XRechnung/ZUGFeRD) reference identifier.</summary>
+    public string? EinvoiceReference { get; init; }
+
+    /// <summary>Gets or sets whether this invoice is an e-invoice.</summary>
+    public bool? PropertyIsEInvoice { get; init; }
 }

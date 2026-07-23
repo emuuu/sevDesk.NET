@@ -20,7 +20,7 @@ public class ApiDeserializationTests
         var json = """
         {
             "objects": [{
-                "id": "125718421",
+                "id": "12345678",
                 "customerNumber": "K-10042",
                 "surename": "Max",
                 "familyname": "Mustermann",
@@ -40,6 +40,7 @@ public class ApiDeserializationTests
                 "exemptVat": "0",
                 "defaultDiscountPercentage": "1",
                 "governmentAgency": "0",
+                "buyerReference": "991-33333TEST-33",
                 "create": "2026-02-19T14:13:11+01:00",
                 "update": "2026-02-19T15:00:00+01:00"
             }],
@@ -56,7 +57,7 @@ public class ApiDeserializationTests
 
         var contact = ModelMapper.ToPublic(response.Objects[0]);
 
-        contact.Id.ShouldBe(125718421);
+        contact.Id.ShouldBe(12345678);
         contact.CustomerNumber.ShouldBe("K-10042");
         contact.Surename.ShouldBe("Max");
         contact.Familyname.ShouldBe("Mustermann");
@@ -78,6 +79,7 @@ public class ApiDeserializationTests
         contact.ExemptVat.ShouldBe(false); // "0" → false
         contact.DefaultDiscountPercentage.ShouldBe(1m); // string "1" → decimal
         contact.GovernmentAgency.ShouldBe(false); // "0" → false
+        contact.BuyerReference.ShouldBe("991-33333TEST-33");
         contact.Create.ShouldNotBeNull();
         contact.Update.ShouldNotBeNull();
     }
@@ -114,6 +116,8 @@ public class ApiDeserializationTests
                 "taxSet": {"id": "1", "objectName": "TaxSet"},
                 "paymentMethod": {"id": "42", "objectName": "PaymentMethod"},
                 "taxRule": {"id": "1", "objectName": "TaxRule"},
+                "einvoiceReference": "RE-2026-0042-EINV",
+                "propertyIsEInvoice": "1",
                 "create": "2026-02-19T14:13:11+01:00",
                 "update": "2026-02-19T14:13:11+01:00"
             }],
@@ -154,6 +158,8 @@ public class ApiDeserializationTests
         invoice.PaymentMethod.ObjectName.ShouldBe("PaymentMethod");
         invoice.TaxRule.ShouldNotBeNull();
         invoice.TaxRule!.Id.ShouldBe(1);
+        invoice.EinvoiceReference.ShouldBe("RE-2026-0042-EINV");
+        invoice.PropertyIsEInvoice.ShouldBe(true); // "1" → true
         invoice.Create.ShouldNotBeNull();
     }
 
@@ -168,7 +174,9 @@ public class ApiDeserializationTests
                 "invoiceNumber": "RE-2026-0042",
                 "sumNet": 84.02,
                 "sumGross": 99.98,
-                "sumTax": 15.96
+                "sumTax": 15.96,
+                "einvoiceReference": null,
+                "propertyIsEInvoice": null
             }],
             "total": "1"
         }
@@ -184,6 +192,8 @@ public class ApiDeserializationTests
         invoice.SumNet.ShouldBe(84.02m); // JSON number → decimal
         invoice.SumGross.ShouldBe(99.98m);
         invoice.SumTax.ShouldBe(15.96m);
+        invoice.EinvoiceReference.ShouldBeNull();
+        invoice.PropertyIsEInvoice.ShouldBeNull();
     }
 
     [Fact]
@@ -510,7 +520,7 @@ public class ApiDeserializationTests
             "objects": [{
                 "id": "220001",
                 "orderNumber": "AN-2026-0001",
-                "contact": {"id": "125718421", "objectName": "Contact"},
+                "contact": {"id": "12345678", "objectName": "Contact"},
                 "orderDate": "2026-02-19T00:00:00+01:00",
                 "status": "100",
                 "orderType": "AN",
@@ -549,7 +559,7 @@ public class ApiDeserializationTests
         order.Id.ShouldBe(220001);
         order.OrderNumber.ShouldBe("AN-2026-0001");
         order.Contact.ShouldNotBeNull();
-        order.Contact!.Id.ShouldBe(125718421);
+        order.Contact!.Id.ShouldBe(12345678);
         order.OrderDate.ShouldNotBeNull();
         order.Status.ShouldBe(OrderStatus.Draft);
         order.OrderType.ShouldBe(OrderType.AN);
@@ -642,7 +652,7 @@ public class ApiDeserializationTests
             "objects": [{
                 "id": "880001",
                 "voucherDate": "2026-02-15T00:00:00+01:00",
-                "supplier": {"id": "125718421", "objectName": "Contact"},
+                "supplier": {"id": "12345678", "objectName": "Contact"},
                 "status": "100",
                 "voucherType": "VOU",
                 "description": "Bueromaterial Februar",
@@ -674,7 +684,7 @@ public class ApiDeserializationTests
         voucher.Id.ShouldBe(880001);
         voucher.VoucherDate.ShouldNotBeNull();
         voucher.Supplier.ShouldNotBeNull();
-        voucher.Supplier!.Id.ShouldBe(125718421);
+        voucher.Supplier!.Id.ShouldBe(12345678);
         voucher.Status.ShouldBe(VoucherStatus.Unpaid);
         voucher.VoucherType.ShouldBe(VoucherType.VOU);
         voucher.Description.ShouldBe("Bueromaterial Februar");
@@ -753,7 +763,7 @@ public class ApiDeserializationTests
             "objects": [{
                 "id": "330001",
                 "creditNoteNumber": "GS-2026-0001",
-                "contact": {"id": "125718421", "objectName": "Contact"},
+                "contact": {"id": "12345678", "objectName": "Contact"},
                 "creditNoteDate": "2026-02-19T00:00:00+01:00",
                 "status": "200",
                 "header": "Gutschrift",
@@ -788,7 +798,7 @@ public class ApiDeserializationTests
         cn.Id.ShouldBe(330001);
         cn.CreditNoteNumber.ShouldBe("GS-2026-0001");
         cn.Contact.ShouldNotBeNull();
-        cn.Contact!.Id.ShouldBe(125718421);
+        cn.Contact!.Id.ShouldBe(12345678);
         cn.CreditNoteDate.ShouldNotBeNull();
         cn.Status.ShouldBe(CreditNoteStatus.Open);
         cn.Header.ShouldBe("Gutschrift");
@@ -875,7 +885,7 @@ public class ApiDeserializationTests
         {
             "objects": [{
                 "id": "112001",
-                "contact": {"id": "125718421", "objectName": "Contact"},
+                "contact": {"id": "12345678", "objectName": "Contact"},
                 "type": "EMAIL",
                 "value": "max@test-gmbh.de",
                 "key": {"id": "1", "objectName": "CommunicationWayKey"},
@@ -896,7 +906,7 @@ public class ApiDeserializationTests
 
         cw.Id.ShouldBe(112001);
         cw.Contact.ShouldNotBeNull();
-        cw.Contact!.Id.ShouldBe(125718421);
+        cw.Contact!.Id.ShouldBe(12345678);
         cw.Type.ShouldBe(CommunicationWayType.EMAIL);
         cw.Value.ShouldBe("max@test-gmbh.de");
         cw.Key.ShouldNotBeNull();
@@ -913,7 +923,7 @@ public class ApiDeserializationTests
         {
             "objects": [{
                 "id": "223001",
-                "contact": {"id": "125718421", "objectName": "Contact"},
+                "contact": {"id": "12345678", "objectName": "Contact"},
                 "street": "Musterstr. 1",
                 "zip": "12345",
                 "city": "Berlin",
@@ -939,7 +949,7 @@ public class ApiDeserializationTests
 
         addr.Id.ShouldBe(223001);
         addr.Contact.ShouldNotBeNull();
-        addr.Contact!.Id.ShouldBe(125718421);
+        addr.Contact!.Id.ShouldBe(12345678);
         addr.Street.ShouldBe("Musterstr. 1");
         addr.Zip.ShouldBe("12345");
         addr.City.ShouldBe("Berlin");
@@ -964,7 +974,7 @@ public class ApiDeserializationTests
             "objects": [{
                 "id": "55001",
                 "name": "Wichtig",
-                "object": {"id": "125718421", "objectName": "Contact"},
+                "object": {"id": "12345678", "objectName": "Contact"},
                 "objectType": "Contact",
                 "create": "2026-02-19T14:13:11+01:00"
             }],
@@ -982,7 +992,7 @@ public class ApiDeserializationTests
         tag.Id.ShouldBe(55001);
         tag.Name.ShouldBe("Wichtig");
         tag.Object.ShouldNotBeNull();
-        tag.Object!.Id.ShouldBe(125718421);
+        tag.Object!.Id.ShouldBe(12345678);
         tag.Object.ObjectName.ShouldBe("Contact");
         tag.ObjectType.ShouldBe("Contact");
         tag.Create.ShouldNotBeNull();

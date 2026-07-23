@@ -102,6 +102,12 @@ internal class ApiInvoice
 
     [JsonPropertyName("taxRule")]
     public ApiObjectReference? TaxRule { get; set; }
+
+    [JsonPropertyName("einvoiceReference")]
+    public string? EinvoiceReference { get; set; }
+
+    [JsonPropertyName("propertyIsEInvoice")]
+    public string? PropertyIsEInvoice { get; set; }
 }
 
 internal class ApiInvoicePos

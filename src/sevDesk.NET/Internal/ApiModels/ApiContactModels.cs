@@ -76,6 +76,9 @@ internal class ApiContact
     [JsonPropertyName("governmentAgency")]
     public string? GovernmentAgency { get; set; }
 
+    [JsonPropertyName("buyerReference")]
+    public string? BuyerReference { get; set; }
+
     [JsonPropertyName("create")]
     public string? Create { get; set; }
 
