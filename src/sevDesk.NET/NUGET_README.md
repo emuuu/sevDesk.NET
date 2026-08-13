@@ -44,7 +44,7 @@ public class InvoiceService(ISevDeskClient client)
 - **Strongly typed models and enums** for all resources
 - **Transaction operations** — save invoice/order/voucher with positions atomically
 - **PDF generation**, email sending, status management, and document upload
-- **Pagination** with `SevDeskListResponse<T>` and filtering
+- **Pagination** with `SevDeskListResponse<T>` and filtering — `Total` is `int?`, so "the server reported no total" stays distinct from "the result set is empty"
 - **Typed exception hierarchy** — `SevDeskAuthenticationException`, `SevDeskNotFoundException`, `SevDeskValidationException`
 - **`IHttpClientFactory`** integration with automatic auth header injection
 

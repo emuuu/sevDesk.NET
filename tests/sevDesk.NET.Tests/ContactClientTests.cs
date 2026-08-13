@@ -54,6 +54,48 @@ public class ContactClientTests
     }
 
     [Fact]
+    public async Task ListAsync_MissingTotal_ReturnsNullTotal()
+    {
+        var responseBody = new
+        {
+            objects = new[]
+            {
+                new { id = 1, surename = "Max", familyname = "Mustermann", name = "Test GmbH", status = 100 }
+            }
+        };
+
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        var result = await client.Contacts.ListAsync();
+
+        result.Items.Count.ShouldBe(1);
+        result.Total.ShouldBeNull(); // no total from the server ≠ a total of 0
+    }
+
+    [Fact]
+    public async Task ListAsync_ZeroTotal_ReturnsZeroTotal()
+    {
+        var responseBody = new
+        {
+            objects = Array.Empty<object>(),
+            total = "0"
+        };
+
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        var result = await client.Contacts.ListAsync();
+
+        result.Items.ShouldBeEmpty();
+        result.Total.ShouldBe(0);
+    }
+
+    [Fact]
     public async Task GetAsync_ReturnsContact()
     {
         var responseBody = new

@@ -49,7 +49,11 @@
     public async Task ListContactsAsync()
     {
         var result = await _client.Contacts.ListAsync();
-        Console.WriteLine($&quot;Found {result.Total} contacts&quot;);
+
+        // Total is int? — null when the API reported no total, which is not the same as 0.
+        Console.WriteLine(result.Total is int total
+            ? $&quot;Found {total} contacts&quot;
+            : $&quot;Found {result.Items.Count} contacts on this page&quot;);
 
         foreach (var contact in result.Items)
         {

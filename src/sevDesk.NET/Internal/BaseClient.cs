@@ -18,7 +18,7 @@ internal class BaseClient
         _httpClient = httpClient;
     }
 
-    internal async Task<(List<TApi> Items, int Total)> GetListAsync<TApi>(
+    internal async Task<(List<TApi> Items, int? Total)> GetListAsync<TApi>(
         string path,
         PaginationParameters? pagination,
         JsonTypeInfo<SevDeskApiListResponse<TApi>> typeInfo,

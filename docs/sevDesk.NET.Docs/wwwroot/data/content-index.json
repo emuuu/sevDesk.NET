@@ -64,11 +64,12 @@
     "headings": [
       "PaginationParameters",
       "SevDeskListResponse",
+      "Total is nullable, and null is not 0",
       "Paginating Through All Results",
       "Filtering",
       "Embedding related objects"
     ],
-    "searchText": "PaginationParameters All ListAsync methods accept an optional PaginationParameters object: SevDeskListResponse List methods return a SevDeskListResponse\u003CT\u003E containing the items and total count: - Items \u2014 The page of results - Total \u2014 The total number of matching records (for calculating total pages) Paginating Through All Results Filtering Some clients support filtering in their ListAsync methods: Invoices support an additional InvoiceListFilter for server-side filtering by update timestamp, sta"
+    "searchText": "PaginationParameters All ListAsync methods accept an optional PaginationParameters object: SevDeskListResponse List methods return a SevDeskListResponse\u003CT\u003E containing the items and total count: - Items \u2014 The page of results - Total \u2014 The total number of matching records (for calculating total pages), or null when the API did not report one Total is nullable, and null is not 0 Every ListAsync requests countAll=true, which is what makes the API send total at all \u2014 but it does not send it reliably "
   },
   {
     "slug": "guides/error-handling",
