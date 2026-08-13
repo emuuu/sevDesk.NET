@@ -10,14 +10,22 @@ internal class ApiInvoice
     [JsonPropertyName("invoiceNumber")]
     public string? InvoiceNumber { get; set; }
 
+    /// <summary>
+    /// The contact. Typed as the full <see cref="ApiContact"/> because <c>embed=contact</c> expands
+    /// this from the bare <c>{id, objectName}</c> reference into the complete contact object;
+    /// see <see cref="ApiContact.IsEmbedded"/>. Only the reference fields are ever written back.
+    /// </summary>
     [JsonPropertyName("contact")]
-    public ApiObjectReference? Contact { get; set; }
+    public ApiContact? Contact { get; set; }
 
     [JsonPropertyName("invoiceDate")]
     public string? InvoiceDate { get; set; }
 
     [JsonPropertyName("deliveryDate")]
     public string? DeliveryDate { get; set; }
+
+    [JsonPropertyName("deliveryDateUntil")]
+    public string? DeliveryDateUntil { get; set; }
 
     [JsonPropertyName("status")]
     public int? Status { get; set; }

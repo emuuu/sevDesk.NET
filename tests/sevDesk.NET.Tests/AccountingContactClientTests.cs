@@ -78,6 +78,38 @@ public class AccountingContactClientTests
     }
 
     [Fact]
+    public async Task ListAsync_MapsContactReference()
+    {
+        // Without the contact reference a debitor number cannot be attributed to a
+        // sevDesk contact, which is the only reason to read this endpoint.
+        var responseBody = new
+        {
+            objects = new[]
+            {
+                new
+                {
+                    id = 1001,
+                    contact = new { id = 12345678, objectName = "Contact" },
+                    contactName = "Test GmbH",
+                    debitorNumber = "10042"
+                }
+            },
+            total = 1
+        };
+
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        var result = await client.AccountingContacts.ListAsync();
+
+        result.Items[0].Contact.ShouldNotBeNull();
+        result.Items[0].Contact!.Id.ShouldBe(12345678);
+        result.Items[0].Contact!.ObjectName.ShouldBe("Contact");
+    }
+
+    [Fact]
     public async Task GetAsync_ReturnsAccountingContact()
     {
         var responseBody = new
@@ -97,5 +129,35 @@ public class AccountingContactClientTests
         result.ContactName.ShouldBe("Test GmbH");
         result.DebitorNumber.ShouldBe("10042");
         result.CreditorNumber.ShouldBe("70001");
+    }
+
+    [Fact]
+    public async Task GetAsync_ArrayEnvelope_ReturnsAccountingContact()
+    {
+        var responseBody = new
+        {
+            objects = new[]
+            {
+                new
+                {
+                    id = 1001,
+                    contact = new { id = 12345678, objectName = "Contact" },
+                    contactName = "Test GmbH",
+                    debitorNumber = "10042"
+                }
+            }
+        };
+
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        var result = await client.AccountingContacts.GetAsync(1001);
+
+        result.Id.ShouldBe(1001);
+        result.Contact.ShouldNotBeNull();
+        result.Contact!.Id.ShouldBe(12345678);
+        result.DebitorNumber.ShouldBe("10042");
     }
 }

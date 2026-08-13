@@ -1,6 +1,7 @@
 using System.Text.Json;
 using sevDesk.NET.Internal;
 using sevDesk.NET.Internal.ApiModels;
+using sevDesk.NET.Models;
 using sevDesk.NET.Models.Enums;
 using Shouldly;
 using Xunit;
@@ -95,6 +96,7 @@ public class ApiDeserializationTests
                 "contact": {"id": "12345678", "objectName": "Contact"},
                 "invoiceDate": "2026-02-19T00:00:00+01:00",
                 "deliveryDate": "2026-02-19T00:00:00+01:00",
+                "deliveryDateUntil": "2026-03-18T23:59:59+01:00",
                 "status": "100",
                 "invoiceType": "RE",
                 "header": "Rechnung",
@@ -189,7 +191,10 @@ public class ApiDeserializationTests
         // time, so the expected value has to be expressed the same way — comparing against
         // a bare date would pass in UTC+1 and fail on a UTC machine.
         invoice.PayDate!.Value.ShouldBe(new DateTimeOffset(2026, 3, 5, 0, 0, 0, TimeSpan.FromHours(1)).LocalDateTime);
+        invoice.DeliveryDateUntil.ShouldNotBeNull();
+        invoice.DeliveryDateUntil!.Value.ShouldBe(new DateTimeOffset(2026, 3, 18, 23, 59, 59, TimeSpan.FromHours(1)).LocalDateTime);
         invoice.Positions.ShouldBeNull(); // no embed=positions requested
+        invoice.EmbeddedContact.ShouldBeNull(); // contact came back as a bare reference
     }
 
     [Fact]
@@ -237,15 +242,88 @@ public class ApiDeserializationTests
     }
 
     [Fact]
+    public void Invoice_DeserializesEmbeddedContact()
+    {
+        // GET /Invoice?embed=contact expands the contact reference into the full object.
+        // Contact keeps carrying the reference, EmbeddedContact carries the payload.
+        var json = """
+        {
+            "objects": [{
+                "id": "98765432",
+                "invoiceNumber": "RE-2026-0042",
+                "contact": {
+                    "id": "12345678",
+                    "objectName": "Contact",
+                    "customerNumber": "K-1001",
+                    "surename": "Mustermann",
+                    "familyname": "Max",
+                    "name": null,
+                    "status": "100",
+                    "category": {"id": "3", "objectName": "Category"},
+                    "buyerReference": "991-12345-67",
+                    "create": "2026-02-19T14:13:11+01:00",
+                    "update": "2026-02-19T14:13:11+01:00"
+                }
+            }],
+            "total": "1"
+        }
+        """;
+
+        var response = JsonSerializer.Deserialize(json, SevDeskJsonContext.Default.SevDeskApiListResponseApiInvoice);
+
+        response.ShouldNotBeNull();
+        response.Objects.ShouldNotBeNull();
+
+        var invoice = ModelMapper.ToPublic(response.Objects![0]);
+
+        invoice.Contact.ShouldNotBeNull();
+        invoice.Contact!.Id.ShouldBe(12345678);
+        invoice.Contact.ObjectName.ShouldBe("Contact");
+
+        invoice.EmbeddedContact.ShouldNotBeNull();
+        invoice.EmbeddedContact!.Id.ShouldBe(12345678);
+        invoice.EmbeddedContact.CustomerNumber.ShouldBe("K-1001");
+        invoice.EmbeddedContact.Surename.ShouldBe("Mustermann");
+        invoice.EmbeddedContact.Familyname.ShouldBe("Max");
+        invoice.EmbeddedContact.Status.ShouldBe(ContactStatus.Active);
+        invoice.EmbeddedContact.Category.ShouldNotBeNull();
+        invoice.EmbeddedContact.Category!.Id.ShouldBe(3);
+        invoice.EmbeddedContact.BuyerReference.ShouldBe("991-12345-67");
+        invoice.EmbeddedContact.Create.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void Invoice_ToApi_WritesContactBackAsBareReference()
+    {
+        // Round-tripping an embedded contact must not push the whole contact object
+        // back into the invoice payload — the API expects a reference there.
+        var invoice = new Invoice
+        {
+            Id = 98765432,
+            Contact = new SevDeskObjectReference { Id = 12345678, ObjectName = "Contact" },
+            EmbeddedContact = new Contact { Id = 12345678, Surename = "Mustermann", CustomerNumber = "K-1001" }
+        };
+
+        var json = JsonSerializer.Serialize(ModelMapper.ToApi(invoice), SevDeskJsonContext.Default.ApiInvoice);
+
+        using var document = JsonDocument.Parse(json);
+        var contact = document.RootElement.GetProperty("contact");
+
+        contact.EnumerateObject().Select(p => p.Name).OrderBy(n => n)
+            .ShouldBe(["id", "objectName"]);
+        contact.GetProperty("id").GetInt32().ShouldBe(12345678);
+        contact.GetProperty("objectName").GetString().ShouldBe("Contact");
+    }
+
+    [Fact]
     public void AccountingContact_DeserializesRealApiResponse()
     {
-        // The API returns no contact reference on this object — only contactName.
-        // Resolving to a contact goes through the contactId filter on ListAsync.
         var json = """
         {
             "objects": [{
                 "id": "1234567",
                 "objectName": "AccountingContact",
+                "contact": {"id": "12345678", "objectName": "Contact"},
                 "contactName": "Test GmbH",
                 "debitorNumber": "10042",
                 "creditorNumber": null,
@@ -265,6 +343,9 @@ public class ApiDeserializationTests
         var accountingContact = ModelMapper.ToPublic(response.Objects![0]);
 
         accountingContact.Id.ShouldBe(1234567);
+        accountingContact.Contact.ShouldNotBeNull(); // maps the bookkeeping number back to a contact
+        accountingContact.Contact!.Id.ShouldBe(12345678);
+        accountingContact.Contact.ObjectName.ShouldBe("Contact");
         accountingContact.ContactName.ShouldBe("Test GmbH");
         accountingContact.DebitorNumber.ShouldBe("10042");
         accountingContact.CreditorNumber.ShouldBeNull();

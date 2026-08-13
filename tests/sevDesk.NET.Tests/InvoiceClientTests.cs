@@ -611,4 +611,158 @@ public class InvoiceClientTests
 
         result.Positions.ShouldBeNull();
     }
+
+    [Fact]
+    public async Task GetAsync_ArrayEnvelope_ReturnsInvoice()
+    {
+        // GET /Invoice/{id} wraps the single object in an array, unlike the create and
+        // update endpoints, which answer with a bare object.
+        var responseBody = new
+        {
+            objects = new[]
+            {
+                new { id = 98765432, invoiceNumber = "RE-2026-0042", status = 1000, currency = "EUR" }
+            }
+        };
+
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        var result = await client.Invoices.GetAsync(98765432);
+
+        result.Id.ShouldBe(98765432);
+        result.InvoiceNumber.ShouldBe("RE-2026-0042");
+        result.Status.ShouldBe(Models.Enums.InvoiceStatus.Paid);
+        result.Currency.ShouldBe("EUR");
+    }
+
+    [Fact]
+    public async Task GetAsync_EmptyArrayEnvelope_ThrowsSevDeskNotFoundException()
+    {
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(new { objects = Array.Empty<object>() })
+        });
+
+        await Should.ThrowAsync<SevDeskNotFoundException>(() => client.Invoices.GetAsync(98765432));
+    }
+
+    [Fact]
+    public async Task GetAsync_NullObjects_ThrowsSevDeskNotFoundException()
+    {
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent("""{"objects":null}""", System.Text.Encoding.UTF8, "application/json")
+        });
+
+        await Should.ThrowAsync<SevDeskNotFoundException>(() => client.Invoices.GetAsync(98765432));
+    }
+
+    [Fact]
+    public async Task GetAsync_MissingObjects_ThrowsSevDeskApiException()
+    {
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent("""{"total":"0"}""", System.Text.Encoding.UTF8, "application/json")
+        });
+
+        await Should.ThrowAsync<SevDeskApiException>(() => client.Invoices.GetAsync(98765432));
+    }
+
+    [Fact]
+    public async Task GetAsync_WithEmbeddedContact_MapsEmbeddedContactAndKeepsReference()
+    {
+        var responseBody = new
+        {
+            objects = new[]
+            {
+                new
+                {
+                    id = 98765432,
+                    invoiceNumber = "RE-2026-0042",
+                    contact = new
+                    {
+                        id = 12345678,
+                        objectName = "Contact",
+                        customerNumber = "K-1001",
+                        surename = "Mustermann",
+                        familyname = "Max"
+                    }
+                }
+            }
+        };
+
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        var result = await client.Invoices.GetAsync(98765432, embed: "contact");
+
+        result.Contact.ShouldNotBeNull();
+        result.Contact!.Id.ShouldBe(12345678);
+        result.EmbeddedContact.ShouldNotBeNull();
+        result.EmbeddedContact!.CustomerNumber.ShouldBe("K-1001");
+        result.EmbeddedContact.Surename.ShouldBe("Mustermann");
+        result.EmbeddedContact.Familyname.ShouldBe("Max");
+    }
+
+    [Fact]
+    public async Task GetAsync_WithoutEmbeddedContact_LeavesEmbeddedContactNull()
+    {
+        var responseBody = new
+        {
+            objects = new
+            {
+                id = 98765432,
+                contact = new { id = 12345678, objectName = "Contact" }
+            }
+        };
+
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        var result = await client.Invoices.GetAsync(98765432);
+
+        result.Contact.ShouldNotBeNull();
+        result.Contact!.Id.ShouldBe(12345678);
+        result.EmbeddedContact.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task CreateAsync_SendsDeliveryDateUntil()
+    {
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.Created)
+        {
+            Content = JsonContent.Create(new { objects = new { id = 1 } })
+        });
+
+        await client.Invoices.CreateAsync(new Invoice
+        {
+            DeliveryDate = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Unspecified),
+            DeliveryDateUntil = new DateTime(2026, 3, 18, 23, 59, 59, DateTimeKind.Unspecified)
+        });
+
+        var body = await handler.LastRequest!.Content!.ReadAsStringAsync();
+        body.ShouldContain("\"deliveryDate\":\"2026-03-01 00:00:00\"");
+        body.ShouldContain("\"deliveryDateUntil\":\"2026-03-18 23:59:59\"");
+    }
+
+    [Fact]
+    public async Task CreateAsync_WithoutDeliveryDateUntil_OmitsPropertyFromRequestBody()
+    {
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.Created)
+        {
+            Content = JsonContent.Create(new { objects = new { id = 1 } })
+        });
+
+        await client.Invoices.CreateAsync(new Invoice { InvoiceNumber = "RE-001" });
+
+        var body = await handler.LastRequest!.Content!.ReadAsStringAsync();
+        body.ShouldNotContain("deliveryDateUntil");
+    }
 }

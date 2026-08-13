@@ -18,7 +18,7 @@ internal class StaticCountryClient : IStaticCountryClient
 
     public async Task<StaticCountry> GetAsync(int id, CancellationToken ct = default)
     {
-        var api = await _client.GetAsync($"StaticCountry/{id}", SevDeskJsonContext.Default.SevDeskApiResponseApiStaticCountry, ct: ct).ConfigureAwait(false);
+        var api = await _client.GetAsync($"StaticCountry/{id}", SevDeskJsonContext.Default.ApiStaticCountry, ct: ct).ConfigureAwait(false);
         return ModelMapper.ToPublic(api);
     }
 }

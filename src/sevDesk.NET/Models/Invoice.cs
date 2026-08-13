@@ -16,11 +16,24 @@ public class Invoice
     /// <summary>Gets or sets the contact reference.</summary>
     public SevDeskObjectReference? Contact { get; init; }
 
+    /// <summary>
+    /// Gets the full contact when it was requested via <c>embed=contact</c>;
+    /// <see langword="null"/> otherwise. <see cref="Contact"/> always carries the reference.
+    /// Read-only — only the reference is written back on create and update.
+    /// </summary>
+    public Contact? EmbeddedContact { get; init; }
+
     /// <summary>Gets or sets the invoice date.</summary>
     public DateTime? InvoiceDate { get; init; }
 
-    /// <summary>Gets or sets the delivery date.</summary>
+    /// <summary>Gets or sets the delivery date — the start of the service period.</summary>
     public DateTime? DeliveryDate { get; init; }
+
+    /// <summary>
+    /// Gets or sets the end of the service period. Together with <see cref="DeliveryDate"/> this
+    /// spans a period rather than a single day; <see langword="null"/> when the invoice covers one date.
+    /// </summary>
+    public DateTime? DeliveryDateUntil { get; init; }
 
     /// <summary>Gets or sets the invoice status.</summary>
     public InvoiceStatus? Status { get; init; }

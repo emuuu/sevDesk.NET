@@ -14,6 +14,17 @@ internal static class ModelMapper
     internal static ApiObjectReference? ToApi(SevDeskObjectReference? model) =>
         model is null ? null : new ApiObjectReference { Id = model.Id, ObjectName = model.ObjectName };
 
+    /// <summary>
+    /// Maps a reference onto <see cref="ApiContact"/>, which carries the reference shape as well
+    /// because <c>embed=contact</c> expands it. Only <c>id</c> and <c>objectName</c> are written,
+    /// so the serialized JSON is the same reference object as before.
+    /// </summary>
+    internal static ApiContact? ToApiContactReference(SevDeskObjectReference? model) =>
+        model is null ? null : new ApiContact { Id = model.Id, ObjectName = model.ObjectName };
+
+    internal static SevDeskObjectReference? ToReference(ApiContact? api) =>
+        api is null ? null : new SevDeskObjectReference { Id = api.Id, ObjectName = api.ObjectName ?? "" };
+
     // --- DateTime Parsing ---
 
     internal static DateTime? ParseDateTime(string? value) =>
@@ -102,9 +113,11 @@ internal static class ModelMapper
     {
         Id = api.Id,
         InvoiceNumber = api.InvoiceNumber,
-        Contact = ToPublic(api.Contact),
+        Contact = ToReference(api.Contact),
+        EmbeddedContact = api.Contact is { IsEmbedded: true } embedded ? ToPublic(embedded) : null,
         InvoiceDate = ParseDateTime(api.InvoiceDate),
         DeliveryDate = ParseDateTime(api.DeliveryDate),
+        DeliveryDateUntil = ParseDateTime(api.DeliveryDateUntil),
         Status = api.Status.HasValue ? (InvoiceStatus)api.Status.Value : null,
         InvoiceType = api.InvoiceType is not null && Enum.TryParse<InvoiceType>(api.InvoiceType, out var it) ? it : null,
         Header = api.Header,
@@ -153,9 +166,10 @@ internal static class ModelMapper
     {
         Id = model.Id,
         InvoiceNumber = model.InvoiceNumber,
-        Contact = ToApi(model.Contact),
+        Contact = ToApiContactReference(model.Contact),
         InvoiceDate = FormatDateTime(model.InvoiceDate),
         DeliveryDate = FormatDateTime(model.DeliveryDate),
+        DeliveryDateUntil = FormatDateTime(model.DeliveryDateUntil),
         Status = model.Status.HasValue ? (int)model.Status.Value : null,
         InvoiceType = model.InvoiceType?.ToString(),
         Header = model.Header,
@@ -654,6 +668,7 @@ internal static class ModelMapper
     internal static AccountingContact ToPublic(ApiAccountingContact api) => new()
     {
         Id = api.Id,
+        Contact = ToPublic(api.Contact),
         ContactName = api.ContactName,
         DebitorNumber = api.DebitorNumber,
         CreditorNumber = api.CreditorNumber,

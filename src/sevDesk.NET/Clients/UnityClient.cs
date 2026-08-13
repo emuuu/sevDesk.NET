@@ -18,7 +18,7 @@ internal class UnityClient : IUnityClient
 
     public async Task<Unity> GetAsync(int id, CancellationToken ct = default)
     {
-        var api = await _client.GetAsync($"Unity/{id}", SevDeskJsonContext.Default.SevDeskApiResponseApiUnity, ct: ct).ConfigureAwait(false);
+        var api = await _client.GetAsync($"Unity/{id}", SevDeskJsonContext.Default.ApiUnity, ct: ct).ConfigureAwait(false);
         return ModelMapper.ToPublic(api);
     }
 }
