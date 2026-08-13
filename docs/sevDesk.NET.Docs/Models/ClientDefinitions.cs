@@ -18,6 +18,7 @@ public static class ClientDefinitions
         new("Contacts", "api/contacts", "Manage customers, suppliers, and partners with full CRUD and customer number generation.", "IContactClient", "Contacts"),
         new("Contact Addresses", "api/contact-addresses", "Manage postal addresses for contacts.", "IContactAddressClient", "Contacts"),
         new("Communication Ways", "api/communication-ways", "Manage email, phone, and other communication channels for contacts.", "ICommunicationWayClient", "Contacts"),
+        new("Accounting Contacts", "api/accounting-contacts", "Query the debitor and creditor numbers assigned to contacts.", "IAccountingContactClient", "Contacts"),
 
         // Banking
         new("Check Accounts", "api/check-accounts", "Manage bank accounts (online and offline) with balance queries.", "ICheckAccountClient", "Banking"),
@@ -35,6 +36,7 @@ public static class ClientDefinitions
         new("Units", "api/unities", "Query available units of measure (pieces, hours, etc.).", "IUnityClient", "Reference Data"),
         new("Tax Rules", "api/tax-rules", "Query available tax rules and rates.", "ITaxRuleClient", "Reference Data"),
         new("Currency Exchange Rates", "api/currency-exchange-rates", "Query currency exchange rates.", "ICurrencyExchangeRateClient", "Reference Data"),
+        new("Static Countries", "api/static-countries", "Query the country catalogue that country references resolve against.", "IStaticCountryClient", "Reference Data"),
     ];
 
     public static readonly IReadOnlyList<string> GroupOrder =

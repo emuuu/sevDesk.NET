@@ -31,7 +31,7 @@
 <p>All <code>ListAsync</code> methods accept an optional <code>PaginationParameters</code> object:</p>
 <pre><code class="language-csharp">var result = await client.Contacts.ListAsync(new PaginationParameters
 {
-    Limit = 50,   // Number of items per page (1-1000, default: 100)
+    Limit = 50,   // Number of items per page (1-2000, default: 100)
     Offset = 0    // Number of items to skip
 });
 </code></pre>
@@ -72,6 +72,40 @@ var comms = await client.CommunicationWays.ListAsync(contactId: 67890);
 
 // Categories for a specific object type
 var categories = await client.Categories.ListAsync(objectType: &quot;Invoice&quot;);
+</code></pre>
+<p>Invoices support an additional <code>InvoiceListFilter</code> for server-side filtering by update timestamp, status, contact, and invoice date:</p>
+<pre><code class="language-csharp">var recentOpenInvoices = await client.Invoices.ListAsync(filter: new InvoiceListFilter
+{
+    UpdateAfter = DateTimeOffset.UtcNow.AddDays(-7),
+    Status = InvoiceStatus.Open,
+    ContactId = 12345678
+});
+</code></pre>
+<p><code>InvoiceDateFrom</code> and <code>InvoiceDateTo</code> filter on the invoice date rather than the update
+timestamp. They make a historical import resumable: walk backwards one date window at a
+time and remember the window you finished.</p>
+<pre><code class="language-csharp">var q1 = await client.Invoices.ListAsync(filter: new InvoiceListFilter
+{
+    InvoiceDateFrom = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
+    InvoiceDateTo = new DateTimeOffset(2026, 3, 31, 23, 59, 59, TimeSpan.Zero)
+});
+</code></pre>
+<h2 id="embedding-related-objects">Embedding related objects</h2>
+<p><code>ListAsync</code> and <code>GetAsync</code> accept an <code>embed</code> argument that pulls related objects into the
+same response. For invoices this turns a full import from one request per invoice into a
+single paginated pass:</p>
+<pre><code class="language-csharp">var invoices = await client.Invoices.ListAsync(
+    new PaginationParameters { Limit = 2000 },
+    embed: &quot;positions&quot;);
+
+foreach (var invoice in invoices.Items)
+{
+    // Positions is null unless embed: &quot;positions&quot; was requested
+    foreach (var position in invoice.Positions ?? [])
+    {
+        Console.WriteLine($&quot;{position.Name}: {position.Quantity} x {position.PriceNet}&quot;);
+    }
+}
 </code></pre>
 
         </article>

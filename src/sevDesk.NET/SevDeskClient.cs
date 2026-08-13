@@ -51,6 +51,9 @@ public class SevDeskClient : ISevDeskClient
     public IContactAddressClient ContactAddresses { get; }
 
     /// <inheritdoc />
+    public IAccountingContactClient AccountingContacts { get; }
+
+    /// <inheritdoc />
     public ITagClient Tags { get; }
 
     /// <inheritdoc />
@@ -64,6 +67,9 @@ public class SevDeskClient : ISevDeskClient
 
     /// <inheritdoc />
     public ICurrencyExchangeRateClient CurrencyExchangeRates { get; }
+
+    /// <inheritdoc />
+    public IStaticCountryClient StaticCountries { get; }
 
     /// <inheritdoc />
     public IDocumentClient Documents { get; }
@@ -91,11 +97,13 @@ public class SevDeskClient : ISevDeskClient
         CheckAccountTransactions = new CheckAccountTransactionClient(baseClient);
         CommunicationWays = new CommunicationWayClient(baseClient);
         ContactAddresses = new ContactAddressClient(baseClient);
+        AccountingContacts = new AccountingContactClient(baseClient);
         Tags = new TagClient(baseClient);
         Categories = new CategoryClient(baseClient);
         Unities = new UnityClient(baseClient);
         TaxRules = new TaxRuleClient(baseClient);
         CurrencyExchangeRates = new CurrencyExchangeRateClient(baseClient);
+        StaticCountries = new StaticCountryClient(baseClient);
         Documents = new DocumentClient(baseClient);
     }
 }

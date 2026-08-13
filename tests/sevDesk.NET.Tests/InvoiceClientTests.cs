@@ -486,6 +486,40 @@ public class InvoiceClientTests
     }
 
     [Fact]
+    public async Task ListAsync_WithInvoiceDateFromFilter_AddsStartDateToQuery()
+    {
+        var responseBody = new { objects = Array.Empty<object>(), total = 0 };
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.ListAsync(filter: new InvoiceListFilter
+        {
+            InvoiceDateFrom = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero)
+        });
+
+        handler.LastRequest!.RequestUri!.Query.ShouldContain("startDate=1767225600");
+    }
+
+    [Fact]
+    public async Task ListAsync_WithInvoiceDateToFilter_AddsEndDateToQuery()
+    {
+        var responseBody = new { objects = Array.Empty<object>(), total = 0 };
+        var (client, handler) = CreateClientWithHandler(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        await client.Invoices.ListAsync(filter: new InvoiceListFilter
+        {
+            InvoiceDateTo = new DateTimeOffset(2026, 3, 31, 23, 59, 59, TimeSpan.Zero)
+        });
+
+        handler.LastRequest!.RequestUri!.Query.ShouldContain("endDate=1775001599");
+    }
+
+    [Fact]
     public async Task ListAsync_WithCombinedFilter_AddsAllQueryParameters()
     {
         var responseBody = new { objects = Array.Empty<object>(), total = 0 };
@@ -498,7 +532,9 @@ public class InvoiceClientTests
         {
             UpdateAfter = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
             Status = Models.Enums.InvoiceStatus.Open,
-            ContactId = 12345678
+            ContactId = 12345678,
+            InvoiceDateFrom = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
+            InvoiceDateTo = new DateTimeOffset(2026, 3, 31, 23, 59, 59, TimeSpan.Zero)
         });
 
         var query = handler.LastRequest!.RequestUri!.Query;
@@ -506,6 +542,8 @@ public class InvoiceClientTests
         query.ShouldContain("status=200");
         query.ShouldContain("contact%5Bid%5D=12345678");
         query.ShouldContain("contact%5BobjectName%5D=Contact");
+        query.ShouldContain("startDate=1767225600");
+        query.ShouldContain("endDate=1775001599");
     }
 
     [Fact]
@@ -523,5 +561,54 @@ public class InvoiceClientTests
         query.ShouldNotContain("updateAfter");
         query.ShouldNotContain("status");
         query.ShouldNotContain("contact%5Bid%5D");
+        query.ShouldNotContain("startDate");
+        query.ShouldNotContain("endDate");
+    }
+
+    [Fact]
+    public async Task GetAsync_WithEmbeddedPositions_MapsPositions()
+    {
+        var responseBody = new
+        {
+            objects = new
+            {
+                id = 98765432,
+                invoiceNumber = "RE-2026-0042",
+                positions = new[]
+                {
+                    new { id = 313724090, name = "Testartikel", quantity = "2", price = "42.01", priceNet = "42.01" },
+                    new { id = 313724091, name = "Versand", quantity = "1", price = "5.90", priceNet = "5.90" }
+                }
+            }
+        };
+
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        var result = await client.Invoices.GetAsync(98765432, embed: "positions");
+
+        result.Positions.ShouldNotBeNull();
+        result.Positions!.Count.ShouldBe(2);
+        result.Positions[0].Name.ShouldBe("Testartikel");
+        result.Positions[0].Quantity.ShouldBe(2m);
+        result.Positions[0].PriceNet.ShouldBe(42.01m);
+        result.Positions[1].Name.ShouldBe("Versand");
+    }
+
+    [Fact]
+    public async Task GetAsync_WithoutEmbeddedPositions_LeavesPositionsNull()
+    {
+        var responseBody = new { objects = new { id = 98765432, invoiceNumber = "RE-2026-0042" } };
+
+        var client = CreateClient(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(responseBody)
+        });
+
+        var result = await client.Invoices.GetAsync(98765432);
+
+        result.Positions.ShouldBeNull();
     }
 }

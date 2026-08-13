@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.1.0] - 2026-08-13
+
+### Added
+
+- `Invoice`: the structured recipient address next to the existing rendered `Address` block — `AddressName`, `AddressName2`, `AddressStreet`, `AddressZip`, `AddressCity`, `AddressCountry` (a `StaticCountry` reference), `AddressParentName`, `AddressParentName2` and `AddressGender`. Previously an invoice import could only recover the recipient from the multi-line text block. Mapped in both directions.
+- `Invoice.PaidAmount` and `Invoice.PayDate` (read-only, calculated by the API).
+- `Invoice.Positions`: line items requested via `embed=positions` are now mapped instead of being silently dropped, so a full import no longer needs one extra request per invoice. The property stays `null` when the embed was not requested.
+- `InvoicePos.PriceNet`, `InvoicePos.PriceGross` and `InvoicePos.PriceTax` (read-only, calculated by the API). `PriceNet` is the authoritative net unit price of a position.
+- `InvoiceListFilter.InvoiceDateFrom` and `InvoiceListFilter.InvoiceDateTo`: server-side `startDate` / `endDate` filters on `invoiceDate`, sent as Unix seconds. Makes a resumable historical import that walks backwards in date windows possible.
+- `IAccountingContactClient` via `client.AccountingContacts`: read access to `/AccountingContact`, the source of the DATEV debitor and creditor numbers. The endpoint returns no contact reference, only `ContactName`, so resolving an entry to a specific contact goes through the `contactId` argument on `ListAsync`. `DebitorNumber` and `CreditorNumber` are typed as `string` because the API returns them as strings and bookkeeping numbers may carry leading zeros.
+- `IStaticCountryClient` via `client.StaticCountries`: read access to `/StaticCountry`, the catalogue the `country` and `addressCountry` references resolve against.
+
+### Notes
+
+- `ISevDeskClient` gained the `AccountingContacts` and `StaticCountries` properties. Custom implementations of that interface must add them; callers using `SevDeskClient` or a mocking framework are unaffected.
+
 ## [2.0.0] - 2026-07-23
 
 ### Changed

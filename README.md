@@ -117,6 +117,7 @@ builder.Services.AddSevDesk(
 | Contacts | `client.Contacts` | CRUD, GetNextCustomerNumber |
 | Contact Addresses | `client.ContactAddresses` | CRUD, filter by contact |
 | Communication Ways | `client.CommunicationWays` | CRUD, filter by contact |
+| Accounting Contacts | `client.AccountingContacts` | List, Get, filter by contact |
 
 ### Banking
 
@@ -146,6 +147,7 @@ builder.Services.AddSevDesk(
 | Unities | `client.Unities` | List, Get |
 | Tax Rules | `client.TaxRules` | List, Get |
 | Currency Exchange Rates | `client.CurrencyExchangeRates` | List, Get |
+| Static Countries | `client.StaticCountries` | List, Get |
 
 ## Key Operations
 

@@ -65,7 +65,7 @@ var comms = await client.CommunicationWays.ListAsync(contactId: 67890);
 var categories = await client.Categories.ListAsync(objectType: "Invoice");
 ```
 
-Invoices support an additional `InvoiceListFilter` for server-side filtering by update timestamp, status, and contact:
+Invoices support an additional `InvoiceListFilter` for server-side filtering by update timestamp, status, contact, and invoice date:
 
 ```csharp
 var recentOpenInvoices = await client.Invoices.ListAsync(filter: new InvoiceListFilter
@@ -74,4 +74,37 @@ var recentOpenInvoices = await client.Invoices.ListAsync(filter: new InvoiceList
     Status = InvoiceStatus.Open,
     ContactId = 12345678
 });
+```
+
+`InvoiceDateFrom` and `InvoiceDateTo` filter on the invoice date rather than the update
+timestamp. They make a historical import resumable: walk backwards one date window at a
+time and remember the window you finished.
+
+```csharp
+var q1 = await client.Invoices.ListAsync(filter: new InvoiceListFilter
+{
+    InvoiceDateFrom = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
+    InvoiceDateTo = new DateTimeOffset(2026, 3, 31, 23, 59, 59, TimeSpan.Zero)
+});
+```
+
+## Embedding related objects
+
+`ListAsync` and `GetAsync` accept an `embed` argument that pulls related objects into the
+same response. For invoices this turns a full import from one request per invoice into a
+single paginated pass:
+
+```csharp
+var invoices = await client.Invoices.ListAsync(
+    new PaginationParameters { Limit = 2000 },
+    embed: "positions");
+
+foreach (var invoice in invoices.Items)
+{
+    // Positions is null unless embed: "positions" was requested
+    foreach (var position in invoice.Positions ?? [])
+    {
+        Console.WriteLine($"{position.Name}: {position.Quantity} x {position.PriceNet}");
+    }
+}
 ```
