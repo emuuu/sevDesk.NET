@@ -19,7 +19,7 @@ internal class CommunicationWayClient : ICommunicationWayClient
 
     public async Task<CommunicationWay> GetAsync(int id, CancellationToken ct = default)
     {
-        var api = await _client.GetAsync($"CommunicationWay/{id}", SevDeskJsonContext.Default.SevDeskApiResponseApiCommunicationWay, ct: ct).ConfigureAwait(false);
+        var api = await _client.GetAsync($"CommunicationWay/{id}", SevDeskJsonContext.Default.ApiCommunicationWay, ct: ct).ConfigureAwait(false);
         return ModelMapper.ToPublic(api);
     }
 

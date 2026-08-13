@@ -3532,6 +3532,219 @@
                   ]
                 },
                 {
+                  "name": "EmbeddedContact",
+                  "type": "Contact?",
+                  "required": false,
+                  "description": "Gets the full contact when it was requested via embed=contact; otherwise. always carries the reference. Read-only \u2014 only the reference is written back on create and update.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the contact ID.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "CustomerNumber",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the customer number.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Surename",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the contact\u0027s first name (note: sevDesk API uses \u0022surename\u0022).",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Familyname",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the contact\u0027s family name.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Name",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the company name.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Name2",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the company name (second line).",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Status",
+                      "type": "ContactStatus?",
+                      "required": false,
+                      "description": "Gets or sets the contact status.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Title",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the title (e.g. \u0022Herr\u0022, \u0022Frau\u0022).",
+                      "default": "null"
+                    },
+                    {
+                      "name": "AcademicTitle",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the academic title.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Gender",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the gender (m/f/null).",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Category",
+                      "type": "SevDeskObjectReference?",
+                      "required": false,
+                      "description": "Gets or sets the category reference.",
+                      "default": "null",
+                      "properties": [
+                        {
+                          "name": "Id",
+                          "type": "int",
+                          "required": false,
+                          "description": "Gets the ID of the referenced object.",
+                          "default": "0"
+                        },
+                        {
+                          "name": "ObjectName",
+                          "type": "string",
+                          "required": true,
+                          "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Description",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the description.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "VatNumber",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the VAT number.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "BankAccount",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the bank account.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "BankNumber",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the bank number.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "DefaultCashbackTime",
+                      "type": "int?",
+                      "required": false,
+                      "description": "Gets or sets the default cashback time in days.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "DefaultCashbackPercent",
+                      "type": "decimal?",
+                      "required": false,
+                      "description": "Gets or sets the default cashback percentage.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "DefaultTimeToPay",
+                      "type": "int?",
+                      "required": false,
+                      "description": "Gets or sets the default time to pay in days.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "TaxNumber",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the tax number.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "TaxOffice",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the tax office.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "ExemptVat",
+                      "type": "bool?",
+                      "required": false,
+                      "description": "Gets or sets whether the contact is exempt from VAT.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Birthday",
+                      "type": "DateTime?",
+                      "required": false,
+                      "description": "Gets or sets the birthday.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "DefaultDiscountPercentage",
+                      "type": "decimal?",
+                      "required": false,
+                      "description": "Gets or sets the default discount percentage.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "GovernmentAgency",
+                      "type": "bool?",
+                      "required": false,
+                      "description": "Gets or sets whether this is a government agency.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Create",
+                      "type": "DateTime?",
+                      "required": false,
+                      "description": "Gets the creation date.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Update",
+                      "type": "DateTime?",
+                      "required": false,
+                      "description": "Gets the last update date.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "BuyerReference",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the buyer reference (Leitweg-ID) used for e-invoicing.",
+                      "default": "null"
+                    }
+                  ]
+                },
+                {
                   "name": "InvoiceDate",
                   "type": "DateTime?",
                   "required": false,
@@ -3542,7 +3755,14 @@
                   "name": "DeliveryDate",
                   "type": "DateTime?",
                   "required": false,
-                  "description": "Gets or sets the delivery date.",
+                  "description": "Gets or sets the delivery date \u2014 the start of the service period.",
+                  "default": "null"
+                },
+                {
+                  "name": "DeliveryDateUntil",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets or sets the end of the service period. Together with this spans a period rather than a single day; when the invoice covers one date.",
                   "default": "null"
                 },
                 {
@@ -4002,6 +4222,219 @@
                   ]
                 },
                 {
+                  "name": "EmbeddedContact",
+                  "type": "Contact?",
+                  "required": false,
+                  "description": "Gets the full contact when it was requested via embed=contact; otherwise. always carries the reference. Read-only \u2014 only the reference is written back on create and update.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the contact ID.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "CustomerNumber",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the customer number.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Surename",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the contact\u0027s first name (note: sevDesk API uses \u0022surename\u0022).",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Familyname",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the contact\u0027s family name.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Name",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the company name.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Name2",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the company name (second line).",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Status",
+                      "type": "ContactStatus?",
+                      "required": false,
+                      "description": "Gets or sets the contact status.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Title",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the title (e.g. \u0022Herr\u0022, \u0022Frau\u0022).",
+                      "default": "null"
+                    },
+                    {
+                      "name": "AcademicTitle",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the academic title.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Gender",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the gender (m/f/null).",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Category",
+                      "type": "SevDeskObjectReference?",
+                      "required": false,
+                      "description": "Gets or sets the category reference.",
+                      "default": "null",
+                      "properties": [
+                        {
+                          "name": "Id",
+                          "type": "int",
+                          "required": false,
+                          "description": "Gets the ID of the referenced object.",
+                          "default": "0"
+                        },
+                        {
+                          "name": "ObjectName",
+                          "type": "string",
+                          "required": true,
+                          "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Description",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the description.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "VatNumber",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the VAT number.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "BankAccount",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the bank account.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "BankNumber",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the bank number.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "DefaultCashbackTime",
+                      "type": "int?",
+                      "required": false,
+                      "description": "Gets or sets the default cashback time in days.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "DefaultCashbackPercent",
+                      "type": "decimal?",
+                      "required": false,
+                      "description": "Gets or sets the default cashback percentage.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "DefaultTimeToPay",
+                      "type": "int?",
+                      "required": false,
+                      "description": "Gets or sets the default time to pay in days.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "TaxNumber",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the tax number.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "TaxOffice",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the tax office.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "ExemptVat",
+                      "type": "bool?",
+                      "required": false,
+                      "description": "Gets or sets whether the contact is exempt from VAT.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Birthday",
+                      "type": "DateTime?",
+                      "required": false,
+                      "description": "Gets or sets the birthday.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "DefaultDiscountPercentage",
+                      "type": "decimal?",
+                      "required": false,
+                      "description": "Gets or sets the default discount percentage.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "GovernmentAgency",
+                      "type": "bool?",
+                      "required": false,
+                      "description": "Gets or sets whether this is a government agency.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Create",
+                      "type": "DateTime?",
+                      "required": false,
+                      "description": "Gets the creation date.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Update",
+                      "type": "DateTime?",
+                      "required": false,
+                      "description": "Gets the last update date.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "BuyerReference",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the buyer reference (Leitweg-ID) used for e-invoicing.",
+                      "default": "null"
+                    }
+                  ]
+                },
+                {
                   "name": "InvoiceDate",
                   "type": "DateTime?",
                   "required": false,
@@ -4012,7 +4445,14 @@
                   "name": "DeliveryDate",
                   "type": "DateTime?",
                   "required": false,
-                  "description": "Gets or sets the delivery date.",
+                  "description": "Gets or sets the delivery date \u2014 the start of the service period.",
+                  "default": "null"
+                },
+                {
+                  "name": "DeliveryDateUntil",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets or sets the end of the service period. Together with this spans a period rather than a single day; when the invoice covers one date.",
                   "default": "null"
                 },
                 {
@@ -4479,6 +4919,219 @@
                   ]
                 },
                 {
+                  "name": "EmbeddedContact",
+                  "type": "Contact?",
+                  "required": false,
+                  "description": "Gets the full contact when it was requested via embed=contact; otherwise. always carries the reference. Read-only \u2014 only the reference is written back on create and update.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the contact ID.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "CustomerNumber",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the customer number.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Surename",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the contact\u0027s first name (note: sevDesk API uses \u0022surename\u0022).",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Familyname",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the contact\u0027s family name.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Name",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the company name.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Name2",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the company name (second line).",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Status",
+                      "type": "ContactStatus?",
+                      "required": false,
+                      "description": "Gets or sets the contact status.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Title",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the title (e.g. \u0022Herr\u0022, \u0022Frau\u0022).",
+                      "default": "null"
+                    },
+                    {
+                      "name": "AcademicTitle",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the academic title.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Gender",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the gender (m/f/null).",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Category",
+                      "type": "SevDeskObjectReference?",
+                      "required": false,
+                      "description": "Gets or sets the category reference.",
+                      "default": "null",
+                      "properties": [
+                        {
+                          "name": "Id",
+                          "type": "int",
+                          "required": false,
+                          "description": "Gets the ID of the referenced object.",
+                          "default": "0"
+                        },
+                        {
+                          "name": "ObjectName",
+                          "type": "string",
+                          "required": true,
+                          "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Description",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the description.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "VatNumber",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the VAT number.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "BankAccount",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the bank account.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "BankNumber",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the bank number.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "DefaultCashbackTime",
+                      "type": "int?",
+                      "required": false,
+                      "description": "Gets or sets the default cashback time in days.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "DefaultCashbackPercent",
+                      "type": "decimal?",
+                      "required": false,
+                      "description": "Gets or sets the default cashback percentage.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "DefaultTimeToPay",
+                      "type": "int?",
+                      "required": false,
+                      "description": "Gets or sets the default time to pay in days.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "TaxNumber",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the tax number.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "TaxOffice",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the tax office.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "ExemptVat",
+                      "type": "bool?",
+                      "required": false,
+                      "description": "Gets or sets whether the contact is exempt from VAT.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Birthday",
+                      "type": "DateTime?",
+                      "required": false,
+                      "description": "Gets or sets the birthday.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "DefaultDiscountPercentage",
+                      "type": "decimal?",
+                      "required": false,
+                      "description": "Gets or sets the default discount percentage.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "GovernmentAgency",
+                      "type": "bool?",
+                      "required": false,
+                      "description": "Gets or sets whether this is a government agency.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Create",
+                      "type": "DateTime?",
+                      "required": false,
+                      "description": "Gets the creation date.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Update",
+                      "type": "DateTime?",
+                      "required": false,
+                      "description": "Gets the last update date.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "BuyerReference",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the buyer reference (Leitweg-ID) used for e-invoicing.",
+                      "default": "null"
+                    }
+                  ]
+                },
+                {
                   "name": "InvoiceDate",
                   "type": "DateTime?",
                   "required": false,
@@ -4489,7 +5142,14 @@
                   "name": "DeliveryDate",
                   "type": "DateTime?",
                   "required": false,
-                  "description": "Gets or sets the delivery date.",
+                  "description": "Gets or sets the delivery date \u2014 the start of the service period.",
+                  "default": "null"
+                },
+                {
+                  "name": "DeliveryDateUntil",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets or sets the end of the service period. Together with this spans a period rather than a single day; when the invoice covers one date.",
                   "default": "null"
                 },
                 {
@@ -8901,6 +9561,12 @@
           "description": "Gets the accounting contact ID."
         },
         {
+          "name": "Contact",
+          "type": "SevDeskObjectReference?",
+          "description": "Gets or sets the reference to the contact this accounting contact belongs to. Use it to map a bookkeeping number back to a sevDesk contact without querying once per contact.",
+          "nestedType": "SevDeskObjectReference"
+        },
+        {
           "name": "ContactName",
           "type": "string?",
           "description": "Gets or sets the name of the contact this accounting contact belongs to."
@@ -9688,6 +10354,12 @@
           "nestedType": "SevDeskObjectReference"
         },
         {
+          "name": "EmbeddedContact",
+          "type": "Contact?",
+          "description": "Gets the full contact when it was requested via embed=contact; otherwise. always carries the reference. Read-only \u2014 only the reference is written back on create and update.",
+          "nestedType": "Contact"
+        },
+        {
           "name": "InvoiceDate",
           "type": "DateTime?",
           "description": "Gets or sets the invoice date."
@@ -9695,7 +10367,12 @@
         {
           "name": "DeliveryDate",
           "type": "DateTime?",
-          "description": "Gets or sets the delivery date."
+          "description": "Gets or sets the delivery date \u2014 the start of the service period."
+        },
+        {
+          "name": "DeliveryDateUntil",
+          "type": "DateTime?",
+          "description": "Gets or sets the end of the service period. Together with this spans a period rather than a single day; when the invoice covers one date."
         },
         {
           "name": "Status",

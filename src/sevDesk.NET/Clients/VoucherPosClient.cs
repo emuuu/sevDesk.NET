@@ -19,7 +19,7 @@ internal class VoucherPosClient : IVoucherPosClient
 
     public async Task<VoucherPos> GetAsync(int id, CancellationToken ct = default)
     {
-        var api = await _client.GetAsync($"VoucherPos/{id}", SevDeskJsonContext.Default.SevDeskApiResponseApiVoucherPos, ct: ct).ConfigureAwait(false);
+        var api = await _client.GetAsync($"VoucherPos/{id}", SevDeskJsonContext.Default.ApiVoucherPos, ct: ct).ConfigureAwait(false);
         return ModelMapper.ToPublic(api);
     }
 

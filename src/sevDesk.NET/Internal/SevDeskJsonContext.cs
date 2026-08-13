@@ -71,6 +71,8 @@ namespace sevDesk.NET.Internal;
 [JsonSerializable(typeof(ApiCheckAccountTransaction))]
 [JsonSerializable(typeof(ApiCommunicationWay))]
 [JsonSerializable(typeof(ApiContactAddress))]
+[JsonSerializable(typeof(ApiAccountingContact))]
+[JsonSerializable(typeof(ApiStaticCountry))]
 [JsonSerializable(typeof(ApiTag))]
 [JsonSerializable(typeof(ApiCategory))]
 [JsonSerializable(typeof(ApiUnity))]

@@ -38,9 +38,18 @@ internal class BaseClient
         return (result.Objects ?? [], result.Total);
     }
 
+    /// <summary>
+    /// Reads a single object. The sevDesk API is inconsistent about the shape of <c>objects</c>:
+    /// <c>GET /{Entity}/{id}</c> answers with a single-element array, while the create and update
+    /// endpoints answer with a bare object. Both are accepted here.
+    /// </summary>
+    /// <param name="path">Request path, relative to the configured base address.</param>
+    /// <param name="typeInfo">Type info of the entity itself, not of the <c>objects</c> envelope.</param>
+    /// <param name="configureQuery">Optional callback to add query string parameters.</param>
+    /// <param name="ct">Cancellation token.</param>
     internal async Task<TApi> GetAsync<TApi>(
         string path,
-        JsonTypeInfo<SevDeskApiResponse<TApi>> typeInfo,
+        JsonTypeInfo<TApi> typeInfo,
         Action<QueryBuilder>? configureQuery = null,
         CancellationToken ct = default)
     {
@@ -55,10 +64,23 @@ internal class BaseClient
         using var response = await _httpClient.GetAsync(url, ct).ConfigureAwait(false);
         await EnsureSuccessAsync(response, ct).ConfigureAwait(false);
 
-        var result = await response.Content.ReadFromJsonAsync(typeInfo, ct).ConfigureAwait(false)
-            ?? throw new SevDeskApiException("Failed to deserialize sevDesk response.");
+        using var stream = await response.Content.ReadAsStreamAsync(ct).ConfigureAwait(false);
+        using var document = await JsonDocument.ParseAsync(stream, cancellationToken: ct).ConfigureAwait(false);
 
-        return result.Objects ?? throw new SevDeskNotFoundException("Object not found.");
+        if (!document.RootElement.TryGetProperty("objects", out var objects))
+        {
+            throw new SevDeskApiException("Failed to deserialize sevDesk response: missing 'objects'.");
+        }
+
+        var element = objects.ValueKind switch
+        {
+            JsonValueKind.Object => objects,
+            JsonValueKind.Array when objects.GetArrayLength() > 0 => objects[0],
+            JsonValueKind.Array or JsonValueKind.Null => throw new SevDeskNotFoundException("Object not found."),
+            _ => throw new SevDeskApiException($"Unexpected 'objects' shape in sevDesk response: {objects.ValueKind}.")
+        };
+
+        return element.Deserialize(typeInfo) ?? throw new SevDeskNotFoundException("Object not found.");
     }
 
     internal async Task<TResult> PostAsync<TRequest, TResult>(

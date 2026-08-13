@@ -18,7 +18,7 @@ internal class DocumentClient : IDocumentClient
 
     public async Task<Document> GetAsync(int id, CancellationToken ct = default)
     {
-        var api = await _client.GetAsync($"Document/{id}", SevDeskJsonContext.Default.SevDeskApiResponseApiDocument, ct: ct).ConfigureAwait(false);
+        var api = await _client.GetAsync($"Document/{id}", SevDeskJsonContext.Default.ApiDocument, ct: ct).ConfigureAwait(false);
         return ModelMapper.ToPublic(api);
     }
 

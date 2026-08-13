@@ -19,7 +19,7 @@ internal class ContactClient : IContactClient
 
     public async Task<Contact> GetAsync(int id, string? embed = null, CancellationToken ct = default)
     {
-        var api = await _client.GetAsync($"Contact/{id}", SevDeskJsonContext.Default.SevDeskApiResponseApiContact,
+        var api = await _client.GetAsync($"Contact/{id}", SevDeskJsonContext.Default.ApiContact,
             qb => qb.AddIfNotNull("embed", embed), ct).ConfigureAwait(false);
         return ModelMapper.ToPublic(api);
     }

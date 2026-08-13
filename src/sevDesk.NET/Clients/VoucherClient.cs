@@ -20,7 +20,7 @@ internal class VoucherClient : IVoucherClient
 
     public async Task<Voucher> GetAsync(int id, string? embed = null, CancellationToken ct = default)
     {
-        var api = await _client.GetAsync($"Voucher/{id}", SevDeskJsonContext.Default.SevDeskApiResponseApiVoucher,
+        var api = await _client.GetAsync($"Voucher/{id}", SevDeskJsonContext.Default.ApiVoucher,
             qb => qb.AddIfNotNull("embed", embed), ct).ConfigureAwait(false);
         return ModelMapper.ToPublic(api);
     }

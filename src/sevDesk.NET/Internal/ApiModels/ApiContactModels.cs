@@ -7,6 +7,9 @@ internal class ApiContact
     [JsonPropertyName("id")]
     public int Id { get; set; }
 
+    [JsonPropertyName("objectName")]
+    public string? ObjectName { get; set; }
+
     [JsonPropertyName("customerNumber")]
     public string? CustomerNumber { get; set; }
 
@@ -84,6 +87,22 @@ internal class ApiContact
 
     [JsonPropertyName("update")]
     public string? Update { get; set; }
+
+    /// <summary>
+    /// True when this object carries more than the bare <c>{id, objectName}</c> reference shape,
+    /// i.e. the API expanded it in response to an <c>embed</c> query parameter. Internal, so it is
+    /// never serialized back to the API.
+    /// </summary>
+    internal bool IsEmbedded =>
+        CustomerNumber is not null || Surename is not null || Familyname is not null ||
+        Name is not null || Name2 is not null || Status is not null || Title is not null ||
+        AcademicTitle is not null || Gender is not null || Category is not null ||
+        Description is not null || VatNumber is not null || BankAccount is not null ||
+        BankNumber is not null || DefaultCashbackTime is not null || DefaultCashbackPercent is not null ||
+        DefaultTimeToPay is not null || TaxNumber is not null || TaxOffice is not null ||
+        ExemptVat is not null || Birthday is not null || DefaultDiscountPercentage is not null ||
+        GovernmentAgency is not null || BuyerReference is not null ||
+        Create is not null || Update is not null;
 }
 
 internal class ApiAccountingContact
@@ -93,6 +112,9 @@ internal class ApiAccountingContact
 
     [JsonPropertyName("objectName")]
     public string? ObjectName { get; set; }
+
+    [JsonPropertyName("contact")]
+    public ApiObjectReference? Contact { get; set; }
 
     [JsonPropertyName("contactName")]
     public string? ContactName { get; set; }

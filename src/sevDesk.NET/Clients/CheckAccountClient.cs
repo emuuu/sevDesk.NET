@@ -20,7 +20,7 @@ internal class CheckAccountClient : ICheckAccountClient
 
     public async Task<CheckAccount> GetAsync(int id, CancellationToken ct = default)
     {
-        var api = await _client.GetAsync($"CheckAccount/{id}", SevDeskJsonContext.Default.SevDeskApiResponseApiCheckAccount, ct: ct).ConfigureAwait(false);
+        var api = await _client.GetAsync($"CheckAccount/{id}", SevDeskJsonContext.Default.ApiCheckAccount, ct: ct).ConfigureAwait(false);
         return ModelMapper.ToPublic(api);
     }
 

@@ -19,7 +19,7 @@ internal class CreditNoteClient : ICreditNoteClient
 
     public async Task<CreditNote> GetAsync(int id, string? embed = null, CancellationToken ct = default)
     {
-        var api = await _client.GetAsync($"CreditNote/{id}", SevDeskJsonContext.Default.SevDeskApiResponseApiCreditNote,
+        var api = await _client.GetAsync($"CreditNote/{id}", SevDeskJsonContext.Default.ApiCreditNote,
             qb => qb.AddIfNotNull("embed", embed), ct).ConfigureAwait(false);
         return ModelMapper.ToPublic(api);
     }

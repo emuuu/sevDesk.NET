@@ -48,7 +48,7 @@ internal class InvoiceClient : IInvoiceClient
 
     public async Task<Invoice> GetAsync(int id, string? embed = null, CancellationToken ct = default)
     {
-        var api = await _client.GetAsync($"Invoice/{id}", SevDeskJsonContext.Default.SevDeskApiResponseApiInvoice,
+        var api = await _client.GetAsync($"Invoice/{id}", SevDeskJsonContext.Default.ApiInvoice,
             qb => qb.AddIfNotNull("embed", embed), ct).ConfigureAwait(false);
         return ModelMapper.ToPublic(api);
     }

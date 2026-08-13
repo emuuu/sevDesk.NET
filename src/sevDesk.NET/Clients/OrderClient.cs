@@ -20,7 +20,7 @@ internal class OrderClient : IOrderClient
 
     public async Task<Order> GetAsync(int id, string? embed = null, CancellationToken ct = default)
     {
-        var api = await _client.GetAsync($"Order/{id}", SevDeskJsonContext.Default.SevDeskApiResponseApiOrder,
+        var api = await _client.GetAsync($"Order/{id}", SevDeskJsonContext.Default.ApiOrder,
             qb => qb.AddIfNotNull("embed", embed), ct).ConfigureAwait(false);
         return ModelMapper.ToPublic(api);
     }

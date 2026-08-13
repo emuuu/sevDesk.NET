@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.2.0] - 2026-08-13
+
+### Fixed
+
+- `GetAsync(id)` on every client threw a `JsonException` against the live API. `GET /{Entity}/{id}` answers with `{"objects": [ … ]}` — a single-element array — while the create and update endpoints answer with a bare `{"objects": { … }}`. Only the bare object was accepted. Both shapes are now read; an empty array or a null `objects` raises `SevDeskNotFoundException`, a missing `objects` raises `SevDeskApiException`.
+- `AccountingContact.Contact`: the `contact` reference the API returns was dropped during mapping, which made a debitor number unattributable to a contact — the only reason to read the endpoint. Resolving it no longer requires one filtered `ListAsync` call per contact. This also corrects the 2.1.0 note claiming the endpoint returns no contact reference.
+
+### Added
+
+- `Invoice.DeliveryDateUntil`: the end of the service period. The API has always returned `deliveryDateUntil`, but the model exposed only `DeliveryDate`, so a period silently collapsed into a single date. Mapped in both directions.
+- `Invoice.EmbeddedContact`: the full contact returned for `embed=contact` was discarded because only the `{id, objectName}` reference was mapped. `Contact` keeps carrying the reference; `EmbeddedContact` carries the expanded object and stays `null` when the embed was not requested. Only the reference is ever written back on create and update.
+
 ## [2.1.0] - 2026-08-13
 
 ### Added
