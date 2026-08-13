@@ -105,6 +105,17 @@ public class ApiDeserializationTests
                 "discount": "0",
                 "contactPerson": {"id": "555", "objectName": "SevUser"},
                 "address": "Test GmbH\nMusterstr. 1\n12345 Berlin",
+                "addressName": "Test GmbH",
+                "addressName2": "Abteilung Einkauf",
+                "addressStreet": "Musterstr. 1",
+                "addressZip": "12345",
+                "addressCity": "Berlin",
+                "addressCountry": {"id": "1", "objectName": "StaticCountry"},
+                "addressParentName": "Test Holding AG",
+                "addressParentName2": "Konzernzentrale",
+                "addressGender": "m",
+                "paidAmount": "99.98",
+                "payDate": "2026-03-05T00:00:00+01:00",
                 "currency": "EUR",
                 "sumNet": "84.02",
                 "sumGross": "99.98",
@@ -161,6 +172,156 @@ public class ApiDeserializationTests
         invoice.EinvoiceReference.ShouldBe("RE-2026-0042-EINV");
         invoice.PropertyIsEInvoice.ShouldBe(true); // "1" → true
         invoice.Create.ShouldNotBeNull();
+        invoice.AddressName.ShouldBe("Test GmbH");
+        invoice.AddressName2.ShouldBe("Abteilung Einkauf");
+        invoice.AddressStreet.ShouldBe("Musterstr. 1");
+        invoice.AddressZip.ShouldBe("12345");
+        invoice.AddressCity.ShouldBe("Berlin");
+        invoice.AddressCountry.ShouldNotBeNull();
+        invoice.AddressCountry!.Id.ShouldBe(1);
+        invoice.AddressCountry.ObjectName.ShouldBe("StaticCountry");
+        invoice.AddressParentName.ShouldBe("Test Holding AG");
+        invoice.AddressParentName2.ShouldBe("Konzernzentrale");
+        invoice.AddressGender.ShouldBe("m");
+        invoice.PaidAmount.ShouldBe(99.98m); // string "99.98" → decimal
+        invoice.PayDate.ShouldNotBeNull();
+        invoice.PayDate!.Value.Date.ShouldBe(new DateTime(2026, 3, 5));
+        invoice.Positions.ShouldBeNull(); // no embed=positions requested
+    }
+
+    [Fact]
+    public void Invoice_DeserializesEmbeddedPositions()
+    {
+        // GET /Invoice?embed=positions returns the line items inline instead of
+        // forcing a second request per invoice.
+        var json = """
+        {
+            "objects": [{
+                "id": "98765432",
+                "invoiceNumber": "RE-2026-0042",
+                "paidAmount": 0,
+                "positions": [{
+                    "id": "313724090",
+                    "invoice": {"id": "98765432", "objectName": "Invoice"},
+                    "quantity": "2",
+                    "price": "42.01",
+                    "priceNet": "42.01",
+                    "priceGross": "49.9919",
+                    "priceTax": "7.9819",
+                    "name": "Testartikel",
+                    "sumNet": "84.02"
+                }]
+            }],
+            "total": "1"
+        }
+        """;
+
+        var response = JsonSerializer.Deserialize(json, SevDeskJsonContext.Default.SevDeskApiListResponseApiInvoice);
+
+        response.ShouldNotBeNull();
+        response.Objects.ShouldNotBeNull();
+
+        var invoice = ModelMapper.ToPublic(response.Objects![0]);
+
+        invoice.PaidAmount.ShouldBe(0m); // JSON number → decimal
+        invoice.Positions.ShouldNotBeNull();
+        invoice.Positions!.Count.ShouldBe(1);
+        invoice.Positions[0].Id.ShouldBe(313724090);
+        invoice.Positions[0].Name.ShouldBe("Testartikel");
+        invoice.Positions[0].Quantity.ShouldBe(2m);
+        invoice.Positions[0].PriceNet.ShouldBe(42.01m);
+        invoice.Positions[0].SumNet.ShouldBe(84.02m);
+    }
+
+    [Fact]
+    public void AccountingContact_DeserializesRealApiResponse()
+    {
+        // The API returns no contact reference on this object — only contactName.
+        // Resolving to a contact goes through the contactId filter on ListAsync.
+        var json = """
+        {
+            "objects": [{
+                "id": "1234567",
+                "objectName": "AccountingContact",
+                "contactName": "Test GmbH",
+                "debitorNumber": "10042",
+                "creditorNumber": null,
+                "create": "2026-02-19T14:13:11+01:00",
+                "update": "2026-02-19T14:13:11+01:00"
+            }],
+            "total": "1"
+        }
+        """;
+
+        var response = JsonSerializer.Deserialize(json, SevDeskJsonContext.Default.SevDeskApiListResponseApiAccountingContact);
+
+        response.ShouldNotBeNull();
+        response.Total.ShouldBe(1);
+        response.Objects.ShouldNotBeNull();
+
+        var accountingContact = ModelMapper.ToPublic(response.Objects![0]);
+
+        accountingContact.Id.ShouldBe(1234567);
+        accountingContact.ContactName.ShouldBe("Test GmbH");
+        accountingContact.DebitorNumber.ShouldBe("10042");
+        accountingContact.CreditorNumber.ShouldBeNull();
+        accountingContact.Create.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void AccountingContact_PreservesLeadingZerosInBookkeepingNumbers()
+    {
+        var json = """
+        {
+            "objects": [{"id": "1234567", "debitorNumber": "0010042", "creditorNumber": "0070001"}],
+            "total": "1"
+        }
+        """;
+
+        var response = JsonSerializer.Deserialize(json, SevDeskJsonContext.Default.SevDeskApiListResponseApiAccountingContact);
+
+        response.ShouldNotBeNull();
+        response.Objects.ShouldNotBeNull();
+
+        var accountingContact = ModelMapper.ToPublic(response.Objects![0]);
+
+        accountingContact.DebitorNumber.ShouldBe("0010042");
+        accountingContact.CreditorNumber.ShouldBe("0070001");
+    }
+
+    [Fact]
+    public void StaticCountry_DeserializesRealApiResponse()
+    {
+        var json = """
+        {
+            "objects": [{
+                "id": "1",
+                "objectName": "StaticCountry",
+                "code": "de",
+                "name": "Deutschland",
+                "nameEn": "Germany",
+                "translationCode": "COUNTRY_DE",
+                "locale": "de_DE",
+                "priority": "100"
+            }],
+            "total": "1"
+        }
+        """;
+
+        var response = JsonSerializer.Deserialize(json, SevDeskJsonContext.Default.SevDeskApiListResponseApiStaticCountry);
+
+        response.ShouldNotBeNull();
+        response.Objects.ShouldNotBeNull();
+
+        var country = ModelMapper.ToPublic(response.Objects![0]);
+
+        country.Id.ShouldBe(1);
+        country.Code.ShouldBe("de");
+        country.Name.ShouldBe("Deutschland");
+        country.NameEn.ShouldBe("Germany");
+        country.TranslationCode.ShouldBe("COUNTRY_DE");
+        country.Locale.ShouldBe("de_DE");
+        country.Priority.ShouldBe(100); // string "100" → int
     }
 
     [Fact]
@@ -467,6 +628,9 @@ public class ApiDeserializationTests
                 "part": {"id": "44001", "objectName": "Part"},
                 "quantity": "3",
                 "price": "49.99",
+                "priceNet": "49.99",
+                "priceGross": "59.4881",
+                "priceTax": "9.4981",
                 "name": "Beratungsleistung",
                 "unity": {"id": "1", "objectName": "Unity"},
                 "taxRate": "19",
@@ -498,6 +662,9 @@ public class ApiDeserializationTests
         pos.Part!.Id.ShouldBe(44001);
         pos.Quantity.ShouldBe(3m);
         pos.Price.ShouldBe(49.99m);
+        pos.PriceNet.ShouldBe(49.99m);
+        pos.PriceGross.ShouldBe(59.4881m);
+        pos.PriceTax.ShouldBe(9.4981m);
         pos.Name.ShouldBe("Beratungsleistung");
         pos.Unity.ShouldNotBeNull();
         pos.Unity!.Id.ShouldBe(1);

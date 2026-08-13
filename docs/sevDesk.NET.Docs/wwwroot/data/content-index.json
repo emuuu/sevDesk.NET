@@ -65,9 +65,10 @@
       "PaginationParameters",
       "SevDeskListResponse",
       "Paginating Through All Results",
-      "Filtering"
+      "Filtering",
+      "Embedding related objects"
     ],
-    "searchText": "PaginationParameters All ListAsync methods accept an optional PaginationParameters object: SevDeskListResponse List methods return a SevDeskListResponse\u003CT\u003E containing the items and total count: - Items \u2014 The page of results - Total \u2014 The total number of matching records (for calculating total pages) Paginating Through All Results Filtering Some clients support filtering in their ListAsync methods:"
+    "searchText": "PaginationParameters All ListAsync methods accept an optional PaginationParameters object: SevDeskListResponse List methods return a SevDeskListResponse\u003CT\u003E containing the items and total count: - Items \u2014 The page of results - Total \u2014 The total number of matching records (for calculating total pages) Paginating Through All Results Filtering Some clients support filtering in their ListAsync methods: Invoices support an additional InvoiceListFilter for server-side filtering by update timestamp, sta"
   },
   {
     "slug": "guides/error-handling",

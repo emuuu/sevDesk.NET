@@ -49,6 +49,33 @@ internal class ApiInvoice
     [JsonPropertyName("address")]
     public string? Address { get; set; }
 
+    [JsonPropertyName("addressName")]
+    public string? AddressName { get; set; }
+
+    [JsonPropertyName("addressName2")]
+    public string? AddressName2 { get; set; }
+
+    [JsonPropertyName("addressStreet")]
+    public string? AddressStreet { get; set; }
+
+    [JsonPropertyName("addressZip")]
+    public string? AddressZip { get; set; }
+
+    [JsonPropertyName("addressCity")]
+    public string? AddressCity { get; set; }
+
+    [JsonPropertyName("addressCountry")]
+    public ApiObjectReference? AddressCountry { get; set; }
+
+    [JsonPropertyName("addressParentName")]
+    public string? AddressParentName { get; set; }
+
+    [JsonPropertyName("addressParentName2")]
+    public string? AddressParentName2 { get; set; }
+
+    [JsonPropertyName("addressGender")]
+    public string? AddressGender { get; set; }
+
     [JsonPropertyName("currency")]
     public string? Currency { get; set; }
 
@@ -108,6 +135,19 @@ internal class ApiInvoice
 
     [JsonPropertyName("propertyIsEInvoice")]
     public string? PropertyIsEInvoice { get; set; }
+
+    [JsonPropertyName("paidAmount")]
+    public decimal? PaidAmount { get; set; }
+
+    [JsonPropertyName("payDate")]
+    public string? PayDate { get; set; }
+
+    /// <summary>
+    /// Positions embedded via <c>embed=positions</c>. Read-only — never serialized back
+    /// to the API, which expects positions in the dedicated <c>invoicePosSave</c> array.
+    /// </summary>
+    [JsonPropertyName("positions")]
+    public List<ApiInvoicePos>? Positions { get; set; }
 }
 
 internal class ApiInvoicePos
@@ -126,6 +166,15 @@ internal class ApiInvoicePos
 
     [JsonPropertyName("price")]
     public decimal? Price { get; set; }
+
+    [JsonPropertyName("priceNet")]
+    public decimal? PriceNet { get; set; }
+
+    [JsonPropertyName("priceGross")]
+    public decimal? PriceGross { get; set; }
+
+    [JsonPropertyName("priceTax")]
+    public decimal? PriceTax { get; set; }
 
     [JsonPropertyName("name")]
     public string? Name { get; set; }

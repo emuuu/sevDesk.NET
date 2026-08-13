@@ -31,6 +31,16 @@ internal class InvoiceClient : IInvoiceClient
                         qb.Add("contact[id]", filter.ContactId.Value.ToString());
                         qb.Add("contact[objectName]", "Contact");
                     }
+
+                    if (filter.InvoiceDateFrom.HasValue)
+                    {
+                        qb.Add("startDate", filter.InvoiceDateFrom.Value.ToUnixTimeSeconds().ToString());
+                    }
+
+                    if (filter.InvoiceDateTo.HasValue)
+                    {
+                        qb.Add("endDate", filter.InvoiceDateTo.Value.ToUnixTimeSeconds().ToString());
+                    }
                 }
             }, ct).ConfigureAwait(false);
         return new SevDeskListResponse<Invoice> { Items = items.Select(ModelMapper.ToPublic).ToList(), Total = total };

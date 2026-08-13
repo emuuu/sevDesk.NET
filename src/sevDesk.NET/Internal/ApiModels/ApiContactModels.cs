@@ -85,3 +85,54 @@ internal class ApiContact
     [JsonPropertyName("update")]
     public string? Update { get; set; }
 }
+
+internal class ApiAccountingContact
+{
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
+
+    [JsonPropertyName("objectName")]
+    public string? ObjectName { get; set; }
+
+    [JsonPropertyName("contactName")]
+    public string? ContactName { get; set; }
+
+    [JsonPropertyName("debitorNumber")]
+    public string? DebitorNumber { get; set; }
+
+    [JsonPropertyName("creditorNumber")]
+    public string? CreditorNumber { get; set; }
+
+    [JsonPropertyName("create")]
+    public string? Create { get; set; }
+
+    [JsonPropertyName("update")]
+    public string? Update { get; set; }
+}
+
+internal class ApiStaticCountry
+{
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
+
+    [JsonPropertyName("objectName")]
+    public string? ObjectName { get; set; }
+
+    [JsonPropertyName("code")]
+    public string? Code { get; set; }
+
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
+
+    [JsonPropertyName("nameEn")]
+    public string? NameEn { get; set; }
+
+    [JsonPropertyName("translationCode")]
+    public string? TranslationCode { get; set; }
+
+    [JsonPropertyName("locale")]
+    public string? Locale { get; set; }
+
+    [JsonPropertyName("priority")]
+    public int? Priority { get; set; }
+}

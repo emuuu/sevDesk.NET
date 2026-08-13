@@ -49,8 +49,35 @@ public class Invoice
     /// <summary>Gets or sets the contact person reference.</summary>
     public SevDeskObjectReference? ContactPerson { get; init; }
 
-    /// <summary>Gets or sets the address text.</summary>
+    /// <summary>Gets or sets the address text (the rendered multi-line block).</summary>
     public string? Address { get; init; }
+
+    /// <summary>Gets or sets the recipient name of the invoice address.</summary>
+    public string? AddressName { get; init; }
+
+    /// <summary>Gets or sets the second recipient name line of the invoice address.</summary>
+    public string? AddressName2 { get; init; }
+
+    /// <summary>Gets or sets the street of the invoice address.</summary>
+    public string? AddressStreet { get; init; }
+
+    /// <summary>Gets or sets the postal code of the invoice address.</summary>
+    public string? AddressZip { get; init; }
+
+    /// <summary>Gets or sets the city of the invoice address.</summary>
+    public string? AddressCity { get; init; }
+
+    /// <summary>Gets or sets the country reference (<c>StaticCountry</c>) of the invoice address.</summary>
+    public SevDeskObjectReference? AddressCountry { get; init; }
+
+    /// <summary>Gets or sets the parent (company) name of the invoice address.</summary>
+    public string? AddressParentName { get; init; }
+
+    /// <summary>Gets or sets the second parent (company) name line of the invoice address.</summary>
+    public string? AddressParentName2 { get; init; }
+
+    /// <summary>Gets or sets the salutation of the invoice address.</summary>
+    public string? AddressGender { get; init; }
 
     /// <summary>Gets or sets the currency (ISO 4217).</summary>
     public string? Currency { get; init; }
@@ -111,4 +138,17 @@ public class Invoice
 
     /// <summary>Gets or sets whether this invoice is an e-invoice.</summary>
     public bool? PropertyIsEInvoice { get; init; }
+
+    /// <summary>Gets the amount already paid on this invoice. Calculated by the API — read-only.</summary>
+    public decimal? PaidAmount { get; init; }
+
+    /// <summary>Gets the date the invoice was paid. Set by the API when payments are booked — read-only.</summary>
+    public DateTime? PayDate { get; init; }
+
+    /// <summary>
+    /// Gets the invoice positions when they were requested via <c>embed=positions</c>;
+    /// <see langword="null"/> otherwise. Read-only — use
+    /// <see cref="Clients.IInvoiceClient.SaveInvoiceAsync"/> to write positions.
+    /// </summary>
+    public IReadOnlyList<InvoicePos>? Positions { get; init; }
 }

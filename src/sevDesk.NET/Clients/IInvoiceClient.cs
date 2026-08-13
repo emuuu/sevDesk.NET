@@ -15,7 +15,7 @@ public interface IInvoiceClient
     /// </summary>
     /// <param name="pagination">Optional pagination parameters to control the result set.</param>
     /// <param name="embed">Optional comma-separated list of related objects to embed in the response.</param>
-    /// <param name="filter">Optional server-side filters (update timestamp, status, contact).</param>
+    /// <param name="filter">Optional server-side filters (update timestamp, status, contact, invoice date range).</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A paginated list of invoices.</returns>
     Task<SevDeskListResponse<Invoice>> ListAsync(PaginationParameters? pagination = null, string? embed = null, InvoiceListFilter? filter = null, CancellationToken ct = default);

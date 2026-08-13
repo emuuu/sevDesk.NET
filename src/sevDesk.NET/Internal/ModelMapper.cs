@@ -115,6 +115,15 @@ internal static class ModelMapper
         Discount = api.Discount,
         ContactPerson = ToPublic(api.ContactPerson),
         Address = api.Address,
+        AddressName = api.AddressName,
+        AddressName2 = api.AddressName2,
+        AddressStreet = api.AddressStreet,
+        AddressZip = api.AddressZip,
+        AddressCity = api.AddressCity,
+        AddressCountry = ToPublic(api.AddressCountry),
+        AddressParentName = api.AddressParentName,
+        AddressParentName2 = api.AddressParentName2,
+        AddressGender = api.AddressGender,
         Currency = api.Currency,
         SumNet = api.SumNet,
         SumGross = api.SumGross,
@@ -134,7 +143,10 @@ internal static class ModelMapper
         Update = ParseDateTime(api.Update),
         TaxRule = ToPublic(api.TaxRule),
         EinvoiceReference = api.EinvoiceReference,
-        PropertyIsEInvoice = ParseBool(api.PropertyIsEInvoice)
+        PropertyIsEInvoice = ParseBool(api.PropertyIsEInvoice),
+        PaidAmount = api.PaidAmount,
+        PayDate = ParseDateTime(api.PayDate),
+        Positions = api.Positions?.Select(ToPublic).ToList()
     };
 
     internal static ApiInvoice ToApi(Invoice model) => new()
@@ -154,6 +166,15 @@ internal static class ModelMapper
         Discount = model.Discount,
         ContactPerson = ToApi(model.ContactPerson),
         Address = model.Address,
+        AddressName = model.AddressName,
+        AddressName2 = model.AddressName2,
+        AddressStreet = model.AddressStreet,
+        AddressZip = model.AddressZip,
+        AddressCity = model.AddressCity,
+        AddressCountry = ToApi(model.AddressCountry),
+        AddressParentName = model.AddressParentName,
+        AddressParentName2 = model.AddressParentName2,
+        AddressGender = model.AddressGender,
         Currency = model.Currency,
         TaxType = model.TaxType,
         TaxRate = model.TaxRate,
@@ -180,6 +201,9 @@ internal static class ModelMapper
         Part = ToPublic(api.Part),
         Quantity = api.Quantity,
         Price = api.Price,
+        PriceNet = api.PriceNet,
+        PriceGross = api.PriceGross,
+        PriceTax = api.PriceTax,
         Name = api.Name,
         Unity = ToPublic(api.Unity),
         TaxRate = api.TaxRate,
@@ -623,6 +647,31 @@ internal static class ModelMapper
         Name2 = model.Name2,
         Name3 = model.Name3,
         Name4 = model.Name4
+    };
+
+    // --- AccountingContact ---
+
+    internal static AccountingContact ToPublic(ApiAccountingContact api) => new()
+    {
+        Id = api.Id,
+        ContactName = api.ContactName,
+        DebitorNumber = api.DebitorNumber,
+        CreditorNumber = api.CreditorNumber,
+        Create = ParseDateTime(api.Create),
+        Update = ParseDateTime(api.Update)
+    };
+
+    // --- StaticCountry ---
+
+    internal static StaticCountry ToPublic(ApiStaticCountry api) => new()
+    {
+        Id = api.Id,
+        Code = api.Code,
+        Name = api.Name,
+        NameEn = api.NameEn,
+        TranslationCode = api.TranslationCode,
+        Locale = api.Locale,
+        Priority = api.Priority
     };
 
     // --- Tag ---

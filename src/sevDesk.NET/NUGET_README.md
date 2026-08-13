@@ -53,11 +53,11 @@ public class InvoiceService(ISevDeskClient client)
 | Area | Clients |
 |---|---|
 | Financial Documents | `Invoices`, `InvoicePositions`, `Orders`, `OrderPositions`, `Vouchers`, `VoucherPositions`, `CreditNotes`, `CreditNotePositions` |
-| Contacts | `Contacts`, `ContactAddresses`, `CommunicationWays` |
+| Contacts | `Contacts`, `ContactAddresses`, `CommunicationWays`, `AccountingContacts` |
 | Banking | `CheckAccounts`, `CheckAccountTransactions` |
 | Products | `Parts` |
 | Organization | `Tags`, `Categories`, `Documents` |
-| Reference Data | `Unities`, `TaxRules`, `CurrencyExchangeRates` |
+| Reference Data | `Unities`, `TaxRules`, `CurrencyExchangeRates`, `StaticCountries` |
 
 All clients are accessible via `ISevDeskClient` (e.g. `client.Invoices`, `client.Contacts`).
 

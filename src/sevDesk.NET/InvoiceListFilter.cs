@@ -22,4 +22,16 @@ public class InvoiceListFilter
     /// Gets or sets the contact ID to filter by.
     /// </summary>
     public int? ContactId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the inclusive lower bound for the invoice's <c>invoiceDate</c>.
+    /// Sent to the API as <c>startDate</c> in Unix seconds.
+    /// </summary>
+    public DateTimeOffset? InvoiceDateFrom { get; set; }
+
+    /// <summary>
+    /// Gets or sets the inclusive upper bound for the invoice's <c>invoiceDate</c>.
+    /// Sent to the API as <c>endDate</c> in Unix seconds.
+    /// </summary>
+    public DateTimeOffset? InvoiceDateTo { get; set; }
 }

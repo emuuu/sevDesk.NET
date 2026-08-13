@@ -20,6 +20,15 @@ public class InvoicePos
     /// <summary>Gets or sets the price (net, per unit).</summary>
     public decimal? Price { get; init; }
 
+    /// <summary>Gets the net price per unit. Calculated by the API — read-only.</summary>
+    public decimal? PriceNet { get; init; }
+
+    /// <summary>Gets the gross price per unit. Calculated by the API — read-only.</summary>
+    public decimal? PriceGross { get; init; }
+
+    /// <summary>Gets the tax amount per unit. Calculated by the API — read-only.</summary>
+    public decimal? PriceTax { get; init; }
+
     /// <summary>Gets or sets the name / description.</summary>
     public string? Name { get; init; }
 

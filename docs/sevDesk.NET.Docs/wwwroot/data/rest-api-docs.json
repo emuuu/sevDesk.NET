@@ -1,6 +1,61 @@
 {
   "clients": [
     {
+      "interfaceName": "IAccountingContactClient",
+      "description": "Client for retrieving accounting contacts in sevDesk. Provides read-only access to the debitor and creditor numbers assigned to contacts.",
+      "methods": [
+        {
+          "name": "ListAsync",
+          "description": "Retrieves a paginated list of accounting contacts.",
+          "returnType": "SevDeskListResponse\u003CAccountingContact\u003E",
+          "parameters": [
+            {
+              "name": "pagination",
+              "type": "PaginationParameters?",
+              "required": false,
+              "description": "Optional pagination parameters to control the result set.",
+              "properties": [
+                {
+                  "name": "Limit",
+                  "type": "int",
+                  "required": false,
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
+                  "default": "100"
+                },
+                {
+                  "name": "Offset",
+                  "type": "int",
+                  "required": false,
+                  "description": "Gets or sets the number of items to skip.",
+                  "default": "0"
+                }
+              ]
+            },
+            {
+              "name": "contactId",
+              "type": "int?",
+              "required": false,
+              "description": "Optional contact identifier to only return that contact\u0027s accounting contact.",
+              "default": "null"
+            }
+          ]
+        },
+        {
+          "name": "GetAsync",
+          "description": "Retrieves a single accounting contact by its identifier.",
+          "returnType": "AccountingContact",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "int",
+              "required": true,
+              "description": "The accounting contact identifier."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "interfaceName": "ICategoryClient",
       "description": "Client for managing categories in sevDesk. Provides operations for creating, reading, updating, and deleting categories, with optional filtering by object type.",
       "methods": [
@@ -3368,7 +3423,7 @@
               "name": "filter",
               "type": "InvoiceListFilter?",
               "required": false,
-              "description": "Optional server-side filters (update timestamp, status, contact).",
+              "description": "Optional server-side filters (update timestamp, status, contact, invoice date range).",
               "properties": [
                 {
                   "name": "UpdateAfter",
@@ -3389,6 +3444,20 @@
                   "type": "int?",
                   "required": false,
                   "description": "Gets or sets the contact ID to filter by.",
+                  "default": "null"
+                },
+                {
+                  "name": "InvoiceDateFrom",
+                  "type": "DateTimeOffset?",
+                  "required": false,
+                  "description": "Gets or sets the inclusive lower bound for the invoice\u0027s invoiceDate. Sent to the API as startDate in Unix seconds.",
+                  "default": "null"
+                },
+                {
+                  "name": "InvoiceDateTo",
+                  "type": "DateTimeOffset?",
+                  "required": false,
+                  "description": "Gets or sets the inclusive upper bound for the invoice\u0027s invoiceDate. Sent to the API as endDate in Unix seconds.",
                   "default": "null"
                 }
               ]
@@ -3558,7 +3627,85 @@
                   "name": "Address",
                   "type": "string?",
                   "required": false,
-                  "description": "Gets or sets the address text.",
+                  "description": "Gets or sets the address text (the rendered multi-line block).",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressName",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the recipient name of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressName2",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the second recipient name line of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressStreet",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the street of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressZip",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the postal code of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressCity",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the city of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressCountry",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the country reference (StaticCountry) of the invoice address.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "AddressParentName",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the parent (company) name of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressParentName2",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the second parent (company) name line of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressGender",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the salutation of the invoice address.",
                   "default": "null"
                 },
                 {
@@ -3774,6 +3921,27 @@
                   "type": "bool?",
                   "required": false,
                   "description": "Gets or sets whether this invoice is an e-invoice.",
+                  "default": "null"
+                },
+                {
+                  "name": "PaidAmount",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets the amount already paid on this invoice. Calculated by the API \u2014 read-only.",
+                  "default": "null"
+                },
+                {
+                  "name": "PayDate",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets the date the invoice was paid. Set by the API when payments are booked \u2014 read-only.",
+                  "default": "null"
+                },
+                {
+                  "name": "Positions",
+                  "type": "IReadOnlyList\u003CInvoicePos\u003E?",
+                  "required": false,
+                  "description": "Gets the invoice positions when they were requested via embed=positions; otherwise. Read-only \u2014 use to write positions.",
                   "default": "null"
                 }
               ]
@@ -3929,7 +4097,85 @@
                   "name": "Address",
                   "type": "string?",
                   "required": false,
-                  "description": "Gets or sets the address text.",
+                  "description": "Gets or sets the address text (the rendered multi-line block).",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressName",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the recipient name of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressName2",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the second recipient name line of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressStreet",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the street of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressZip",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the postal code of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressCity",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the city of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressCountry",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the country reference (StaticCountry) of the invoice address.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "AddressParentName",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the parent (company) name of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressParentName2",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the second parent (company) name line of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressGender",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the salutation of the invoice address.",
                   "default": "null"
                 },
                 {
@@ -4145,6 +4391,27 @@
                   "type": "bool?",
                   "required": false,
                   "description": "Gets or sets whether this invoice is an e-invoice.",
+                  "default": "null"
+                },
+                {
+                  "name": "PaidAmount",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets the amount already paid on this invoice. Calculated by the API \u2014 read-only.",
+                  "default": "null"
+                },
+                {
+                  "name": "PayDate",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets the date the invoice was paid. Set by the API when payments are booked \u2014 read-only.",
+                  "default": "null"
+                },
+                {
+                  "name": "Positions",
+                  "type": "IReadOnlyList\u003CInvoicePos\u003E?",
+                  "required": false,
+                  "description": "Gets the invoice positions when they were requested via embed=positions; otherwise. Read-only \u2014 use to write positions.",
                   "default": "null"
                 }
               ]
@@ -4307,7 +4574,85 @@
                   "name": "Address",
                   "type": "string?",
                   "required": false,
-                  "description": "Gets or sets the address text.",
+                  "description": "Gets or sets the address text (the rendered multi-line block).",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressName",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the recipient name of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressName2",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the second recipient name line of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressStreet",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the street of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressZip",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the postal code of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressCity",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the city of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressCountry",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the country reference (StaticCountry) of the invoice address.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "AddressParentName",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the parent (company) name of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressParentName2",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the second parent (company) name line of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressGender",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the salutation of the invoice address.",
                   "default": "null"
                 },
                 {
@@ -4523,6 +4868,27 @@
                   "type": "bool?",
                   "required": false,
                   "description": "Gets or sets whether this invoice is an e-invoice.",
+                  "default": "null"
+                },
+                {
+                  "name": "PaidAmount",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets the amount already paid on this invoice. Calculated by the API \u2014 read-only.",
+                  "default": "null"
+                },
+                {
+                  "name": "PayDate",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets the date the invoice was paid. Set by the API when payments are booked \u2014 read-only.",
+                  "default": "null"
+                },
+                {
+                  "name": "Positions",
+                  "type": "IReadOnlyList\u003CInvoicePos\u003E?",
+                  "required": false,
+                  "description": "Gets the invoice positions when they were requested via embed=positions; otherwise. Read-only \u2014 use to write positions.",
                   "default": "null"
                 }
               ]
@@ -4801,6 +5167,27 @@
                   "default": "null"
                 },
                 {
+                  "name": "PriceNet",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets the net price per unit. Calculated by the API \u2014 read-only.",
+                  "default": "null"
+                },
+                {
+                  "name": "PriceGross",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets the gross price per unit. Calculated by the API \u2014 read-only.",
+                  "default": "null"
+                },
+                {
+                  "name": "PriceTax",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets the tax amount per unit. Calculated by the API \u2014 read-only.",
+                  "default": "null"
+                },
+                {
                   "name": "Name",
                   "type": "string?",
                   "required": false,
@@ -4983,6 +5370,27 @@
                   "type": "decimal?",
                   "required": false,
                   "description": "Gets or sets the price (net, per unit).",
+                  "default": "null"
+                },
+                {
+                  "name": "PriceNet",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets the net price per unit. Calculated by the API \u2014 read-only.",
+                  "default": "null"
+                },
+                {
+                  "name": "PriceGross",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets the gross price per unit. Calculated by the API \u2014 read-only.",
+                  "default": "null"
+                },
+                {
+                  "name": "PriceTax",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets the tax amount per unit. Calculated by the API \u2014 read-only.",
                   "default": "null"
                 },
                 {
@@ -6838,6 +7246,54 @@
       ]
     },
     {
+      "interfaceName": "IStaticCountryClient",
+      "description": "Client for retrieving countries from the sevDesk country catalogue. Provides read-only operations for resolving the country references carried by contact addresses and invoices.",
+      "methods": [
+        {
+          "name": "ListAsync",
+          "description": "Retrieves a paginated list of countries.",
+          "returnType": "SevDeskListResponse\u003CStaticCountry\u003E",
+          "parameters": [
+            {
+              "name": "pagination",
+              "type": "PaginationParameters?",
+              "required": false,
+              "description": "Optional pagination parameters to control the result set.",
+              "properties": [
+                {
+                  "name": "Limit",
+                  "type": "int",
+                  "required": false,
+                  "description": "Gets or sets the maximum number of items to return (1-2000). Defaults to 100.",
+                  "default": "100"
+                },
+                {
+                  "name": "Offset",
+                  "type": "int",
+                  "required": false,
+                  "description": "Gets or sets the number of items to skip.",
+                  "default": "0"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "GetAsync",
+          "description": "Retrieves a single country by its identifier.",
+          "returnType": "StaticCountry",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "int",
+              "required": true,
+              "description": "The country identifier."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "interfaceName": "ITagClient",
       "description": "Client for managing tags in sevDesk. Provides operations for creating, reading, and deleting tags.",
       "methods": [
@@ -8436,6 +8892,42 @@
   ],
   "modelTypes": [
     {
+      "name": "AccountingContact",
+      "description": "Represents the accounting contact of a sevDesk contact, holding the bookkeeping numbers (debitor / creditor) used by DATEV exports.",
+      "properties": [
+        {
+          "name": "Id",
+          "type": "int",
+          "description": "Gets the accounting contact ID."
+        },
+        {
+          "name": "ContactName",
+          "type": "string?",
+          "description": "Gets or sets the name of the contact this accounting contact belongs to."
+        },
+        {
+          "name": "DebitorNumber",
+          "type": "string?",
+          "description": "Gets or sets the debitor (customer) number. Kept as a string because the API returns it as one and bookkeeping numbers may carry leading zeros."
+        },
+        {
+          "name": "CreditorNumber",
+          "type": "string?",
+          "description": "Gets or sets the creditor (supplier) number. See ."
+        },
+        {
+          "name": "Create",
+          "type": "DateTime?",
+          "description": "Gets the creation date."
+        },
+        {
+          "name": "Update",
+          "type": "DateTime?",
+          "description": "Gets the last update date."
+        }
+      ]
+    },
+    {
       "name": "Category",
       "description": "Represents a sevDesk category.",
       "properties": [
@@ -9254,7 +9746,53 @@
         {
           "name": "Address",
           "type": "string?",
-          "description": "Gets or sets the address text."
+          "description": "Gets or sets the address text (the rendered multi-line block)."
+        },
+        {
+          "name": "AddressName",
+          "type": "string?",
+          "description": "Gets or sets the recipient name of the invoice address."
+        },
+        {
+          "name": "AddressName2",
+          "type": "string?",
+          "description": "Gets or sets the second recipient name line of the invoice address."
+        },
+        {
+          "name": "AddressStreet",
+          "type": "string?",
+          "description": "Gets or sets the street of the invoice address."
+        },
+        {
+          "name": "AddressZip",
+          "type": "string?",
+          "description": "Gets or sets the postal code of the invoice address."
+        },
+        {
+          "name": "AddressCity",
+          "type": "string?",
+          "description": "Gets or sets the city of the invoice address."
+        },
+        {
+          "name": "AddressCountry",
+          "type": "SevDeskObjectReference?",
+          "description": "Gets or sets the country reference (StaticCountry) of the invoice address.",
+          "nestedType": "SevDeskObjectReference"
+        },
+        {
+          "name": "AddressParentName",
+          "type": "string?",
+          "description": "Gets or sets the parent (company) name of the invoice address."
+        },
+        {
+          "name": "AddressParentName2",
+          "type": "string?",
+          "description": "Gets or sets the second parent (company) name line of the invoice address."
+        },
+        {
+          "name": "AddressGender",
+          "type": "string?",
+          "description": "Gets or sets the salutation of the invoice address."
         },
         {
           "name": "Currency",
@@ -9360,6 +9898,22 @@
           "name": "PropertyIsEInvoice",
           "type": "bool?",
           "description": "Gets or sets whether this invoice is an e-invoice."
+        },
+        {
+          "name": "PaidAmount",
+          "type": "decimal?",
+          "description": "Gets the amount already paid on this invoice. Calculated by the API \u2014 read-only."
+        },
+        {
+          "name": "PayDate",
+          "type": "DateTime?",
+          "description": "Gets the date the invoice was paid. Set by the API when payments are booked \u2014 read-only."
+        },
+        {
+          "name": "Positions",
+          "type": "IReadOnlyList\u003CInvoicePos\u003E?",
+          "description": "Gets the invoice positions when they were requested via embed=positions; otherwise. Read-only \u2014 use to write positions.",
+          "nestedType": "InvoicePos"
         }
       ]
     },
@@ -9393,6 +9947,21 @@
           "name": "Price",
           "type": "decimal?",
           "description": "Gets or sets the price (net, per unit)."
+        },
+        {
+          "name": "PriceNet",
+          "type": "decimal?",
+          "description": "Gets the net price per unit. Calculated by the API \u2014 read-only."
+        },
+        {
+          "name": "PriceGross",
+          "type": "decimal?",
+          "description": "Gets the gross price per unit. Calculated by the API \u2014 read-only."
+        },
+        {
+          "name": "PriceTax",
+          "type": "decimal?",
+          "description": "Gets the tax amount per unit. Calculated by the API \u2014 read-only."
         },
         {
           "name": "Name",
@@ -9787,6 +10356,47 @@
           "name": "ObjectName",
           "type": "string",
           "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+        }
+      ]
+    },
+    {
+      "name": "StaticCountry",
+      "description": "Represents a country from the sevDesk country catalogue. Country references on contact addresses and invoices resolve against this catalogue.",
+      "properties": [
+        {
+          "name": "Id",
+          "type": "int",
+          "description": "Gets the country ID."
+        },
+        {
+          "name": "Code",
+          "type": "string?",
+          "description": "Gets or sets the ISO 3166-1 alpha-2 country code (lower case, e.g. de)."
+        },
+        {
+          "name": "Name",
+          "type": "string?",
+          "description": "Gets or sets the localized country name."
+        },
+        {
+          "name": "NameEn",
+          "type": "string?",
+          "description": "Gets or sets the English country name."
+        },
+        {
+          "name": "TranslationCode",
+          "type": "string?",
+          "description": "Gets or sets the translation code."
+        },
+        {
+          "name": "Locale",
+          "type": "string?",
+          "description": "Gets or sets the locale the is returned in."
+        },
+        {
+          "name": "Priority",
+          "type": "int?",
+          "description": "Gets or sets the sort priority within the catalogue."
         }
       ]
     },

@@ -49,6 +49,9 @@ public interface ISevDeskClient
     /// <summary>Gets the client for managing contact addresses.</summary>
     IContactAddressClient ContactAddresses { get; }
 
+    /// <summary>Gets the client for querying accounting contacts (debitor / creditor numbers).</summary>
+    IAccountingContactClient AccountingContacts { get; }
+
     /// <summary>Gets the client for managing tags.</summary>
     ITagClient Tags { get; }
 
@@ -63,6 +66,9 @@ public interface ISevDeskClient
 
     /// <summary>Gets the client for querying currency exchange rates.</summary>
     ICurrencyExchangeRateClient CurrencyExchangeRates { get; }
+
+    /// <summary>Gets the client for querying the country catalogue.</summary>
+    IStaticCountryClient StaticCountries { get; }
 
     /// <summary>Gets the client for managing documents.</summary>
     IDocumentClient Documents { get; }
