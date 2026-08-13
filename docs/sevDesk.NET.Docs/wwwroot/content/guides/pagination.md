@@ -25,14 +25,31 @@ List methods return a `SevDeskListResponse<T>` containing the items and total co
 public class SevDeskListResponse<T>
 {
     public IReadOnlyList<T> Items { get; init; }
-    public int Total { get; init; }
+    public int? Total { get; init; }
 }
 ```
 
 - `Items` — The page of results
-- `Total` — The total number of matching records (for calculating total pages)
+- `Total` — The total number of matching records (for calculating total pages), or `null` when the
+  API did not report one
+
+### `Total` is nullable, and `null` is not `0`
+
+Every `ListAsync` requests `countAll=true`, which is what makes the API send `total` at all — but
+it does not send it reliably on every response. The two cases are deliberately distinct:
+
+| `Total` | Meaning |
+|---|---|
+| `null` | The server reported no total. The size of the result set is unknown. |
+| `0` | The server reported an empty result set. |
+
+Collapsing the two — treating a missing total as `0` — makes a full page of results look like the
+end of the data.
 
 ## Paginating Through All Results
+
+Drive the loop off the page size and use `Total` only as an early exit when the server supplied
+one:
 
 ```csharp
 var allContacts = new List<Contact>();
@@ -43,12 +60,21 @@ while (true)
     var result = await client.Contacts.ListAsync(pagination);
     allContacts.AddRange(result.Items);
 
-    if (allContacts.Count >= result.Total)
+    // A short page is the end of the data, with or without a total.
+    if (result.Items.Count < pagination.Limit)
+        break;
+
+    // A reported total lets us stop one request earlier.
+    if (result.Total is int total && allContacts.Count >= total)
         break;
 
     pagination.Offset += pagination.Limit;
 }
 ```
+
+Checking `allContacts.Count >= result.Total` on its own is not enough: with `Total` null the
+comparison is always `false`, so the loop would only ever end on the short-page check — and
+substituting `0` for a missing total would end it after the first page.
 
 ## Filtering
 

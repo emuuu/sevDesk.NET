@@ -201,8 +201,15 @@ var page = await client.Contacts.ListAsync(new PaginationParameters
     Offset = 100
 });
 
-Console.WriteLine($"Showing {page.Items.Count} of {page.Total} contacts");
+Console.WriteLine(page.Total is int total
+    ? $"Showing {page.Items.Count} of {total} contacts"
+    : $"Showing {page.Items.Count} contacts (server reported no total)");
 ```
+
+`SevDeskListResponse<T>.Total` is `int?`. The API sends `total` only for `countAll=true` — which
+every `ListAsync` requests — and not reliably even then, so `null` (no total reported, result set
+size unknown) and `0` (an empty result set) are distinct. To page through everything, loop while a
+page comes back full and use `Total` only as an early exit.
 
 ### Upload a voucher with file
 

@@ -1312,4 +1312,93 @@ public class ApiDeserializationTests
         response.Objects.ShouldNotBeNull();
         response.Objects!.Count.ShouldBe(1);
     }
+
+    [Fact]
+    public void ListResponse_DeserializesNumericTotal()
+    {
+        var json = """
+        {
+            "objects": [
+                {"id": "1", "surename": "Max", "familyname": "Mustermann", "status": "100"}
+            ],
+            "total": 1
+        }
+        """;
+
+        var response = JsonSerializer.Deserialize(json, SevDeskJsonContext.Default.SevDeskApiListResponseApiContact);
+
+        response.ShouldNotBeNull();
+        response.Total.ShouldBe(1); // JSON number stays readable next to the string form
+    }
+
+    [Fact]
+    public void ListResponse_DeserializesStringZeroTotal()
+    {
+        var json = """
+        {
+            "objects": [],
+            "total": "0"
+        }
+        """;
+
+        var response = JsonSerializer.Deserialize(json, SevDeskJsonContext.Default.SevDeskApiListResponseApiContact);
+
+        response.ShouldNotBeNull();
+        response.Total.ShouldBe(0); // the API reports an empty result set as the string "0"
+        response.Objects.ShouldNotBeNull();
+        response.Objects!.Count.ShouldBe(0);
+    }
+
+    [Fact]
+    public void ListResponse_DeserializesNumericZeroTotal()
+    {
+        var json = """
+        {
+            "objects": [],
+            "total": 0
+        }
+        """;
+
+        var response = JsonSerializer.Deserialize(json, SevDeskJsonContext.Default.SevDeskApiListResponseApiContact);
+
+        response.ShouldNotBeNull();
+        response.Total.ShouldBe(0);
+    }
+
+    [Fact]
+    public void ListResponse_MissingTotal_IsNull()
+    {
+        // Without countAll=true the API omits total entirely — see the recorded
+        // GET /Contact, /Category, /TaxRule and /Unity responses.
+        var json = """
+        {
+            "objects": [
+                {"id": "1", "surename": "Max", "familyname": "Mustermann", "status": "100"}
+            ]
+        }
+        """;
+
+        var response = JsonSerializer.Deserialize(json, SevDeskJsonContext.Default.SevDeskApiListResponseApiContact);
+
+        response.ShouldNotBeNull();
+        response.Total.ShouldBeNull(); // absent ≠ 0
+        response.Objects.ShouldNotBeNull();
+        response.Objects!.Count.ShouldBe(1);
+    }
+
+    [Fact]
+    public void ListResponse_NullTotal_IsNull()
+    {
+        var json = """
+        {
+            "objects": [],
+            "total": null
+        }
+        """;
+
+        var response = JsonSerializer.Deserialize(json, SevDeskJsonContext.Default.SevDeskApiListResponseApiContact);
+
+        response.ShouldNotBeNull();
+        response.Total.ShouldBeNull();
+    }
 }

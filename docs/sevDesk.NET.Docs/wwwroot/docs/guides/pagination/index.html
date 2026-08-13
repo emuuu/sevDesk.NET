@@ -40,14 +40,40 @@
 <pre><code class="language-csharp">public class SevDeskListResponse&lt;T&gt;
 {
     public IReadOnlyList&lt;T&gt; Items { get; init; }
-    public int Total { get; init; }
+    public int? Total { get; init; }
 }
 </code></pre>
 <ul>
 <li><code>Items</code> — The page of results</li>
-<li><code>Total</code> — The total number of matching records (for calculating total pages)</li>
+<li><code>Total</code> — The total number of matching records (for calculating total pages), or <code>null</code> when the
+API did not report one</li>
 </ul>
+<h3 id="total-is-nullable-and-null-is-not-0"><code>Total</code> is nullable, and <code>null</code> is not <code>0</code></h3>
+<p>Every <code>ListAsync</code> requests <code>countAll=true</code>, which is what makes the API send <code>total</code> at all — but
+it does not send it reliably on every response. The two cases are deliberately distinct:</p>
+<table>
+<thead>
+<tr>
+<th><code>Total</code></th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>null</code></td>
+<td>The server reported no total. The size of the result set is unknown.</td>
+</tr>
+<tr>
+<td><code>0</code></td>
+<td>The server reported an empty result set.</td>
+</tr>
+</tbody>
+</table>
+<p>Collapsing the two — treating a missing total as <code>0</code> — makes a full page of results look like the
+end of the data.</p>
 <h2 id="paginating-through-all-results">Paginating Through All Results</h2>
+<p>Drive the loop off the page size and use <code>Total</code> only as an early exit when the server supplied
+one:</p>
 <pre><code class="language-csharp">var allContacts = new List&lt;Contact&gt;();
 var pagination = new PaginationParameters { Limit = 100, Offset = 0 };
 
@@ -56,12 +82,20 @@ while (true)
     var result = await client.Contacts.ListAsync(pagination);
     allContacts.AddRange(result.Items);
 
-    if (allContacts.Count &gt;= result.Total)
+    // A short page is the end of the data, with or without a total.
+    if (result.Items.Count &lt; pagination.Limit)
+        break;
+
+    // A reported total lets us stop one request earlier.
+    if (result.Total is int total &amp;&amp; allContacts.Count &gt;= total)
         break;
 
     pagination.Offset += pagination.Limit;
 }
 </code></pre>
+<p>Checking <code>allContacts.Count &gt;= result.Total</code> on its own is not enough: with <code>Total</code> null the
+comparison is always <code>false</code>, so the loop would only ever end on the short-page check — and
+substituting <code>0</code> for a missing total would end it after the first page.</p>
 <h2 id="filtering">Filtering</h2>
 <p>Some clients support filtering in their <code>ListAsync</code> methods:</p>
 <pre><code class="language-csharp">// Invoice positions for a specific invoice

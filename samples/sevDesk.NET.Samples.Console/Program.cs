@@ -26,7 +26,8 @@ try
     // {
     //     Console.WriteLine($"  {contact.Id}: {contact.Surename} {contact.Familyname} ({contact.Name})");
     // }
-    // Console.WriteLine($"Total: {contacts.Total}");
+    // // Total is int? — null when the API reported no total, which is not the same as 0.
+    // Console.WriteLine(contacts.Total is int total ? $"Total: {total}" : "Total: not reported");
 }
 catch (sevDesk.NET.Exceptions.SevDeskException ex)
 {

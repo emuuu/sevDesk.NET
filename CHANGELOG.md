@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.0.0] - 2026-08-13
+
+### Changed
+
+- **Breaking:** `SevDeskListResponse<T>.Total` is now `int?` instead of `int`. The API sends `total` only for `countAll=true` — which every `ListAsync` requests — and not reliably even then; the recorded `GET /Contact`, `/Category`, `/TaxRule` and `/Unity` responses carry no `total` at all. A missing field silently became the `int` default `0`, indistinguishable from a genuinely empty result set, which is exactly backwards: a caller paginating to completion reads `0` and stops after the first full page. `null` now means the server reported no total and the size of the result set is unknown, while `0` keeps meaning the server reported an empty result set. Both wire forms are still read, the JSON string the API actually sends (`"total": "42"`) and a JSON number (`"total": 42`); an explicit `"total": null` reads as `null`. **Migration:** recompile against 3.0.0. Code that consumed `Total` as an `int` — arithmetic, comparisons, assignment to an `int` — no longer compiles and has to decide what a missing total should mean. Interpolating it into a string still compiles but renders empty instead of `0`. To page through everything, loop while a page comes back full and use `Total` only as an early exit:
+
+  ```csharp
+  if (result.Items.Count < pagination.Limit)
+      break;
+
+  if (result.Total is int total && allContacts.Count >= total)
+      break;
+  ```
+
+  `allContacts.Count >= result.Total` on its own is not a substitute: with `Total` null the lifted comparison is always `false`. Neither is `result.Total ?? 0`, which reintroduces the bug the change removes.
+
 ## [2.2.0] - 2026-08-13
 
 ### Fixed
