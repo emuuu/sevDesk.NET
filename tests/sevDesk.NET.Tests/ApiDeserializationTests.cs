@@ -185,7 +185,10 @@ public class ApiDeserializationTests
         invoice.AddressGender.ShouldBe("m");
         invoice.PaidAmount.ShouldBe(99.98m); // string "99.98" → decimal
         invoice.PayDate.ShouldNotBeNull();
-        invoice.PayDate!.Value.Date.ShouldBe(new DateTime(2026, 3, 5));
+        // The API sends an offset-bearing timestamp and the mapper resolves it to local
+        // time, so the expected value has to be expressed the same way — comparing against
+        // a bare date would pass in UTC+1 and fail on a UTC machine.
+        invoice.PayDate!.Value.ShouldBe(new DateTimeOffset(2026, 3, 5, 0, 0, 0, TimeSpan.FromHours(1)).LocalDateTime);
         invoice.Positions.ShouldBeNull(); // no embed=positions requested
     }
 
