@@ -4,6 +4,50 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.1.0] - 2026-08-16
+
+### Added
+
+- `SevDeskWriteSucceededException`: raised when a write to sevDesk **succeeded** but a later step of the same call failed. The `Save…Async` methods are two requests, not one — they post the document to a `Factory` endpoint and then read it back by its identifier. Only the post writes. Until now every phase of that sequence threw the same exception types, so a caller could not tell "the invoice was never created" from "the invoice was created and reading it back timed out" — and had to choose between losing a document and booking a duplicate one into a live client. The new type is thrown from the moment the API confirms the write, and only then:
+
+  ```csharp
+  try
+  {
+      var invoice = await client.Invoices.SaveInvoiceAsync(invoice, positions);
+  }
+  catch (SevDeskWriteSucceededException ex)
+  {
+      // The invoice EXISTS. Do not send it again.
+      // ex.ObjectId — the id, or null when even that could not be read
+      // ex.IsObjectIdKnown — false means: written, id unknown; look it up, never rewrite
+      // ex.ObjectName — "Invoice", "CreditNote", "Order", "Voucher"
+      // ex.RawResponse — the raw body of the write response, or null if none arrived
+      // ex.InnerException — the failure that followed the write
+  }
+  catch (SevDeskApiException)
+  {
+      // Nothing was written. Retrying is safe.
+  }
+  ```
+
+  `ObjectId` is `null` in the worst case of all: the write went through and its answer could not be read or parsed, so the document exists under an identifier nobody knows. That state is deliberately not conflatable with "not written".
+
+- `SaveInvoiceReferenceAsync`, `SaveCreditNoteReferenceAsync`, `CreateFromInvoiceReferenceAsync`, `SaveOrderReferenceAsync` and `SaveVoucherReferenceAsync`: the same writes without the read-back. They return a `SevDeskObjectReference` carrying the new identifier, in one request instead of two. Callers that only need to know whether and under which id something was created avoid the failing follow-up altogether. The full object stays one `GetAsync(id)` away.
+
+### Changed
+
+- The write to a `Factory` endpoint is now sent with `HttpCompletionOption.ResponseHeadersRead`. Under the default option the handler buffers the entire response body before returning, so a connection dropping mid-body surfaced as a transport error *before* the status code was ever inspected — the created document was then indistinguishable from one that never got written. The status code is now evaluated first, which is what makes that case reportable at all.
+
+- All five factory call sites (`Invoice`, `CreditNote` save and create-from-invoice, `Order`, `Voucher`) share one implementation, so the guarantee holds identically for every document type rather than for invoices alone.
+
+### Notes
+
+- **Backwards compatible for callers.** No signature changed. `SevDeskWriteSucceededException` derives from `SevDeskApiException`, which derives from `SevDeskException`, so an existing `catch (SevDeskApiException)` or `catch (SevDeskException)` around a `Save…Async` call keeps catching exactly what it caught in 3.0.0. Covered by tests.
+
+- **Behaviour change in the failure path.** A failure *after* a confirmed write now arrives as `SevDeskWriteSucceededException` rather than as the underlying exception. Code that specifically caught `SevDeskNotFoundException`, `HttpRequestException` or `OperationCanceledException` around a `Save…Async` call no longer matches on those — the original exception is preserved as `InnerException`. This is the correction: the previous types asserted something the library could not know. A `catch (SevDeskWriteSucceededException)` clause must be placed before any `catch (SevDeskApiException)` clause, which the compiler enforces.
+
+- `ISevDeskClient`'s document client interfaces gained the `…ReferenceAsync` methods. Custom implementations of `IInvoiceClient`, `ICreditNoteClient`, `IOrderClient` or `IVoucherClient` must add them; callers using `SevDeskClient` or a mocking framework are unaffected.
+
 ## [3.0.0] - 2026-08-13
 
 ### Changed

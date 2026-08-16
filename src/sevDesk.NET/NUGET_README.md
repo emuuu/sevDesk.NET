@@ -45,7 +45,7 @@ public class InvoiceService(ISevDeskClient client)
 - **Transaction operations** — save invoice/order/voucher with positions atomically
 - **PDF generation**, email sending, status management, and document upload
 - **Pagination** with `SevDeskListResponse<T>` and filtering — `Total` is `int?`, so "the server reported no total" stays distinct from "the result set is empty"
-- **Typed exception hierarchy** — `SevDeskAuthenticationException`, `SevDeskNotFoundException`, `SevDeskValidationException`
+- **Typed exception hierarchy** — `SevDeskAuthenticationException`, `SevDeskNotFoundException`, `SevDeskValidationException`, and `SevDeskWriteSucceededException` so "written, follow-up failed" never looks like "not written"
 - **`IHttpClientFactory`** integration with automatic auth header injection
 
 ## Available Clients
@@ -73,6 +73,21 @@ catch (SevDeskAuthenticationException) { /* 401 */ }
 catch (SevDeskValidationException ex) { /* 422 */ }
 catch (SevDeskApiException ex) { /* other API errors */ }
 ```
+
+The `Save…Async` methods post the document and then read it back. If the read-back fails, the
+document already exists and repeating the call would create a duplicate — so that outcome is raised
+as `SevDeskWriteSucceededException`, carrying the id of the document that was written:
+
+```csharp
+try
+{
+    var invoice = await client.Invoices.SaveInvoiceAsync(invoice, positions);
+}
+catch (SevDeskWriteSucceededException ex) { /* written — do not send it again */ }
+catch (SevDeskApiException) { /* not written — retrying is safe */ }
+```
+
+Use `SaveInvoiceReferenceAsync` and its siblings to skip the read-back and get just the identifier.
 
 ## Documentation
 

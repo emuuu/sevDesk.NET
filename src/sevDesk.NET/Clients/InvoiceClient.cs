@@ -72,15 +72,25 @@ internal class InvoiceClient : IInvoiceClient
 
     public async Task<Invoice> SaveInvoiceAsync(Invoice invoice, IEnumerable<InvoicePos> positions, CancellationToken ct = default)
     {
+        var write = await PostSaveInvoiceAsync(invoice, positions, ct).ConfigureAwait(false);
+        return await BaseClient.ReadBackAfterWriteAsync(write, "Invoice", () => GetAsync(write.Id, ct: ct)).ConfigureAwait(false);
+    }
+
+    public async Task<SevDeskObjectReference> SaveInvoiceReferenceAsync(Invoice invoice, IEnumerable<InvoicePos> positions, CancellationToken ct = default)
+    {
+        var write = await PostSaveInvoiceAsync(invoice, positions, ct).ConfigureAwait(false);
+        return new SevDeskObjectReference { Id = write.Id, ObjectName = "Invoice" };
+    }
+
+    private Task<FactoryWriteResult> PostSaveInvoiceAsync(Invoice invoice, IEnumerable<InvoicePos> positions, CancellationToken ct)
+    {
         var request = new ApiSaveInvoiceRequest
         {
             Invoice = ModelMapper.ToApi(invoice),
             InvoicePosSave = positions.Select(ModelMapper.ToApi).ToList()
         };
-        var json = await _client.PostAndReadStringAsync("Invoice/Factory/saveInvoice", request,
-            SevDeskJsonContext.Default.ApiSaveInvoiceRequest, ct).ConfigureAwait(false);
-        var id = BaseClient.ParseFactoryResponseId(json, "invoice");
-        return await GetAsync(id, ct: ct).ConfigureAwait(false);
+        return _client.PostFactoryAsync("Invoice/Factory/saveInvoice", request,
+            SevDeskJsonContext.Default.ApiSaveInvoiceRequest, "invoice", "Invoice", ct);
     }
 
     public Task ChangeStatusAsync(int id, InvoiceStatus status, CancellationToken ct = default) =>

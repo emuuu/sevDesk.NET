@@ -44,16 +44,26 @@ internal class VoucherClient : IVoucherClient
 
     public async Task<Voucher> SaveVoucherAsync(Voucher voucher, IEnumerable<VoucherPos> positions, string? filename = null, CancellationToken ct = default)
     {
+        var write = await PostSaveVoucherAsync(voucher, positions, filename, ct).ConfigureAwait(false);
+        return await BaseClient.ReadBackAfterWriteAsync(write, "Voucher", () => GetAsync(write.Id, ct: ct)).ConfigureAwait(false);
+    }
+
+    public async Task<SevDeskObjectReference> SaveVoucherReferenceAsync(Voucher voucher, IEnumerable<VoucherPos> positions, string? filename = null, CancellationToken ct = default)
+    {
+        var write = await PostSaveVoucherAsync(voucher, positions, filename, ct).ConfigureAwait(false);
+        return new SevDeskObjectReference { Id = write.Id, ObjectName = "Voucher" };
+    }
+
+    private Task<FactoryWriteResult> PostSaveVoucherAsync(Voucher voucher, IEnumerable<VoucherPos> positions, string? filename, CancellationToken ct)
+    {
         var request = new ApiSaveVoucherRequest
         {
             Voucher = ModelMapper.ToApi(voucher),
             VoucherPosSave = positions.Select(ModelMapper.ToApi).ToList(),
             Filename = filename
         };
-        var json = await _client.PostAndReadStringAsync("Voucher/Factory/saveVoucher", request,
-            SevDeskJsonContext.Default.ApiSaveVoucherRequest, ct).ConfigureAwait(false);
-        var id = BaseClient.ParseFactoryResponseId(json, "voucher");
-        return await GetAsync(id, ct: ct).ConfigureAwait(false);
+        return _client.PostFactoryAsync("Voucher/Factory/saveVoucher", request,
+            SevDeskJsonContext.Default.ApiSaveVoucherRequest, "voucher", "Voucher", ct);
     }
 
     public Task BookAmountAsync(int id, decimal amount, int checkAccountId, DateTime date, CancellationToken ct = default) =>

@@ -170,15 +170,87 @@ internal class BaseClient
         return await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
     }
 
-    internal async Task<string> PostAndReadStringAsync<TRequest>(
+    /// <summary>
+    /// Posts to a sevDesk <c>Factory</c> endpoint and parses the identifier out of the answer.
+    /// </summary>
+    /// <remarks>
+    /// The post is the write. Anything that fails up to and including the status check means the
+    /// object was not created, and the original exception propagates so the caller may retry.
+    /// Anything that fails afterwards — reading the body, parsing the identifier — happened after
+    /// the object came into existence and is rethrown as <see cref="SevDeskWriteSucceededException"/>
+    /// with <see cref="SevDeskWriteSucceededException.ObjectId"/> unset, because a retry would
+    /// create a duplicate.
+    /// <para>
+    /// The request is sent with <see cref="HttpCompletionOption.ResponseHeadersRead"/> on purpose.
+    /// Under the default option the handler buffers the whole body before returning, so a connection
+    /// dropping mid-body would surface as a transport error before the status code is ever seen —
+    /// indistinguishable from a write that never arrived.
+    /// </para>
+    /// </remarks>
+    /// <param name="path">Factory request path, relative to the configured base address.</param>
+    /// <param name="body">The request payload.</param>
+    /// <param name="requestTypeInfo">Type info of the request payload.</param>
+    /// <param name="entityName">The property name carrying the object in the factory answer, e.g. <c>"invoice"</c>.</param>
+    /// <param name="objectName">The sevDesk object type name, e.g. <c>"Invoice"</c>.</param>
+    /// <param name="ct">Cancellation token.</param>
+    internal async Task<FactoryWriteResult> PostFactoryAsync<TRequest>(
         string path,
         TRequest body,
         JsonTypeInfo<TRequest> requestTypeInfo,
+        string entityName,
+        string objectName,
         CancellationToken ct = default)
     {
-        using var response = await _httpClient.PostAsJsonAsync(path, body, requestTypeInfo, ct).ConfigureAwait(false);
-        await EnsureSuccessAsync(response, ct).ConfigureAwait(false);
-        return await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
+        string json;
+
+        using (var request = new HttpRequestMessage(HttpMethod.Post, path) { Content = JsonContent.Create(body, requestTypeInfo) })
+        using (var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct).ConfigureAwait(false))
+        {
+            // Everything up to here failing means the write did not happen.
+            await EnsureSuccessAsync(response, ct).ConfigureAwait(false);
+
+            // From here on the object exists in sevDesk and must not be written a second time.
+            try
+            {
+                json = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                throw new SevDeskWriteSucceededException(objectName, null, null, ex);
+            }
+        }
+
+        try
+        {
+            return new FactoryWriteResult(ParseFactoryResponseId(json, entityName), json);
+        }
+        catch (Exception ex)
+        {
+            throw new SevDeskWriteSucceededException(objectName, null, json, ex);
+        }
+    }
+
+    /// <summary>
+    /// Runs the read-back that follows a confirmed factory write and reports any failure as
+    /// <see cref="SevDeskWriteSucceededException"/>, carrying the identifier of the object that
+    /// already exists.
+    /// </summary>
+    /// <param name="write">The confirmed write this read-back belongs to.</param>
+    /// <param name="objectName">The sevDesk object type name, e.g. <c>"Invoice"</c>.</param>
+    /// <param name="read">The read-back to run.</param>
+    internal static async Task<TResult> ReadBackAfterWriteAsync<TResult>(
+        FactoryWriteResult write,
+        string objectName,
+        Func<Task<TResult>> read)
+    {
+        try
+        {
+            return await read().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            throw new SevDeskWriteSucceededException(objectName, write.Id, write.RawResponse, ex);
+        }
     }
 
     internal async Task<string> PostStringContentAsync(string path, string jsonBody, CancellationToken ct = default)

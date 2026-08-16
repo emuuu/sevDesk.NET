@@ -53,13 +53,50 @@ public interface IOrderClient
     Task DeleteAsync(int id, CancellationToken ct = default);
 
     /// <summary>
-    /// Saves an order together with its positions in a single transaction.
+    /// Saves an order together with its positions in a single transaction and reads the saved order
+    /// back.
     /// </summary>
+    /// <remarks>
+    /// The read-back is a second request. If it fails, the order has already been created and
+    /// <see cref="sevDesk.NET.Exceptions.SevDeskWriteSucceededException"/> reports that, so the call
+    /// must not be repeated. Use
+    /// <see cref="SaveOrderReferenceAsync(Order, IEnumerable{OrderPos}, CancellationToken)"/>
+    /// to skip the read-back entirely.
+    /// </remarks>
     /// <param name="order">The order to save.</param>
     /// <param name="positions">The line item positions for the order.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>The saved order.</returns>
+    /// <exception cref="sevDesk.NET.Exceptions.SevDeskWriteSucceededException">
+    /// The order was created, but reading it back failed. Do not save it again.
+    /// </exception>
+    /// <exception cref="sevDesk.NET.Exceptions.SevDeskApiException">
+    /// The order was not created. Retrying is safe.
+    /// </exception>
     Task<Order> SaveOrderAsync(Order order, IEnumerable<OrderPos> positions, CancellationToken ct = default);
+
+    /// <summary>
+    /// Saves an order together with its positions in a single transaction and returns only the
+    /// reference to it, without reading the order back.
+    /// </summary>
+    /// <remarks>
+    /// One request instead of two. Use this when the identifier of the new order is all that is
+    /// needed; it removes the read-back and with it the ambiguous failure window that
+    /// <see cref="SaveOrderAsync(Order, IEnumerable{OrderPos}, CancellationToken)"/> has to report
+    /// through <see cref="sevDesk.NET.Exceptions.SevDeskWriteSucceededException"/>.
+    /// </remarks>
+    /// <param name="order">The order to save.</param>
+    /// <param name="positions">The line item positions for the order.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>A reference carrying the identifier of the saved order.</returns>
+    /// <exception cref="sevDesk.NET.Exceptions.SevDeskWriteSucceededException">
+    /// The order was created, but its identifier could not be read from the response. Do not save it
+    /// again; look it up instead.
+    /// </exception>
+    /// <exception cref="sevDesk.NET.Exceptions.SevDeskApiException">
+    /// The order was not created. Retrying is safe.
+    /// </exception>
+    Task<SevDeskObjectReference> SaveOrderReferenceAsync(Order order, IEnumerable<OrderPos> positions, CancellationToken ct = default);
 
     /// <summary>
     /// Changes the status of an order.
