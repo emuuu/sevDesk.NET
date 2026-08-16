@@ -2544,7 +2544,7 @@
         },
         {
           "name": "SaveCreditNoteAsync",
-          "description": "Saves a credit note together with its positions in a single transaction.",
+          "description": "Saves a credit note together with its positions in a single transaction and reads the saved credit note back.",
           "returnType": "CreditNote",
           "parameters": [
             {
@@ -2763,9 +2763,242 @@
           ]
         },
         {
+          "name": "SaveCreditNoteReferenceAsync",
+          "description": "Saves a credit note together with its positions in a single transaction and returns only the reference to it, without reading the credit note back.",
+          "returnType": "SevDeskObjectReference",
+          "parameters": [
+            {
+              "name": "creditNote",
+              "type": "CreditNote",
+              "required": true,
+              "description": "The credit note to save.",
+              "properties": [
+                {
+                  "name": "Id",
+                  "type": "int",
+                  "required": false,
+                  "description": "Gets the credit note ID.",
+                  "default": "0"
+                },
+                {
+                  "name": "CreditNoteNumber",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the credit note number.",
+                  "default": "null"
+                },
+                {
+                  "name": "Contact",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the contact reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "CreditNoteDate",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets or sets the credit note date.",
+                  "default": "null"
+                },
+                {
+                  "name": "Status",
+                  "type": "CreditNoteStatus?",
+                  "required": false,
+                  "description": "Gets or sets the credit note status.",
+                  "default": "null"
+                },
+                {
+                  "name": "Header",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the header text.",
+                  "default": "null"
+                },
+                {
+                  "name": "HeadText",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the head text.",
+                  "default": "null"
+                },
+                {
+                  "name": "FootText",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the foot text.",
+                  "default": "null"
+                },
+                {
+                  "name": "ContactPerson",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the contact person reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "Address",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the address text.",
+                  "default": "null"
+                },
+                {
+                  "name": "Currency",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the currency (ISO 4217).",
+                  "default": "null"
+                },
+                {
+                  "name": "SumNet",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets or sets the total net amount.",
+                  "default": "null"
+                },
+                {
+                  "name": "SumGross",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets or sets the total gross amount.",
+                  "default": "null"
+                },
+                {
+                  "name": "SumTax",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets or sets the total tax amount.",
+                  "default": "null"
+                },
+                {
+                  "name": "TaxType",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the tax type.",
+                  "default": "null"
+                },
+                {
+                  "name": "TaxRate",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets or sets the tax rate.",
+                  "default": "null"
+                },
+                {
+                  "name": "TaxText",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the tax text.",
+                  "default": "null"
+                },
+                {
+                  "name": "TaxSet",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the tax set reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "SendDate",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets or sets the send date.",
+                  "default": "null"
+                },
+                {
+                  "name": "SmallSettlement",
+                  "type": "bool?",
+                  "required": false,
+                  "description": "Gets or sets whether this is a small settlement.",
+                  "default": "null"
+                },
+                {
+                  "name": "Create",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets the creation date.",
+                  "default": "null"
+                },
+                {
+                  "name": "Update",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets the last update date.",
+                  "default": "null"
+                }
+              ]
+            },
+            {
+              "name": "positions",
+              "type": "IEnumerable\u003CCreditNotePos\u003E",
+              "required": true,
+              "description": "The line item positions for the credit note."
+            }
+          ]
+        },
+        {
           "name": "CreateFromInvoiceAsync",
-          "description": "Creates a credit note from an existing invoice.",
+          "description": "Creates a credit note from an existing invoice and reads the created credit note back.",
           "returnType": "CreditNote",
+          "parameters": [
+            {
+              "name": "invoiceId",
+              "type": "int",
+              "required": true,
+              "description": "The identifier of the invoice to create a credit note from."
+            }
+          ]
+        },
+        {
+          "name": "CreateFromInvoiceReferenceAsync",
+          "description": "Creates a credit note from an existing invoice and returns only the reference to it, without reading the credit note back.",
+          "returnType": "SevDeskObjectReference",
           "parameters": [
             {
               "name": "invoiceId",
@@ -4873,8 +5106,698 @@
         },
         {
           "name": "SaveInvoiceAsync",
-          "description": "Saves an invoice together with its positions in a single transaction.",
+          "description": "Saves an invoice together with its positions in a single transaction and reads the saved invoice back.",
           "returnType": "Invoice",
+          "parameters": [
+            {
+              "name": "invoice",
+              "type": "Invoice",
+              "required": true,
+              "description": "The invoice to save.",
+              "properties": [
+                {
+                  "name": "Id",
+                  "type": "int",
+                  "required": false,
+                  "description": "Gets the invoice ID.",
+                  "default": "0"
+                },
+                {
+                  "name": "InvoiceNumber",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the invoice number.",
+                  "default": "null"
+                },
+                {
+                  "name": "Contact",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the contact reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "EmbeddedContact",
+                  "type": "Contact?",
+                  "required": false,
+                  "description": "Gets the full contact when it was requested via embed=contact; otherwise. always carries the reference. Read-only \u2014 only the reference is written back on create and update.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the contact ID.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "CustomerNumber",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the customer number.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Surename",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the contact\u0027s first name (note: sevDesk API uses \u0022surename\u0022).",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Familyname",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the contact\u0027s family name.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Name",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the company name.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Name2",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the company name (second line).",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Status",
+                      "type": "ContactStatus?",
+                      "required": false,
+                      "description": "Gets or sets the contact status.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Title",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the title (e.g. \u0022Herr\u0022, \u0022Frau\u0022).",
+                      "default": "null"
+                    },
+                    {
+                      "name": "AcademicTitle",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the academic title.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Gender",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the gender (m/f/null).",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Category",
+                      "type": "SevDeskObjectReference?",
+                      "required": false,
+                      "description": "Gets or sets the category reference.",
+                      "default": "null",
+                      "properties": [
+                        {
+                          "name": "Id",
+                          "type": "int",
+                          "required": false,
+                          "description": "Gets the ID of the referenced object.",
+                          "default": "0"
+                        },
+                        {
+                          "name": "ObjectName",
+                          "type": "string",
+                          "required": true,
+                          "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Description",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the description.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "VatNumber",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the VAT number.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "BankAccount",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the bank account.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "BankNumber",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the bank number.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "DefaultCashbackTime",
+                      "type": "int?",
+                      "required": false,
+                      "description": "Gets or sets the default cashback time in days.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "DefaultCashbackPercent",
+                      "type": "decimal?",
+                      "required": false,
+                      "description": "Gets or sets the default cashback percentage.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "DefaultTimeToPay",
+                      "type": "int?",
+                      "required": false,
+                      "description": "Gets or sets the default time to pay in days.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "TaxNumber",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the tax number.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "TaxOffice",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the tax office.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "ExemptVat",
+                      "type": "bool?",
+                      "required": false,
+                      "description": "Gets or sets whether the contact is exempt from VAT.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Birthday",
+                      "type": "DateTime?",
+                      "required": false,
+                      "description": "Gets or sets the birthday.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "DefaultDiscountPercentage",
+                      "type": "decimal?",
+                      "required": false,
+                      "description": "Gets or sets the default discount percentage.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "GovernmentAgency",
+                      "type": "bool?",
+                      "required": false,
+                      "description": "Gets or sets whether this is a government agency.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Create",
+                      "type": "DateTime?",
+                      "required": false,
+                      "description": "Gets the creation date.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "Update",
+                      "type": "DateTime?",
+                      "required": false,
+                      "description": "Gets the last update date.",
+                      "default": "null"
+                    },
+                    {
+                      "name": "BuyerReference",
+                      "type": "string?",
+                      "required": false,
+                      "description": "Gets or sets the buyer reference (Leitweg-ID) used for e-invoicing.",
+                      "default": "null"
+                    }
+                  ]
+                },
+                {
+                  "name": "InvoiceDate",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets or sets the invoice date.",
+                  "default": "null"
+                },
+                {
+                  "name": "DeliveryDate",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets or sets the delivery date \u2014 the start of the service period.",
+                  "default": "null"
+                },
+                {
+                  "name": "DeliveryDateUntil",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets or sets the end of the service period. Together with this spans a period rather than a single day; when the invoice covers one date.",
+                  "default": "null"
+                },
+                {
+                  "name": "Status",
+                  "type": "InvoiceStatus?",
+                  "required": false,
+                  "description": "Gets or sets the invoice status.",
+                  "default": "null"
+                },
+                {
+                  "name": "InvoiceType",
+                  "type": "InvoiceType?",
+                  "required": false,
+                  "description": "Gets or sets the invoice type.",
+                  "default": "null"
+                },
+                {
+                  "name": "Header",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the header text.",
+                  "default": "null"
+                },
+                {
+                  "name": "HeadText",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the head text (above positions).",
+                  "default": "null"
+                },
+                {
+                  "name": "FootText",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the foot text (below positions).",
+                  "default": "null"
+                },
+                {
+                  "name": "TimeToPay",
+                  "type": "int?",
+                  "required": false,
+                  "description": "Gets or sets the time to pay in days.",
+                  "default": "null"
+                },
+                {
+                  "name": "DiscountTime",
+                  "type": "int?",
+                  "required": false,
+                  "description": "Gets or sets the discount time in days.",
+                  "default": "null"
+                },
+                {
+                  "name": "Discount",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets or sets the discount percentage.",
+                  "default": "null"
+                },
+                {
+                  "name": "ContactPerson",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the contact person reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "Address",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the address text (the rendered multi-line block).",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressName",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the recipient name of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressName2",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the second recipient name line of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressStreet",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the street of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressZip",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the postal code of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressCity",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the city of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressCountry",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the country reference (StaticCountry) of the invoice address.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "AddressParentName",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the parent (company) name of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressParentName2",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the second parent (company) name line of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "AddressGender",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the salutation of the invoice address.",
+                  "default": "null"
+                },
+                {
+                  "name": "Currency",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the currency (ISO 4217).",
+                  "default": "null"
+                },
+                {
+                  "name": "SumNet",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets or sets the total net amount.",
+                  "default": "null"
+                },
+                {
+                  "name": "SumGross",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets or sets the total gross amount.",
+                  "default": "null"
+                },
+                {
+                  "name": "SumTax",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets or sets the total tax amount.",
+                  "default": "null"
+                },
+                {
+                  "name": "TaxType",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the tax type (default, eu, noteu, custom).",
+                  "default": "null"
+                },
+                {
+                  "name": "TaxRate",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets or sets the tax rate.",
+                  "default": "null"
+                },
+                {
+                  "name": "TaxText",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the tax text.",
+                  "default": "null"
+                },
+                {
+                  "name": "SendDate",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets or sets the send date.",
+                  "default": "null"
+                },
+                {
+                  "name": "PaymentMethod",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the payment method reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "CostCentre",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the cost centre reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "SendType",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the send type (VPR, VPDF, VM, VP).",
+                  "default": "null"
+                },
+                {
+                  "name": "Origin",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the origin reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "CustomerInternalNote",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the customer internal note.",
+                  "default": "null"
+                },
+                {
+                  "name": "SmallSettlement",
+                  "type": "bool?",
+                  "required": false,
+                  "description": "Gets or sets whether this is a small settlement (Kleinunternehmer).",
+                  "default": "null"
+                },
+                {
+                  "name": "TaxSet",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the tax set reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "Create",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets the creation date.",
+                  "default": "null"
+                },
+                {
+                  "name": "Update",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets the last update date.",
+                  "default": "null"
+                },
+                {
+                  "name": "TaxRule",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the tax rule reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "EinvoiceReference",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the e-invoice (XRechnung/ZUGFeRD) reference identifier.",
+                  "default": "null"
+                },
+                {
+                  "name": "PropertyIsEInvoice",
+                  "type": "bool?",
+                  "required": false,
+                  "description": "Gets or sets whether this invoice is an e-invoice.",
+                  "default": "null"
+                },
+                {
+                  "name": "PaidAmount",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets the amount already paid on this invoice. Calculated by the API \u2014 read-only.",
+                  "default": "null"
+                },
+                {
+                  "name": "PayDate",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets the date the invoice was paid. Set by the API when payments are booked \u2014 read-only.",
+                  "default": "null"
+                },
+                {
+                  "name": "Positions",
+                  "type": "IReadOnlyList\u003CInvoicePos\u003E?",
+                  "required": false,
+                  "description": "Gets the invoice positions when they were requested via embed=positions; otherwise. Read-only \u2014 use to write positions.",
+                  "default": "null"
+                }
+              ]
+            },
+            {
+              "name": "positions",
+              "type": "IEnumerable\u003CInvoicePos\u003E",
+              "required": true,
+              "description": "The line item positions for the invoice."
+            }
+          ]
+        },
+        {
+          "name": "SaveInvoiceReferenceAsync",
+          "description": "Saves an invoice together with its positions in a single transaction and returns only the reference to it, without reading the invoice back.",
+          "returnType": "SevDeskObjectReference",
           "parameters": [
             {
               "name": "invoice",
@@ -6766,8 +7689,271 @@
         },
         {
           "name": "SaveOrderAsync",
-          "description": "Saves an order together with its positions in a single transaction.",
+          "description": "Saves an order together with its positions in a single transaction and reads the saved order back.",
           "returnType": "Order",
+          "parameters": [
+            {
+              "name": "order",
+              "type": "Order",
+              "required": true,
+              "description": "The order to save.",
+              "properties": [
+                {
+                  "name": "Id",
+                  "type": "int",
+                  "required": false,
+                  "description": "Gets the order ID.",
+                  "default": "0"
+                },
+                {
+                  "name": "OrderNumber",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the order number.",
+                  "default": "null"
+                },
+                {
+                  "name": "Contact",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the contact reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "OrderDate",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets or sets the order date.",
+                  "default": "null"
+                },
+                {
+                  "name": "Status",
+                  "type": "OrderStatus?",
+                  "required": false,
+                  "description": "Gets or sets the order status.",
+                  "default": "null"
+                },
+                {
+                  "name": "OrderType",
+                  "type": "OrderType?",
+                  "required": false,
+                  "description": "Gets or sets the order type.",
+                  "default": "null"
+                },
+                {
+                  "name": "Header",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the header text.",
+                  "default": "null"
+                },
+                {
+                  "name": "HeadText",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the head text (above positions).",
+                  "default": "null"
+                },
+                {
+                  "name": "FootText",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the foot text (below positions).",
+                  "default": "null"
+                },
+                {
+                  "name": "ContactPerson",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the contact person reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "Address",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the address text.",
+                  "default": "null"
+                },
+                {
+                  "name": "Currency",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the currency (ISO 4217).",
+                  "default": "null"
+                },
+                {
+                  "name": "SumNet",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets or sets the total net amount.",
+                  "default": "null"
+                },
+                {
+                  "name": "SumGross",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets or sets the total gross amount.",
+                  "default": "null"
+                },
+                {
+                  "name": "SumTax",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets or sets the total tax amount.",
+                  "default": "null"
+                },
+                {
+                  "name": "TaxType",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the tax type.",
+                  "default": "null"
+                },
+                {
+                  "name": "TaxRate",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets or sets the tax rate.",
+                  "default": "null"
+                },
+                {
+                  "name": "TaxText",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the tax text.",
+                  "default": "null"
+                },
+                {
+                  "name": "SendDate",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets or sets the send date.",
+                  "default": "null"
+                },
+                {
+                  "name": "DeliveryDate",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets or sets the delivery date.",
+                  "default": "null"
+                },
+                {
+                  "name": "SmallSettlement",
+                  "type": "bool?",
+                  "required": false,
+                  "description": "Gets or sets whether this is a small settlement.",
+                  "default": "null"
+                },
+                {
+                  "name": "TaxSet",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the tax set reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "Origin",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the origin reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "CustomerInternalNote",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the customer internal note.",
+                  "default": "null"
+                },
+                {
+                  "name": "Create",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets the creation date.",
+                  "default": "null"
+                },
+                {
+                  "name": "Update",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets the last update date.",
+                  "default": "null"
+                }
+              ]
+            },
+            {
+              "name": "positions",
+              "type": "IEnumerable\u003COrderPos\u003E",
+              "required": true,
+              "description": "The line item positions for the order."
+            }
+          ]
+        },
+        {
+          "name": "SaveOrderReferenceAsync",
+          "description": "Saves an order together with its positions in a single transaction and returns only the reference to it, without reading the order back.",
+          "returnType": "SevDeskObjectReference",
           "parameters": [
             {
               "name": "order",
@@ -8672,8 +9858,229 @@
         },
         {
           "name": "SaveVoucherAsync",
-          "description": "Saves a voucher together with its positions in a single transaction, optionally attaching a file.",
+          "description": "Saves a voucher together with its positions in a single transaction, optionally attaching a file, and reads the saved voucher back.",
           "returnType": "Voucher",
+          "parameters": [
+            {
+              "name": "voucher",
+              "type": "Voucher",
+              "required": true,
+              "description": "The voucher to save.",
+              "properties": [
+                {
+                  "name": "Id",
+                  "type": "int",
+                  "required": false,
+                  "description": "Gets the voucher ID.",
+                  "default": "0"
+                },
+                {
+                  "name": "VoucherDate",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets or sets the voucher date.",
+                  "default": "null"
+                },
+                {
+                  "name": "Supplier",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the supplier reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "Status",
+                  "type": "VoucherStatus?",
+                  "required": false,
+                  "description": "Gets or sets the voucher status.",
+                  "default": "null"
+                },
+                {
+                  "name": "VoucherType",
+                  "type": "VoucherType?",
+                  "required": false,
+                  "description": "Gets or sets the voucher type.",
+                  "default": "null"
+                },
+                {
+                  "name": "Description",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the description.",
+                  "default": "null"
+                },
+                {
+                  "name": "PayDate",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets or sets the pay date.",
+                  "default": "null"
+                },
+                {
+                  "name": "Currency",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the currency (ISO 4217).",
+                  "default": "null"
+                },
+                {
+                  "name": "SumNet",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets or sets the total net amount.",
+                  "default": "null"
+                },
+                {
+                  "name": "SumGross",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets or sets the total gross amount.",
+                  "default": "null"
+                },
+                {
+                  "name": "SumTax",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets or sets the total tax amount.",
+                  "default": "null"
+                },
+                {
+                  "name": "TaxType",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the tax type.",
+                  "default": "null"
+                },
+                {
+                  "name": "CreditDebit",
+                  "type": "string?",
+                  "required": false,
+                  "description": "Gets or sets the credit/debit flag (C or D).",
+                  "default": "null"
+                },
+                {
+                  "name": "Document",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the document reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "CostCentre",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the cost centre reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "PaidAmount",
+                  "type": "decimal?",
+                  "required": false,
+                  "description": "Gets or sets the paid amount.",
+                  "default": "null"
+                },
+                {
+                  "name": "TaxSet",
+                  "type": "SevDeskObjectReference?",
+                  "required": false,
+                  "description": "Gets or sets the tax set reference.",
+                  "default": "null",
+                  "properties": [
+                    {
+                      "name": "Id",
+                      "type": "int",
+                      "required": false,
+                      "description": "Gets the ID of the referenced object.",
+                      "default": "0"
+                    },
+                    {
+                      "name": "ObjectName",
+                      "type": "string",
+                      "required": true,
+                      "description": "Gets the object type name (e.g. \u0022Contact\u0022, \u0022Invoice\u0022)."
+                    }
+                  ]
+                },
+                {
+                  "name": "Create",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets the creation date.",
+                  "default": "null"
+                },
+                {
+                  "name": "Update",
+                  "type": "DateTime?",
+                  "required": false,
+                  "description": "Gets the last update date.",
+                  "default": "null"
+                }
+              ]
+            },
+            {
+              "name": "positions",
+              "type": "IEnumerable\u003CVoucherPos\u003E",
+              "required": true,
+              "description": "The line item positions for the voucher."
+            },
+            {
+              "name": "filename",
+              "type": "string?",
+              "required": false,
+              "description": "Optional filename of an attached document.",
+              "default": "null"
+            }
+          ]
+        },
+        {
+          "name": "SaveVoucherReferenceAsync",
+          "description": "Saves a voucher together with its positions in a single transaction, optionally attaching a file, and returns only the reference to it, without reading the voucher back.",
+          "returnType": "SevDeskObjectReference",
           "parameters": [
             {
               "name": "voucher",
