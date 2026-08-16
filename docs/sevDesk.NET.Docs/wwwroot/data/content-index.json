@@ -81,9 +81,11 @@
       "Exception Hierarchy",
       "SevDeskException",
       "Handling Errors",
+      "Failures After a Successful Write",
+      "Avoiding the Case Entirely",
       "Common Error Scenarios"
     ],
-    "searchText": "Exception Hierarchy sevDesk.NET uses a typed exception hierarchy for API errors: SevDeskException All exceptions inherit from SevDeskException, which provides: Handling Errors Common Error Scenarios | Exception | HTTP Status | Common Causes | |---|---|---| | SevDeskAuthenticationException | 401 | Invalid or expired API token | | SevDeskNotFoundException | 404 | Resource does not exist or was deleted | | SevDeskValidationException | 422 | Invalid data (missing required fields, wrong format) | | S"
+    "searchText": "Exception Hierarchy sevDesk.NET uses a typed exception hierarchy for API errors: SevDeskException All exceptions inherit from SevDeskException, which provides: Handling Errors Failures After a Successful Write SaveInvoiceAsync, SaveCreditNoteAsync, CreateFromInvoiceAsync, SaveOrderAsync and SaveVoucherAsync do two things: they post the document to a Factory endpoint, and then read the created document back by its identifier. Only the post writes. Once sevDesk has answered it with a success statu"
   },
   {
     "slug": "guides/models-and-enums",

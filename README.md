@@ -260,8 +260,43 @@ catch (SevDeskApiException ex)
 | `SevDeskAuthenticationException` | 401 | Invalid or missing API token |
 | `SevDeskNotFoundException` | 404 | Resource not found |
 | `SevDeskValidationException` | 422 | Invalid request data |
+| `SevDeskWriteSucceededException` | Various | A `Save…Async` write succeeded but its follow-up failed |
 | `SevDeskApiException` | Various | Other API errors |
 | `SevDeskException` | — | Base exception (network errors, etc.) |
+
+### Failures After a Successful Write
+
+`SaveInvoiceAsync`, `SaveCreditNoteAsync`, `CreateFromInvoiceAsync`, `SaveOrderAsync` and
+`SaveVoucherAsync` post the document and then read it back. Only the post writes. If the read-back
+fails, the document already exists and repeating the call would create a duplicate.
+`SevDeskWriteSucceededException` makes that outcome distinguishable from a write that never arrived:
+
+```csharp
+try
+{
+    var invoice = await client.Invoices.SaveInvoiceAsync(invoice, positions);
+}
+catch (SevDeskWriteSucceededException ex)
+{
+    // Written. Do not send it again.
+    // ex.ObjectId is null when even the id could not be read — look the document up.
+}
+catch (SevDeskApiException)
+{
+    // Not written. Retrying is safe.
+}
+```
+
+Each of those methods has a `…ReferenceAsync` counterpart that skips the read-back and returns just
+the identifier — one request instead of two:
+
+```csharp
+var reference = await client.Invoices.SaveInvoiceReferenceAsync(invoice, positions);
+Console.WriteLine(reference.Id);
+```
+
+See the [error handling guide](https://sevDesk-NET.github.io/sevDesk.NET/docs/guides/error-handling/)
+for the full picture.
 
 ## Configuration
 

@@ -44,15 +44,25 @@ internal class OrderClient : IOrderClient
 
     public async Task<Order> SaveOrderAsync(Order order, IEnumerable<OrderPos> positions, CancellationToken ct = default)
     {
+        var write = await PostSaveOrderAsync(order, positions, ct).ConfigureAwait(false);
+        return await BaseClient.ReadBackAfterWriteAsync(write, "Order", () => GetAsync(write.Id, ct: ct)).ConfigureAwait(false);
+    }
+
+    public async Task<SevDeskObjectReference> SaveOrderReferenceAsync(Order order, IEnumerable<OrderPos> positions, CancellationToken ct = default)
+    {
+        var write = await PostSaveOrderAsync(order, positions, ct).ConfigureAwait(false);
+        return new SevDeskObjectReference { Id = write.Id, ObjectName = "Order" };
+    }
+
+    private Task<FactoryWriteResult> PostSaveOrderAsync(Order order, IEnumerable<OrderPos> positions, CancellationToken ct)
+    {
         var request = new ApiSaveOrderRequest
         {
             Order = ModelMapper.ToApi(order),
             OrderPosSave = positions.Select(ModelMapper.ToApi).ToList()
         };
-        var json = await _client.PostAndReadStringAsync("Order/Factory/saveOrder", request,
-            SevDeskJsonContext.Default.ApiSaveOrderRequest, ct).ConfigureAwait(false);
-        var id = BaseClient.ParseFactoryResponseId(json, "order");
-        return await GetAsync(id, ct: ct).ConfigureAwait(false);
+        return _client.PostFactoryAsync("Order/Factory/saveOrder", request,
+            SevDeskJsonContext.Default.ApiSaveOrderRequest, "order", "Order", ct);
     }
 
     public Task ChangeStatusAsync(int id, OrderStatus status, CancellationToken ct = default) =>

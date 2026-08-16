@@ -54,13 +54,53 @@ public interface IInvoiceClient
     Task DeleteAsync(int id, CancellationToken ct = default);
 
     /// <summary>
-    /// Saves an invoice together with its positions in a single transaction.
+    /// Saves an invoice together with its positions in a single transaction and reads the saved
+    /// invoice back.
     /// </summary>
+    /// <remarks>
+    /// The read-back is a second request. If it fails, the invoice has already been created and
+    /// <see cref="sevDesk.NET.Exceptions.SevDeskWriteSucceededException"/> reports that, so the call
+    /// must not be repeated. Use
+    /// <see cref="SaveInvoiceReferenceAsync(Invoice, IEnumerable{InvoicePos}, CancellationToken)"/>
+    /// to skip the read-back entirely.
+    /// </remarks>
     /// <param name="invoice">The invoice to save.</param>
     /// <param name="positions">The line item positions for the invoice.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>The saved invoice.</returns>
+    /// <exception cref="sevDesk.NET.Exceptions.SevDeskWriteSucceededException">
+    /// The invoice was created, but reading it back failed. Do not save it again.
+    /// </exception>
+    /// <exception cref="sevDesk.NET.Exceptions.SevDeskApiException">
+    /// The invoice was not created. Retrying is safe.
+    /// </exception>
     Task<Invoice> SaveInvoiceAsync(Invoice invoice, IEnumerable<InvoicePos> positions, CancellationToken ct = default);
+
+    /// <summary>
+    /// Saves an invoice together with its positions in a single transaction and returns only the
+    /// reference to it, without reading the invoice back.
+    /// </summary>
+    /// <remarks>
+    /// One request instead of two. Use this when the identifier of the new invoice is all that is
+    /// needed; it removes the read-back and with it the ambiguous failure window that
+    /// <see cref="SaveInvoiceAsync(Invoice, IEnumerable{InvoicePos}, CancellationToken)"/> has to
+    /// report through
+    /// <see cref="sevDesk.NET.Exceptions.SevDeskWriteSucceededException"/>. Call
+    /// <see cref="GetAsync(int, string, CancellationToken)"/> separately if the full invoice is
+    /// needed later.
+    /// </remarks>
+    /// <param name="invoice">The invoice to save.</param>
+    /// <param name="positions">The line item positions for the invoice.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>A reference carrying the identifier of the saved invoice.</returns>
+    /// <exception cref="sevDesk.NET.Exceptions.SevDeskWriteSucceededException">
+    /// The invoice was created, but its identifier could not be read from the response. Do not save
+    /// it again; look it up instead.
+    /// </exception>
+    /// <exception cref="sevDesk.NET.Exceptions.SevDeskApiException">
+    /// The invoice was not created. Retrying is safe.
+    /// </exception>
+    Task<SevDeskObjectReference> SaveInvoiceReferenceAsync(Invoice invoice, IEnumerable<InvoicePos> positions, CancellationToken ct = default);
 
     /// <summary>
     /// Changes the status of an invoice.

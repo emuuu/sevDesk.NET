@@ -43,27 +43,47 @@ internal class CreditNoteClient : ICreditNoteClient
 
     public async Task<CreditNote> SaveCreditNoteAsync(CreditNote creditNote, IEnumerable<CreditNotePos> positions, CancellationToken ct = default)
     {
+        var write = await PostSaveCreditNoteAsync(creditNote, positions, ct).ConfigureAwait(false);
+        return await BaseClient.ReadBackAfterWriteAsync(write, "CreditNote", () => GetAsync(write.Id, ct: ct)).ConfigureAwait(false);
+    }
+
+    public async Task<SevDeskObjectReference> SaveCreditNoteReferenceAsync(CreditNote creditNote, IEnumerable<CreditNotePos> positions, CancellationToken ct = default)
+    {
+        var write = await PostSaveCreditNoteAsync(creditNote, positions, ct).ConfigureAwait(false);
+        return new SevDeskObjectReference { Id = write.Id, ObjectName = "CreditNote" };
+    }
+
+    public async Task<CreditNote> CreateFromInvoiceAsync(int invoiceId, CancellationToken ct = default)
+    {
+        var write = await PostCreateFromInvoiceAsync(invoiceId, ct).ConfigureAwait(false);
+        return await BaseClient.ReadBackAfterWriteAsync(write, "CreditNote", () => GetAsync(write.Id, ct: ct)).ConfigureAwait(false);
+    }
+
+    public async Task<SevDeskObjectReference> CreateFromInvoiceReferenceAsync(int invoiceId, CancellationToken ct = default)
+    {
+        var write = await PostCreateFromInvoiceAsync(invoiceId, ct).ConfigureAwait(false);
+        return new SevDeskObjectReference { Id = write.Id, ObjectName = "CreditNote" };
+    }
+
+    private Task<FactoryWriteResult> PostSaveCreditNoteAsync(CreditNote creditNote, IEnumerable<CreditNotePos> positions, CancellationToken ct)
+    {
         var request = new ApiSaveCreditNoteRequest
         {
             CreditNote = ModelMapper.ToApi(creditNote),
             CreditNotePosSave = positions.Select(ModelMapper.ToApi).ToList()
         };
-        var json = await _client.PostAndReadStringAsync("CreditNote/Factory/saveCreditNote", request,
-            SevDeskJsonContext.Default.ApiSaveCreditNoteRequest, ct).ConfigureAwait(false);
-        var id = BaseClient.ParseFactoryResponseId(json, "creditNote");
-        return await GetAsync(id, ct: ct).ConfigureAwait(false);
+        return _client.PostFactoryAsync("CreditNote/Factory/saveCreditNote", request,
+            SevDeskJsonContext.Default.ApiSaveCreditNoteRequest, "creditNote", "CreditNote", ct);
     }
 
-    public async Task<CreditNote> CreateFromInvoiceAsync(int invoiceId, CancellationToken ct = default)
+    private Task<FactoryWriteResult> PostCreateFromInvoiceAsync(int invoiceId, CancellationToken ct)
     {
         var request = new ApiCreateFromInvoiceRequest
         {
             Invoice = new ApiObjectReference { Id = invoiceId, ObjectName = "Invoice" }
         };
-        var json = await _client.PostAndReadStringAsync("CreditNote/Factory/createFromInvoice", request,
-            SevDeskJsonContext.Default.ApiCreateFromInvoiceRequest, ct).ConfigureAwait(false);
-        var id = BaseClient.ParseFactoryResponseId(json, "creditNote");
-        return await GetAsync(id, ct: ct).ConfigureAwait(false);
+        return _client.PostFactoryAsync("CreditNote/Factory/createFromInvoice", request,
+            SevDeskJsonContext.Default.ApiCreateFromInvoiceRequest, "creditNote", "CreditNote", ct);
     }
 
     public Task<byte[]> GetPdfAsync(int id, CancellationToken ct = default) =>
