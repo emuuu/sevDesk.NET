@@ -19,6 +19,6 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>sevdesk;accounting;invoice;api;client</PackageTags>
     <Copyright>Copyright (c) sevDesk.NET Contributors</Copyright>
-    <Description>A .NET client library for the sevDesk API.</Description>
+    <Description>Unofficial .NET client library for the sevDesk API. Community project, not affiliated with or endorsed by sevDesk GmbH.</Description>
   </PropertyGroup>
 </Project>

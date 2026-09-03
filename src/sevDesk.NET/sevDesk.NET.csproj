@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>sevDesk.NET</PackageId>
-    <Description>A .NET client library for the sevDesk API.</Description>
+    <Description>Unofficial .NET client library for the sevDesk API. Community project, not affiliated with or endorsed by sevDesk GmbH.</Description>
     <PackageTags>sevdesk;accounting;invoice;voucher;api;client</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <UseRepoReadmeInPackage>false</UseRepoReadmeInPackage>

@@ -2,6 +2,8 @@
 
 A strongly-typed .NET client library for the [sevDesk API](https://my.sevdesk.de/api/v1/). Manage invoices, contacts, vouchers, orders, credit notes, and more — with full async support and dependency injection.
 
+> **Unofficial project.** Not affiliated with, endorsed by, or supported by sevDesk GmbH. See the trademark notice below.
+
 ## Quick Start
 
 ```bash
@@ -94,3 +96,7 @@ Use `SaveInvoiceReferenceAsync` and its siblings to skip the read-back and get j
 For full documentation, examples, and API reference visit the [project site](https://emuuu.github.io/sevDesk.NET/).
 
 Source code and issue tracker: [GitHub](https://github.com/emuuu/sevDesk.NET)
+
+## Trademarks and disclaimer
+
+This is an independent, community-maintained project. It is not an official sevDesk product and is not affiliated with, endorsed by, or sponsored by sevDesk GmbH. "sevDesk" and the sevDesk logo are trademarks or registered trademarks of sevDesk GmbH; all other names and brands are the property of their respective owners and are used solely to identify the third-party APIs this package communicates with. Provided under the MIT license, as-is, with no warranty and no support agreement from sevDesk. Details: [sevDesk.NET](https://github.com/emuuu/sevDesk.NET).

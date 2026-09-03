@@ -12,6 +12,8 @@ A strongly-typed .NET client library for the [sevDesk API](https://my.sevdesk.de
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docs](https://img.shields.io/badge/Docs-GitHub%20Pages-blue)](https://emuuu.github.io/sevDesk.NET/)
 
+> **Unofficial project.** sevDesk.NET is an independent community library. It is not affiliated with, endorsed by, or supported by sevDesk GmbH. See [Trademarks and disclaimer](#trademarks-and-disclaimer).
+
 **Feature highlights:**
 
 - 20 typed clients covering the entire sevDesk REST API
@@ -313,6 +315,16 @@ for the full picture.
 `AddSevDesk()` validates options on registration:
 - `ApiToken` must not be empty
 - `CustomBaseUrl` (if set) must use HTTPS or be localhost
+
+## Trademarks and disclaimer
+
+sevDesk.NET is an independent, community-maintained open-source project. It is not an official sevDesk product and is not affiliated with, authorized by, endorsed by, or sponsored by sevDesk GmbH.
+
+"sevDesk" and the sevDesk logo are trademarks or registered trademarks of sevDesk GmbH. All other product names, logos and brands are the property of their respective owners. They are used in this project, in its documentation and in its package names solely to identify the third-party APIs this library communicates with; such descriptive use implies no endorsement, sponsorship or business relationship.
+
+The library is provided under the MIT license, as-is and without warranty of any kind. It carries no support agreement or service level of any kind from sevDesk, and using it does not change your obligations under sevDesk's own terms of service — you still need your own sevDesk account and API token. Questions about the APIs themselves belong to their respective providers; questions about this library belong in its [issue tracker](https://github.com/emuuu/sevDesk.NET/issues).
+
+If you hold rights to any of the marks named above and object to their use here, please open an issue and it will be addressed.
 
 ## License
 
