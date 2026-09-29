@@ -26,7 +26,7 @@ dotnet build
 ### Run Tests
 
 ```bash
-dotnet test tests/sevDesk.NET.Tests/
+dotnet test --project tests/sevDesk.NET.Tests/
 ```
 
 ## Pull Request Guidelines
