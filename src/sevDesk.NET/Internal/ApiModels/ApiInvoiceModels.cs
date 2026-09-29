@@ -4,8 +4,21 @@ namespace sevDesk.NET.Internal.ApiModels;
 
 internal class ApiInvoice
 {
+    /// <summary>
+    /// Omitted while zero: a new object has no id yet, and sevDesk answers <c>"id":0</c> by
+    /// looking up object 0 and rejecting the request.
+    /// </summary>
     [JsonPropertyName("id")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int Id { get; set; }
+
+    /// <summary>Required by <c>Invoice/Factory/saveInvoice</c>; set by <see cref="ModelMapper.ToApiFactory(Models.Invoice)"/>.</summary>
+    [JsonPropertyName("objectName")]
+    public string? ObjectName { get; set; }
+
+    /// <summary>Required by <c>Invoice/Factory/saveInvoice</c>; set by <see cref="ModelMapper.ToApiFactory(Models.Invoice)"/>.</summary>
+    [JsonPropertyName("mapAll")]
+    public bool? MapAll { get; set; }
 
     [JsonPropertyName("invoiceNumber")]
     public string? InvoiceNumber { get; set; }
@@ -160,8 +173,16 @@ internal class ApiInvoice
 
 internal class ApiInvoicePos
 {
+    /// <summary>
+    /// Omitted while zero: a new object has no id yet, and sevDesk answers <c>"id":0</c> by
+    /// looking up object 0 and rejecting the request.
+    /// </summary>
     [JsonPropertyName("id")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int Id { get; set; }
+
+    [JsonPropertyName("objectName")]
+    public string? ObjectName { get; set; }
 
     [JsonPropertyName("invoice")]
     public ApiObjectReference? Invoice { get; set; }

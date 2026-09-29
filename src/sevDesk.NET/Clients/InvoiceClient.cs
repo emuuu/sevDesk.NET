@@ -86,7 +86,7 @@ internal class InvoiceClient : IInvoiceClient
     {
         var request = new ApiSaveInvoiceRequest
         {
-            Invoice = ModelMapper.ToApi(invoice),
+            Invoice = ModelMapper.ToApiFactory(invoice),
             InvoicePosSave = positions.Select(ModelMapper.ToApi).ToList()
         };
         return _client.PostFactoryAsync("Invoice/Factory/saveInvoice", request,
