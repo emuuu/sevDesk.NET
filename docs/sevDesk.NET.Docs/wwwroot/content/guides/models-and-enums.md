@@ -15,6 +15,7 @@ sevDesk.NET provides strongly-typed models for all API entities. All model prope
 |---|---|
 | `Invoice` | Full invoice with contact, dates, amounts, and tax details |
 | `InvoicePos` | Invoice line item with quantity, price, and tax |
+| `DocumentDiscount` | Document-level discount or surcharge of an invoice (e.g. a customer discount of 3 %) |
 | `Order` | Offers, order confirmations, and delivery notes |
 | `OrderPos` | Order line item |
 | `Voucher` | Expense or revenue record |

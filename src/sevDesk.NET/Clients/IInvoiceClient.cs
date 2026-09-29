@@ -30,6 +30,24 @@ public interface IInvoiceClient
     Task<Invoice> GetAsync(int id, string? embed = null, CancellationToken ct = default);
 
     /// <summary>
+    /// Retrieves the document-level discounts and surcharges of an invoice.
+    /// </summary>
+    /// <remarks>
+    /// To read them together with the invoice, or for many invoices at once, pass
+    /// <c>embed: "discounts"</c> to <see cref="GetAsync"/> or <see cref="ListAsync"/> and use
+    /// <see cref="Invoice.Discounts"/> instead.
+    /// </remarks>
+    /// <param name="id">The invoice identifier.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>The discounts of the invoice; empty if it has none.</returns>
+    /// <exception cref="NotSupportedException">
+    /// The implementation predates document-level discounts and does not override this member.
+    /// The client returned by <see cref="SevDeskClient"/> always does.
+    /// </exception>
+    Task<IReadOnlyList<DocumentDiscount>> GetDiscountsAsync(int id, CancellationToken ct = default) =>
+        throw new NotSupportedException(DiscountsNotSupported);
+
+    /// <summary>
     /// Creates a new invoice.
     /// </summary>
     /// <param name="invoice">The invoice to create.</param>
@@ -77,6 +95,42 @@ public interface IInvoiceClient
     Task<Invoice> SaveInvoiceAsync(Invoice invoice, IEnumerable<InvoicePos> positions, CancellationToken ct = default);
 
     /// <summary>
+    /// Saves an invoice together with its positions and document-level discounts in a single
+    /// transaction and reads the saved invoice back.
+    /// </summary>
+    /// <remarks>
+    /// Behaves exactly like
+    /// <see cref="SaveInvoiceAsync(Invoice, IEnumerable{InvoicePos}, CancellationToken)"/>,
+    /// including the two-phase contract of
+    /// <see cref="sevDesk.NET.Exceptions.SevDeskWriteSucceededException"/>. The discounts are
+    /// sent in the <c>discountSave</c> array and are added to the invoice; discounts it already
+    /// has are not removed. sevDesk calculates the discount amounts and the sums itself.
+    /// </remarks>
+    /// <param name="invoice">The invoice to save.</param>
+    /// <param name="positions">The line item positions for the invoice.</param>
+    /// <param name="discounts">
+    /// The document-level discounts and surcharges to add. <see langword="null"/> or empty sends
+    /// the same request as the overload without discounts.
+    /// </param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>The saved invoice.</returns>
+    /// <exception cref="sevDesk.NET.Exceptions.SevDeskWriteSucceededException">
+    /// The invoice was created, but reading it back failed. Do not save it again.
+    /// </exception>
+    /// <exception cref="sevDesk.NET.Exceptions.SevDeskApiException">
+    /// The invoice was not created. Retrying is safe.
+    /// </exception>
+    /// <exception cref="NotSupportedException">
+    /// <paramref name="discounts"/> is not empty and the implementation predates document-level
+    /// discounts and does not override this member. Nothing was sent. The client returned by
+    /// <see cref="SevDeskClient"/> always overrides it.
+    /// </exception>
+    Task<Invoice> SaveInvoiceAsync(Invoice invoice, IEnumerable<InvoicePos> positions, IEnumerable<DocumentDiscount>? discounts, CancellationToken ct = default) =>
+        discounts is null || !discounts.Any()
+            ? SaveInvoiceAsync(invoice, positions, ct)
+            : throw new NotSupportedException(DiscountsNotSupported);
+
+    /// <summary>
     /// Saves an invoice together with its positions in a single transaction and returns only the
     /// reference to it, without reading the invoice back.
     /// </summary>
@@ -101,6 +155,41 @@ public interface IInvoiceClient
     /// The invoice was not created. Retrying is safe.
     /// </exception>
     Task<SevDeskObjectReference> SaveInvoiceReferenceAsync(Invoice invoice, IEnumerable<InvoicePos> positions, CancellationToken ct = default);
+
+    /// <summary>
+    /// Saves an invoice together with its positions and document-level discounts in a single
+    /// transaction and returns only the reference to it, without reading the invoice back.
+    /// </summary>
+    /// <remarks>
+    /// Behaves exactly like
+    /// <see cref="SaveInvoiceReferenceAsync(Invoice, IEnumerable{InvoicePos}, CancellationToken)"/>.
+    /// The discounts are sent in the <c>discountSave</c> array and are added to the invoice;
+    /// discounts it already has are not removed.
+    /// </remarks>
+    /// <param name="invoice">The invoice to save.</param>
+    /// <param name="positions">The line item positions for the invoice.</param>
+    /// <param name="discounts">
+    /// The document-level discounts and surcharges to add. <see langword="null"/> or empty sends
+    /// the same request as the overload without discounts.
+    /// </param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>A reference carrying the identifier of the saved invoice.</returns>
+    /// <exception cref="sevDesk.NET.Exceptions.SevDeskWriteSucceededException">
+    /// The invoice was created, but its identifier could not be read from the response. Do not save
+    /// it again; look it up instead.
+    /// </exception>
+    /// <exception cref="sevDesk.NET.Exceptions.SevDeskApiException">
+    /// The invoice was not created. Retrying is safe.
+    /// </exception>
+    /// <exception cref="NotSupportedException">
+    /// <paramref name="discounts"/> is not empty and the implementation predates document-level
+    /// discounts and does not override this member. Nothing was sent. The client returned by
+    /// <see cref="SevDeskClient"/> always overrides it.
+    /// </exception>
+    Task<SevDeskObjectReference> SaveInvoiceReferenceAsync(Invoice invoice, IEnumerable<InvoicePos> positions, IEnumerable<DocumentDiscount>? discounts, CancellationToken ct = default) =>
+        discounts is null || !discounts.Any()
+            ? SaveInvoiceReferenceAsync(invoice, positions, ct)
+            : throw new NotSupportedException(DiscountsNotSupported);
 
     /// <summary>
     /// Changes the status of an invoice.
@@ -159,4 +248,11 @@ public interface IInvoiceClient
     /// <param name="date">The date of the payment.</param>
     /// <param name="ct">Cancellation token.</param>
     Task BookAmountAsync(int id, decimal amount, int checkAccountId, DateTime date, CancellationToken ct = default);
+
+    // Default implementations of the members added in 3.2.0, so that implementations written
+    // against 3.1.0 keep compiling. They refuse to drop discounts silently.
+    private const string DiscountsNotSupported =
+        "This IInvoiceClient implementation does not support document-level discounts. " +
+        "Implement GetDiscountsAsync and the SaveInvoiceAsync/SaveInvoiceReferenceAsync overloads " +
+        "that take discounts, or use the client created by SevDeskClient.";
 }

@@ -104,6 +104,24 @@ public class Invoice
     /// <summary>Gets or sets the total tax amount.</summary>
     public decimal? SumTax { get; init; }
 
+    /// <summary>
+    /// Gets the sum of all document-level discounts and surcharges (see <see cref="Discounts"/>)
+    /// as reported by sevDesk; negative for a discount. Calculated by the API — read-only.
+    /// </summary>
+    public decimal? SumDiscounts { get; init; }
+
+    /// <summary>
+    /// Gets the net sum of all document-level discounts and surcharges; negative for a discount.
+    /// Calculated by the API — read-only.
+    /// </summary>
+    public decimal? SumDiscountNet { get; init; }
+
+    /// <summary>
+    /// Gets the gross sum of all document-level discounts and surcharges; negative for a discount.
+    /// Calculated by the API — read-only.
+    /// </summary>
+    public decimal? SumDiscountGross { get; init; }
+
     /// <summary>Gets or sets the tax type (default, eu, noteu, custom).</summary>
     public string? TaxType { get; init; }
 
@@ -161,7 +179,17 @@ public class Invoice
     /// <summary>
     /// Gets the invoice positions when they were requested via <c>embed=positions</c>;
     /// <see langword="null"/> otherwise. Read-only — use
-    /// <see cref="Clients.IInvoiceClient.SaveInvoiceAsync"/> to write positions.
+    /// <see cref="Clients.IInvoiceClient.SaveInvoiceAsync(Invoice, IEnumerable{InvoicePos}, CancellationToken)"/>
+    /// to write positions.
     /// </summary>
     public IReadOnlyList<InvoicePos>? Positions { get; init; }
+
+    /// <summary>
+    /// Gets the document-level discounts and surcharges when they were requested via
+    /// <c>embed=discounts</c>; <see langword="null"/> otherwise. Read-only — use
+    /// <see cref="Clients.IInvoiceClient.SaveInvoiceAsync(Invoice, IEnumerable{InvoicePos}, IEnumerable{DocumentDiscount}, CancellationToken)"/>
+    /// to write discounts, and <see cref="Clients.IInvoiceClient.GetDiscountsAsync"/> to read them
+    /// for a single invoice.
+    /// </summary>
+    public IReadOnlyList<DocumentDiscount>? Discounts { get; init; }
 }

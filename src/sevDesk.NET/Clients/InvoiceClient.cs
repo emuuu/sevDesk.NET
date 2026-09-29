@@ -70,24 +70,41 @@ internal class InvoiceClient : IInvoiceClient
     public Task DeleteAsync(int id, CancellationToken ct = default) =>
         _client.DeleteAsync($"Invoice/{id}", ct);
 
-    public async Task<Invoice> SaveInvoiceAsync(Invoice invoice, IEnumerable<InvoicePos> positions, CancellationToken ct = default)
+    public async Task<IReadOnlyList<DocumentDiscount>> GetDiscountsAsync(int id, CancellationToken ct = default)
     {
-        var write = await PostSaveInvoiceAsync(invoice, positions, ct).ConfigureAwait(false);
+        var (items, _) = await _client.GetListAsync($"Invoice/{id}/getDiscounts", null,
+            SevDeskJsonContext.Default.SevDeskApiListResponseApiDiscount, ct: ct).ConfigureAwait(false);
+        return items.Select(ModelMapper.ToPublic).ToList();
+    }
+
+    public Task<Invoice> SaveInvoiceAsync(Invoice invoice, IEnumerable<InvoicePos> positions, CancellationToken ct = default) =>
+        SaveInvoiceAsync(invoice, positions, null, ct);
+
+    public async Task<Invoice> SaveInvoiceAsync(Invoice invoice, IEnumerable<InvoicePos> positions, IEnumerable<DocumentDiscount>? discounts, CancellationToken ct = default)
+    {
+        var write = await PostSaveInvoiceAsync(invoice, positions, discounts, ct).ConfigureAwait(false);
         return await BaseClient.ReadBackAfterWriteAsync(write, "Invoice", () => GetAsync(write.Id, ct: ct)).ConfigureAwait(false);
     }
 
-    public async Task<SevDeskObjectReference> SaveInvoiceReferenceAsync(Invoice invoice, IEnumerable<InvoicePos> positions, CancellationToken ct = default)
+    public Task<SevDeskObjectReference> SaveInvoiceReferenceAsync(Invoice invoice, IEnumerable<InvoicePos> positions, CancellationToken ct = default) =>
+        SaveInvoiceReferenceAsync(invoice, positions, null, ct);
+
+    public async Task<SevDeskObjectReference> SaveInvoiceReferenceAsync(Invoice invoice, IEnumerable<InvoicePos> positions, IEnumerable<DocumentDiscount>? discounts, CancellationToken ct = default)
     {
-        var write = await PostSaveInvoiceAsync(invoice, positions, ct).ConfigureAwait(false);
+        var write = await PostSaveInvoiceAsync(invoice, positions, discounts, ct).ConfigureAwait(false);
         return new SevDeskObjectReference { Id = write.Id, ObjectName = "Invoice" };
     }
 
-    private Task<FactoryWriteResult> PostSaveInvoiceAsync(Invoice invoice, IEnumerable<InvoicePos> positions, CancellationToken ct)
+    private Task<FactoryWriteResult> PostSaveInvoiceAsync(Invoice invoice, IEnumerable<InvoicePos> positions, IEnumerable<DocumentDiscount>? discounts, CancellationToken ct)
     {
+        var discountSave = discounts?.Select(ModelMapper.ToApiSave).ToList();
         var request = new ApiSaveInvoiceRequest
         {
             Invoice = ModelMapper.ToApiFactory(invoice),
-            InvoicePosSave = positions.Select(ModelMapper.ToApi).ToList()
+            InvoicePosSave = positions.Select(ModelMapper.ToApi).ToList(),
+            // Omitted entirely when there is nothing to add, so a save without discounts sends
+            // no discountSave member at all.
+            DiscountSave = discountSave is { Count: > 0 } ? discountSave : null
         };
         return _client.PostFactoryAsync("Invoice/Factory/saveInvoice", request,
             SevDeskJsonContext.Default.ApiSaveInvoiceRequest, "invoice", "Invoice", ct);
