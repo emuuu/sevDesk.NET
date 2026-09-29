@@ -4,8 +4,21 @@ namespace sevDesk.NET.Internal.ApiModels;
 
 internal class ApiCreditNote
 {
+    /// <summary>
+    /// Omitted while zero: a new object has no id yet, and sevDesk answers <c>"id":0</c> by
+    /// looking up object 0 and rejecting the request.
+    /// </summary>
     [JsonPropertyName("id")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int Id { get; set; }
+
+    /// <summary>Required by <c>CreditNote/Factory/saveCreditNote</c>; set by <see cref="ModelMapper.ToApiFactory(Models.CreditNote)"/>.</summary>
+    [JsonPropertyName("objectName")]
+    public string? ObjectName { get; set; }
+
+    /// <summary>Required by <c>CreditNote/Factory/saveCreditNote</c>; set by <see cref="ModelMapper.ToApiFactory(Models.CreditNote)"/>.</summary>
+    [JsonPropertyName("mapAll")]
+    public bool? MapAll { get; set; }
 
     [JsonPropertyName("creditNoteNumber")]
     public string? CreditNoteNumber { get; set; }
@@ -73,8 +86,16 @@ internal class ApiCreditNote
 
 internal class ApiCreditNotePos
 {
+    /// <summary>
+    /// Omitted while zero: a new object has no id yet, and sevDesk answers <c>"id":0</c> by
+    /// looking up object 0 and rejecting the request.
+    /// </summary>
     [JsonPropertyName("id")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int Id { get; set; }
+
+    [JsonPropertyName("objectName")]
+    public string? ObjectName { get; set; }
 
     [JsonPropertyName("creditNote")]
     public ApiObjectReference? CreditNote { get; set; }

@@ -4,7 +4,12 @@ namespace sevDesk.NET.Internal.ApiModels;
 
 internal class ApiCheckAccount
 {
+    /// <summary>
+    /// Omitted while zero: a new object has no id yet, and sevDesk answers <c>"id":0</c> by
+    /// looking up object 0 and rejecting the request.
+    /// </summary>
     [JsonPropertyName("id")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int Id { get; set; }
 
     [JsonPropertyName("name")]
@@ -40,7 +45,12 @@ internal class ApiCheckAccount
 
 internal class ApiCheckAccountTransaction
 {
+    /// <summary>
+    /// Omitted while zero: a new object has no id yet, and sevDesk answers <c>"id":0</c> by
+    /// looking up object 0 and rejecting the request.
+    /// </summary>
     [JsonPropertyName("id")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int Id { get; set; }
 
     [JsonPropertyName("checkAccount")]

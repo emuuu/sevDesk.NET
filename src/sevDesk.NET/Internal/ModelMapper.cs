@@ -319,6 +319,18 @@ internal static class ModelMapper
         CustomerInternalNote = model.CustomerInternalNote
     };
 
+    /// <summary>
+    /// Maps an order for the <c>order</c> member of <c>Order/Factory/saveOrder</c>, which,
+    /// unlike the plain REST endpoints, requires <c>objectName</c> and <c>mapAll</c>.
+    /// </summary>
+    internal static ApiOrder ToApiFactory(Order model)
+    {
+        var api = ToApi(model);
+        api.ObjectName = "Order";
+        api.MapAll = true;
+        return api;
+    }
+
     // --- OrderPos ---
 
     internal static OrderPos ToPublic(ApiOrderPos api) => new()
@@ -356,6 +368,7 @@ internal static class ModelMapper
         Text = model.Text,
         Discount = model.Discount,
         Optional = FormatBool(model.Optional),
+        ObjectName = "OrderPos",
         MapAll = true
     };
 
@@ -401,6 +414,18 @@ internal static class ModelMapper
         TaxSet = ToApi(model.TaxSet)
     };
 
+    /// <summary>
+    /// Maps a voucher for the <c>voucher</c> member of <c>Voucher/Factory/saveVoucher</c>, which,
+    /// unlike the plain REST endpoints, requires <c>objectName</c> and <c>mapAll</c>.
+    /// </summary>
+    internal static ApiVoucher ToApiFactory(Voucher model)
+    {
+        var api = ToApi(model);
+        api.ObjectName = "Voucher";
+        api.MapAll = true;
+        return api;
+    }
+
     // --- VoucherPos ---
 
     internal static VoucherPos ToPublic(ApiVoucherPos api) => new()
@@ -430,6 +455,7 @@ internal static class ModelMapper
         TaxRate = model.TaxRate,
         IsAsset = FormatBool(model.IsAsset),
         Comment = model.Comment,
+        ObjectName = "VoucherPos",
         MapAll = true
     };
 
@@ -482,6 +508,18 @@ internal static class ModelMapper
         SmallSettlement = FormatBool(model.SmallSettlement)
     };
 
+    /// <summary>
+    /// Maps a credit note for the <c>creditNote</c> member of <c>CreditNote/Factory/saveCreditNote</c>, which,
+    /// unlike the plain REST endpoints, requires <c>objectName</c> and <c>mapAll</c>.
+    /// </summary>
+    internal static ApiCreditNote ToApiFactory(CreditNote model)
+    {
+        var api = ToApi(model);
+        api.ObjectName = "CreditNote";
+        api.MapAll = true;
+        return api;
+    }
+
     // --- CreditNotePos ---
 
     internal static CreditNotePos ToPublic(ApiCreditNotePos api) => new()
@@ -519,6 +557,7 @@ internal static class ModelMapper
         Text = model.Text,
         Discount = model.Discount,
         Optional = FormatBool(model.Optional),
+        ObjectName = "CreditNotePos",
         MapAll = true
     };
 

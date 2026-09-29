@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Fixed
 
 - Factory saves (`Invoice`/`InvoicePos`) were rejected by the live API (400) because the body sent `"id":0` without `objectName`/`mapAll`. Every `SaveInvoiceAsync` and `SaveInvoiceReferenceAsync` call was affected, with or without positions: sevDesk answered `invoice expected array with 'id' and 'objectName'`, and no invoice was created. The `invoice` member of `Invoice/Factory/saveInvoice` now carries `"objectName":"Invoice"` and `"mapAll":true`, each entry of `invoicePosSave` carries `"objectName":"InvoicePos"`, and `id` is sent only when it is set — omitted for a new invoice or position, the real id for an existing one. `CreateAsync` and `UpdateAsync` do not send `objectName` or `mapAll`.
+- The same defect on the other write paths. `CreditNote/Factory/saveCreditNote`, `Order/Factory/saveOrder` and `Voucher/Factory/saveVoucher` sent the document with `"id":0` and without `objectName`/`mapAll`, and their positions without `objectName`; they now follow the invoice. The plain REST creates sent `"id":0` as well, which sevDesk answers with 404 `No Model_Contact with the id 0 was found` for `Contacts.CreateAsync`; `id` is now omitted while it is zero on every model the package writes (`Contact`, `ContactAddress`, `CommunicationWay`, `Part`, `CheckAccountTransaction`, `CheckAccount`, `Category`, `Tag` and the document and position models), and sent as before once it is set.
 
 ## [3.1.0] - 2026-08-16
 

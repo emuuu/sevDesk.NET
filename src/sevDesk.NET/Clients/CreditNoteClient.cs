@@ -69,7 +69,7 @@ internal class CreditNoteClient : ICreditNoteClient
     {
         var request = new ApiSaveCreditNoteRequest
         {
-            CreditNote = ModelMapper.ToApi(creditNote),
+            CreditNote = ModelMapper.ToApiFactory(creditNote),
             CreditNotePosSave = positions.Select(ModelMapper.ToApi).ToList()
         };
         return _client.PostFactoryAsync("CreditNote/Factory/saveCreditNote", request,

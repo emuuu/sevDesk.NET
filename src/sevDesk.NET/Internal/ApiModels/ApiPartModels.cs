@@ -4,7 +4,12 @@ namespace sevDesk.NET.Internal.ApiModels;
 
 internal class ApiPart
 {
+    /// <summary>
+    /// Omitted while zero: a new object has no id yet, and sevDesk answers <c>"id":0</c> by
+    /// looking up object 0 and rejecting the request.
+    /// </summary>
     [JsonPropertyName("id")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int Id { get; set; }
 
     [JsonPropertyName("name")]
@@ -52,7 +57,12 @@ internal class ApiPart
 
 internal class ApiCommunicationWay
 {
+    /// <summary>
+    /// Omitted while zero: a new object has no id yet, and sevDesk answers <c>"id":0</c> by
+    /// looking up object 0 and rejecting the request.
+    /// </summary>
     [JsonPropertyName("id")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int Id { get; set; }
 
     [JsonPropertyName("contact")]
@@ -79,7 +89,12 @@ internal class ApiCommunicationWay
 
 internal class ApiContactAddress
 {
+    /// <summary>
+    /// Omitted while zero: a new object has no id yet, and sevDesk answers <c>"id":0</c> by
+    /// looking up object 0 and rejecting the request.
+    /// </summary>
     [JsonPropertyName("id")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int Id { get; set; }
 
     [JsonPropertyName("contact")]
@@ -121,7 +136,12 @@ internal class ApiContactAddress
 
 internal class ApiTag
 {
+    /// <summary>
+    /// Omitted while zero: a new object has no id yet, and sevDesk answers <c>"id":0</c> by
+    /// looking up object 0 and rejecting the request.
+    /// </summary>
     [JsonPropertyName("id")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int Id { get; set; }
 
     [JsonPropertyName("name")]
@@ -139,7 +159,12 @@ internal class ApiTag
 
 internal class ApiCategory
 {
+    /// <summary>
+    /// Omitted while zero: a new object has no id yet, and sevDesk answers <c>"id":0</c> by
+    /// looking up object 0 and rejecting the request.
+    /// </summary>
     [JsonPropertyName("id")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int Id { get; set; }
 
     [JsonPropertyName("name")]

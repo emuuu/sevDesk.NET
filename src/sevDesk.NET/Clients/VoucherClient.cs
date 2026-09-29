@@ -58,7 +58,7 @@ internal class VoucherClient : IVoucherClient
     {
         var request = new ApiSaveVoucherRequest
         {
-            Voucher = ModelMapper.ToApi(voucher),
+            Voucher = ModelMapper.ToApiFactory(voucher),
             VoucherPosSave = positions.Select(ModelMapper.ToApi).ToList(),
             Filename = filename
         };
