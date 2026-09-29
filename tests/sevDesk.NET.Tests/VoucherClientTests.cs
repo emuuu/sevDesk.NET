@@ -80,11 +80,13 @@ public class VoucherClientTests
             Content = JsonContent.Create(responseBody)
         });
 
+#pragma warning disable CS0618 // Obsolete: tests the deprecated member
         var result = await client.Vouchers.CreateAsync(new Voucher
         {
             Description = "New Voucher",
             CreditDebit = "D"
         });
+#pragma warning restore CS0618
 
         result.Id.ShouldBe(20);
         result.Description.ShouldBe("New Voucher");

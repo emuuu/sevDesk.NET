@@ -73,11 +73,13 @@ public class CheckAccountClientTests
             Content = JsonContent.Create(responseBody)
         });
 
+#pragma warning disable CS0618 // Obsolete: tests the deprecated member
         var result = await client.CheckAccounts.CreateAsync(new CheckAccount
         {
             Name = "Neues Konto",
             Currency = "EUR"
         });
+#pragma warning restore CS0618
 
         result.Id.ShouldBe(10);
         result.Name.ShouldBe("Neues Konto");

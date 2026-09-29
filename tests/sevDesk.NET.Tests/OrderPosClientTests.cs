@@ -72,12 +72,14 @@ public class OrderPosClientTests
             Content = JsonContent.Create(responseBody)
         });
 
+#pragma warning disable CS0618 // Obsolete: tests the deprecated member
         var result = await client.OrderPositions.CreateAsync(new OrderPos
         {
             Name = "New Order Pos",
             Quantity = 2,
             Price = 50.00m
         });
+#pragma warning restore CS0618
 
         result.Id.ShouldBe(10);
         result.Name.ShouldBe("New Order Pos");

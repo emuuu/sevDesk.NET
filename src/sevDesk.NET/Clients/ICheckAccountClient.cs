@@ -31,6 +31,12 @@ public interface ICheckAccountClient
     /// <param name="account">The check account to create.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>The created check account.</returns>
+    /// <remarks>
+    /// The sevDesk API documents no <c>POST /CheckAccount</c> endpoint. Check accounts are created
+    /// through <c>CheckAccount/Factory/fileImportAccount</c> or
+    /// <c>CheckAccount/Factory/clearingAccount</c>, which this package does not cover yet.
+    /// </remarks>
+    [Obsolete("The sevDesk API documents no POST /CheckAccount endpoint. Check accounts are created through CheckAccount/Factory/fileImportAccount or CheckAccount/Factory/clearingAccount.")]
     Task<CheckAccount> CreateAsync(CheckAccount account, CancellationToken ct = default);
 
     /// <summary>

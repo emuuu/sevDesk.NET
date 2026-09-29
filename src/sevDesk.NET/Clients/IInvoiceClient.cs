@@ -53,6 +53,10 @@ public interface IInvoiceClient
     /// <param name="invoice">The invoice to create.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>The created invoice.</returns>
+    /// <remarks>
+    /// <c>POST /Invoice</c> is not part of the sevDesk API specification. It is accepted by the live
+    /// API, but undocumented; the documented way is the invoice factory, <see cref="SaveInvoiceAsync(Invoice, IEnumerable{InvoicePos}, CancellationToken)"/>.
+    /// </remarks>
     Task<Invoice> CreateAsync(Invoice invoice, CancellationToken ct = default);
 
     /// <summary>

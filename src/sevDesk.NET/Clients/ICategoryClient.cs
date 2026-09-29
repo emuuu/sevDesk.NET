@@ -32,6 +32,10 @@ public interface ICategoryClient
     /// <param name="category">The category to create.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>The created category.</returns>
+    /// <remarks>
+    /// The sevDesk API documents no <c>POST /Category</c> endpoint and no factory for categories.
+    /// </remarks>
+    [Obsolete("The sevDesk API documents no POST /Category endpoint, and no other way to create a category.")]
     Task<Category> CreateAsync(Category category, CancellationToken ct = default);
 
     /// <summary>

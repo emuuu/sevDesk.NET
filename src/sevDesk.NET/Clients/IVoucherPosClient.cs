@@ -31,6 +31,11 @@ public interface IVoucherPosClient
     /// <param name="position">The voucher position to create.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>The created voucher position.</returns>
+    /// <remarks>
+    /// The sevDesk API documents no <c>POST /VoucherPos</c> endpoint; voucher positions are created through the
+    /// factory. Use <see cref="IVoucherClient.SaveVoucherAsync(Voucher, IEnumerable{VoucherPos}, string, CancellationToken)"/> instead.
+    /// </remarks>
+    [Obsolete("The sevDesk API documents no POST /VoucherPos endpoint. Use IVoucherClient.SaveVoucherAsync instead.")]
     Task<VoucherPos> CreateAsync(VoucherPos position, CancellationToken ct = default);
 
     /// <summary>

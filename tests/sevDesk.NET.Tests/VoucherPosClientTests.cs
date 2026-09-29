@@ -72,11 +72,13 @@ public class VoucherPosClientTests
             Content = JsonContent.Create(responseBody)
         });
 
+#pragma warning disable CS0618 // Obsolete: tests the deprecated member
         var result = await client.VoucherPositions.CreateAsync(new VoucherPos
         {
             Net = 75.00m,
             TaxRate = 19
         });
+#pragma warning restore CS0618
 
         result.Id.ShouldBe(10);
         result.Net.ShouldBe(75.00m);

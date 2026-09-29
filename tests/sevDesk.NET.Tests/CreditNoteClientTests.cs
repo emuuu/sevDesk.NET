@@ -78,10 +78,12 @@ public class CreditNoteClientTests
             Content = JsonContent.Create(responseBody)
         });
 
+#pragma warning disable CS0618 // Obsolete: tests the deprecated member
         var result = await client.CreditNotes.CreateAsync(new CreditNote
         {
             CreditNoteNumber = "GS-020"
         });
+#pragma warning restore CS0618
 
         result.Id.ShouldBe(20);
         result.CreditNoteNumber.ShouldBe("GS-020");

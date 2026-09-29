@@ -33,6 +33,11 @@ public interface ICreditNoteClient
     /// <param name="creditNote">The credit note to create.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>The created credit note.</returns>
+    /// <remarks>
+    /// The sevDesk API documents no <c>POST /CreditNote</c> endpoint; credit notes are created through the
+    /// factory. Use <see cref="SaveCreditNoteAsync(CreditNote, IEnumerable{CreditNotePos}, CancellationToken)"/> instead.
+    /// </remarks>
+    [Obsolete("The sevDesk API documents no POST /CreditNote endpoint. Use ICreditNoteClient.SaveCreditNoteAsync instead.")]
     Task<CreditNote> CreateAsync(CreditNote creditNote, CancellationToken ct = default);
 
     /// <summary>

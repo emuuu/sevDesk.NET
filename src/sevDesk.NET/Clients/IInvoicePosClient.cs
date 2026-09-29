@@ -31,6 +31,10 @@ public interface IInvoicePosClient
     /// <param name="position">The invoice position to create.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>The created invoice position.</returns>
+    /// <remarks>
+    /// <c>POST /InvoicePos</c> is not part of the sevDesk API specification. It is accepted by the live
+    /// API, but undocumented; the documented way is the invoice factory, <see cref="IInvoiceClient.SaveInvoiceAsync(Invoice, IEnumerable{InvoicePos}, CancellationToken)"/>.
+    /// </remarks>
     Task<InvoicePos> CreateAsync(InvoicePos position, CancellationToken ct = default);
 
     /// <summary>

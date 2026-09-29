@@ -34,6 +34,11 @@ public interface IOrderClient
     /// <param name="order">The order to create.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>The created order.</returns>
+    /// <remarks>
+    /// The sevDesk API documents no <c>POST /Order</c> endpoint; orders are created through the
+    /// factory. Use <see cref="SaveOrderAsync(Order, IEnumerable{OrderPos}, CancellationToken)"/> instead.
+    /// </remarks>
+    [Obsolete("The sevDesk API documents no POST /Order endpoint. Use IOrderClient.SaveOrderAsync instead.")]
     Task<Order> CreateAsync(Order order, CancellationToken ct = default);
 
     /// <summary>
