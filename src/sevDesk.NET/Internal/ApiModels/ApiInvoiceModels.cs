@@ -109,6 +109,15 @@ internal class ApiInvoice
     [JsonPropertyName("sumTax")]
     public decimal? SumTax { get; set; }
 
+    [JsonPropertyName("sumDiscounts")]
+    public decimal? SumDiscounts { get; set; }
+
+    [JsonPropertyName("sumDiscountNet")]
+    public decimal? SumDiscountNet { get; set; }
+
+    [JsonPropertyName("sumDiscountGross")]
+    public decimal? SumDiscountGross { get; set; }
+
     [JsonPropertyName("taxType")]
     public string? TaxType { get; set; }
 
@@ -169,6 +178,13 @@ internal class ApiInvoice
     /// </summary>
     [JsonPropertyName("positions")]
     public List<ApiInvoicePos>? Positions { get; set; }
+
+    /// <summary>
+    /// Discounts embedded via <c>embed=discounts</c>. Read-only — never serialized back
+    /// to the API, which expects discounts in the dedicated <c>discountSave</c> array.
+    /// </summary>
+    [JsonPropertyName("discounts")]
+    public List<ApiDiscount>? Discounts { get; set; }
 }
 
 internal class ApiInvoicePos

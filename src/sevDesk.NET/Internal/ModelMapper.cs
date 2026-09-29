@@ -141,6 +141,9 @@ internal static class ModelMapper
         SumNet = api.SumNet,
         SumGross = api.SumGross,
         SumTax = api.SumTax,
+        SumDiscounts = api.SumDiscounts,
+        SumDiscountNet = api.SumDiscountNet,
+        SumDiscountGross = api.SumDiscountGross,
         TaxType = api.TaxType,
         TaxRate = api.TaxRate,
         TaxText = api.TaxText,
@@ -159,7 +162,8 @@ internal static class ModelMapper
         PropertyIsEInvoice = ParseBool(api.PropertyIsEInvoice),
         PaidAmount = api.PaidAmount,
         PayDate = ParseDateTime(api.PayDate),
-        Positions = api.Positions?.Select(ToPublic).ToList()
+        Positions = api.Positions?.Select(ToPublic).ToList(),
+        Discounts = api.Discounts?.Select(ToPublic).ToList()
     };
 
     internal static ApiInvoice ToApi(Invoice model) => new()
@@ -260,6 +264,29 @@ internal static class ModelMapper
         Optional = FormatBool(model.Optional),
         ObjectName = "InvoicePos",
         MapAll = true
+    };
+
+    // --- DocumentDiscount ---
+
+    internal static DocumentDiscount ToPublic(ApiDiscount api) => new()
+    {
+        Id = api.Id,
+        Object = ToPublic(api.Object),
+        Text = api.Text,
+        IsPercentage = ParseBool(api.Percentage) ?? false,
+        Value = api.Value ?? 0m,
+        IsSurcharge = ParseBool(api.Discount) == false,
+        IsNet = ParseBool(api.IsNet),
+        Create = ParseDateTime(api.Create),
+        Update = ParseDateTime(api.Update)
+    };
+
+    internal static ApiDiscountSave ToApiSave(DocumentDiscount model) => new()
+    {
+        Discount = !model.IsSurcharge,
+        Text = model.Text,
+        Percentage = model.IsPercentage,
+        Value = model.Value
     };
 
     // --- Order ---

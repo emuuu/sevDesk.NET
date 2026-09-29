@@ -4,12 +4,35 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [3.2.0] - 2026-09-29
+
+### Added
+
+- Document-level discounts and surcharges on invoices (sevDesk object `Discounts`), e.g. "Kundenrabatt -3 %" on the sum of all positions. Until now they could be neither read nor written, so a caller had to reconstruct the percentage from the sums — not always unambiguously — and could not write a discounted invoice back at all.
+  - `DocumentDiscount`: `Text`, `IsPercentage`, `Value`, `IsSurcharge`, and the read-only `Id`, `Object`, `IsNet`, `Create`, `Update`.
+  - `IInvoiceClient.GetDiscountsAsync(id)` reads the discounts of one invoice (`GET /Invoice/{id}/getDiscounts`). For several invoices at once, pass `embed: "discounts"` to `ListAsync` or `GetAsync` and read `Invoice.Discounts`.
+  - `Invoice.SumDiscounts`, `Invoice.SumDiscountNet` and `Invoice.SumDiscountGross`, as calculated by sevDesk and passed through unchanged. They are **negative** for a discount: a 3 % discount on 1,365.00 reads as `-40.95`, while `DocumentDiscount.Value` of the same discount is the positive `3`.
+  - `SaveInvoiceAsync` and `SaveInvoiceReferenceAsync` overloads with an additional `IEnumerable<DocumentDiscount>? discounts` parameter. The discounts are sent in the `discountSave` array of `Invoice/Factory/saveInvoice` and added to the invoice. The two-phase contract of `SevDeskWriteSucceededException` applies unchanged.
+
+  ```csharp
+  var invoice = await client.Invoices.SaveInvoiceAsync(invoice, positions,
+      [new DocumentDiscount { Text = "Kundenrabatt", IsPercentage = true, Value = 3 }]);
+  ```
 
 ### Fixed
 
 - Factory saves (`Invoice`/`InvoicePos`) were rejected by the live API (400) because the body sent `"id":0` without `objectName`/`mapAll`. Every `SaveInvoiceAsync` and `SaveInvoiceReferenceAsync` call was affected, with or without positions: sevDesk answered `invoice expected array with 'id' and 'objectName'`, and no invoice was created. The `invoice` member of `Invoice/Factory/saveInvoice` now carries `"objectName":"Invoice"` and `"mapAll":true`, each entry of `invoicePosSave` carries `"objectName":"InvoicePos"`, and `id` is sent only when it is set — omitted for a new invoice or position, the real id for an existing one. `CreateAsync` and `UpdateAsync` do not send `objectName` or `mapAll`.
 - The same defect on the other write paths. `CreditNote/Factory/saveCreditNote`, `Order/Factory/saveOrder` and `Voucher/Factory/saveVoucher` sent the document with `"id":0` and without `objectName`/`mapAll`, and their positions without `objectName`; they now follow the invoice. The plain REST creates sent `"id":0` as well, which sevDesk answers with 404 `No Model_Contact with the id 0 was found` for `Contacts.CreateAsync`; `id` is now omitted while it is zero on every model the package writes (`Contact`, `ContactAddress`, `CommunicationWay`, `Part`, `CheckAccountTransaction`, `CheckAccount`, `Category`, `Tag` and the document and position models), and sent as before once it is set.
+
+### Notes
+
+- Reading and writing document-level discounts is verified against the live API: a draft invoice saved through `SaveInvoiceAsync` with a 3 % "Kundenrabatt" on one position of 100.00 read back with `sumNet` `"97"`, `sumTax` `"18.43"`, `sumGross` `"115.43"`, `sumDiscounts` and `sumDiscountNet` `"-3"`, `sumDiscountGross` `"-3.57"`, and a discount with `discount` `"1"`, `percentage` `"1"`, `value` `"3"`, `isNet` `"1"` — through both `GetDiscountsAsync` and `embed=discounts`. The invoice kept the number it was given and did not draw one from the invoice number sequence.
+- **Backwards compatible.** No existing signature changed. A save without discounts — through the existing overloads, or with `null` or an empty list — sends no `discountSave` member at all. The request body is otherwise not the one 3.1.0 sent: that body was rejected by the live API (see Fixed).
+- The three members added to `IInvoiceClient` have default implementations, so custom implementations written against 3.1.0 — test fakes, for example — compile unchanged. Their defaults never drop a discount silently: the `SaveInvoiceAsync` and `SaveInvoiceReferenceAsync` overloads forward to the existing overloads when `discounts` is `null` or empty and throw `NotSupportedException` otherwise, without sending anything; `GetDiscountsAsync` throws `NotSupportedException`. The client created by `SevDeskClient` implements all three. Covered by a test with an implementation of the 3.1.0 members only.
+- `DocumentDiscount` is not the early-payment discount (`Invoice.Discount` and `Invoice.DiscountTime`, "3 % Skonto within 14 days") and not the position discount (`InvoicePos.Discount`). Both are unchanged.
+- `IsNet` is read-only: `discountSave` does not accept it. The sevDesk API documentation contradicts itself on the meaning of `isNet`; `"1"` is mapped to net, which is what the API returns for discounts on net invoices.
+- Existing discounts of an invoice are not removed when it is saved again. `discountDelete` is not supported yet.
+- Credit notes are not covered: the sevDesk API documents the discount parameters of `CreditNote/Factory/saveCreditNote` as deprecated and without effect.
 
 ## [3.1.0] - 2026-08-16
 

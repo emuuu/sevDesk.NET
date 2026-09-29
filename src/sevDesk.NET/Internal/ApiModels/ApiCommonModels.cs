@@ -18,6 +18,68 @@ internal class ApiSaveInvoiceRequest
 
     [JsonPropertyName("invoicePosSave")]
     public List<ApiInvoicePos>? InvoicePosSave { get; set; }
+
+    [JsonPropertyName("discountSave")]
+    public List<ApiDiscountSave>? DiscountSave { get; set; }
+}
+
+/// <summary>
+/// A document-level discount as returned by <c>GET /Invoice/{id}/getDiscounts</c> and
+/// <c>embed=discounts</c>. The flags arrive as <c>"0"</c>/<c>"1"</c> strings.
+/// </summary>
+internal class ApiDiscount
+{
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
+
+    [JsonPropertyName("object")]
+    public ApiObjectReference? Object { get; set; }
+
+    [JsonPropertyName("discount")]
+    public string? Discount { get; set; }
+
+    [JsonPropertyName("text")]
+    public string? Text { get; set; }
+
+    [JsonPropertyName("percentage")]
+    public string? Percentage { get; set; }
+
+    [JsonPropertyName("value")]
+    public decimal? Value { get; set; }
+
+    [JsonPropertyName("isNet")]
+    public string? IsNet { get; set; }
+
+    [JsonPropertyName("create")]
+    public string? Create { get; set; }
+
+    [JsonPropertyName("update")]
+    public string? Update { get; set; }
+}
+
+/// <summary>
+/// An entry of the <c>discountSave</c> array of a factory save. Unlike the read model, the
+/// flags are JSON booleans here, and <c>isNet</c> is not accepted.
+/// </summary>
+internal class ApiDiscountSave
+{
+    [JsonPropertyName("discount")]
+    public bool Discount { get; set; }
+
+    [JsonPropertyName("text")]
+    public string? Text { get; set; }
+
+    [JsonPropertyName("percentage")]
+    public bool Percentage { get; set; }
+
+    [JsonPropertyName("value")]
+    public decimal Value { get; set; }
+
+    [JsonPropertyName("objectName")]
+    public string ObjectName { get; set; } = "Discounts";
+
+    [JsonPropertyName("mapAll")]
+    public bool MapAll { get; set; } = true;
 }
 
 internal class ApiSaveOrderRequest

@@ -177,6 +177,45 @@ var invoice = await client.Invoices.SaveInvoiceAsync(
     });
 ```
 
+### Invoice with document-level discount
+
+A discount on the whole document ("Kundenrabatt -3 %") is a separate `DocumentDiscount` and goes
+into its own argument. sevDesk calculates the amounts and sums itself.
+
+```csharp
+var invoice = await client.Invoices.SaveInvoiceAsync(
+    new Invoice
+    {
+        Contact = new SevDeskObjectReference { Id = 123, ObjectName = "Contact" },
+        InvoiceDate = DateTime.Today,
+        TimeToPay = 30
+    },
+    positions,
+    new[]
+    {
+        new DocumentDiscount { Text = "Kundenrabatt", IsPercentage = true, Value = 3 }
+    });
+
+// The sums come from sevDesk and are negative for a discount, while Value stays positive:
+// invoice.SumDiscountNet == -40.95m for positions worth 1,365.00
+
+// Read the discounts back, for one invoice or embedded in a list
+IReadOnlyList<DocumentDiscount> discounts = await client.Invoices.GetDiscountsAsync(invoice.Id);
+var withDiscounts = await client.Invoices.ListAsync(embed: "discounts");
+```
+
+Three different things are called "discount" in sevDesk, and each has its own place:
+
+| Kind | Example | Property |
+|------|---------|----------|
+| Document-level discount or surcharge | Kundenrabatt 3 % on all positions | `DocumentDiscount`, `Invoice.Discounts`, `Invoice.SumDiscount*` |
+| Position discount | 20 % on one position | `InvoicePos.Discount` |
+| Early-payment discount | 3 % Skonto within 14 days | `Invoice.Discount`, `Invoice.DiscountTime` |
+
+`Text`, `IsPercentage`, `Value` and `IsSurcharge` are what gets written. `Id`, `Object`, `IsNet`,
+`Create` and `Update` are filled when reading and ignored when saving; sevDesk decides itself
+whether a discount applies to the net or the gross amount.
+
 ### Get invoice PDF
 
 ```csharp

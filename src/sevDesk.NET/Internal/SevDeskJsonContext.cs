@@ -47,6 +47,7 @@ namespace sevDesk.NET.Internal;
 [JsonSerializable(typeof(SevDeskApiListResponse<ApiCurrencyExchangeRate>))]
 [JsonSerializable(typeof(SevDeskApiResponse<ApiDocument>))]
 [JsonSerializable(typeof(SevDeskApiListResponse<ApiDocument>))]
+[JsonSerializable(typeof(SevDeskApiListResponse<ApiDiscount>))]
 [JsonSerializable(typeof(ApiSaveInvoiceRequest))]
 [JsonSerializable(typeof(ApiSaveOrderRequest))]
 [JsonSerializable(typeof(ApiSaveVoucherRequest))]
