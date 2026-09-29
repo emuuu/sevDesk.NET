@@ -30,6 +30,10 @@ public interface ITagClient
     /// <param name="tag">The tag to create.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>The created tag.</returns>
+    /// <remarks>
+    /// <c>POST /Tag</c> is not part of the sevDesk API specification. It is accepted by the live
+    /// API, but undocumented; the documented way is <c>Tag/Factory/create</c>.
+    /// </remarks>
     Task<Tag> CreateAsync(Tag tag, CancellationToken ct = default);
 
     /// <summary>

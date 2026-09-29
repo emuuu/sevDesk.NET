@@ -19,6 +19,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
       [new DocumentDiscount { Text = "Kundenrabatt", IsPercentage = true, Value = 3 }]);
   ```
 
+### Deprecated
+
+- `CreateAsync` on `ICreditNoteClient`, `IOrderClient`, `IVoucherClient`, `ICreditNotePosClient`, `IOrderPosClient`, `IVoucherPosClient`, `ICategoryClient` and `ICheckAccountClient` is marked `[Obsolete]` (a warning, not an error). The sevDesk API documents no `POST` endpoint for any of these objects. Documents and their positions are created through the factory saves (`SaveCreditNoteAsync`, `SaveOrderAsync`, `SaveVoucherAsync`), check accounts through `CheckAccount/Factory/fileImportAccount` or `CheckAccount/Factory/clearingAccount`; for categories the API documents no way to create one. The methods keep working as before and will only be removed in a major version.
+- Not deprecated, but not in the specification either: `POST /Invoice`, `POST /InvoicePos` and `POST /Tag`, behind `IInvoiceClient.CreateAsync`, `IInvoicePosClient.CreateAsync` and `ITagClient.CreateAsync`. They are accepted by the live API; their XML documentation now says that the route is undocumented.
+
 ### Fixed
 
 - Factory saves (`Invoice`/`InvoicePos`) were rejected by the live API (400) because the body sent `"id":0` without `objectName`/`mapAll`. Every `SaveInvoiceAsync` and `SaveInvoiceReferenceAsync` call was affected, with or without positions: sevDesk answered `invoice expected array with 'id' and 'objectName'`, and no invoice was created. The `invoice` member of `Invoice/Factory/saveInvoice` now carries `"objectName":"Invoice"` and `"mapAll":true`, each entry of `invoicePosSave` carries `"objectName":"InvoicePos"`, and `id` is sent only when it is set — omitted for a new invoice or position, the real id for an existing one. `CreateAsync` and `UpdateAsync` do not send `objectName` or `mapAll`.
@@ -33,6 +38,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `IsNet` is read-only: `discountSave` does not accept it. The sevDesk API documentation contradicts itself on the meaning of `isNet`; `"1"` is mapped to net, which is what the API returns for discounts on net invoices.
 - Existing discounts of an invoice are not removed when it is saved again. `discountDelete` is not supported yet.
 - Credit notes are not covered: the sevDesk API documents the discount parameters of `CreditNote/Factory/saveCreditNote` as deprecated and without effect.
+
+### Known limitations
+
+- The factory bodies are accepted by the live API for invoices, but they are not complete against the specification: fields it lists as required are sent only when the caller sets them, and some have no property at all.
+- Credit note, order and voucher saves are not yet usable against the live API, because their models lack fields the API requires:
+  - `CreditNote`: `deliveryDate`, `addressCountry`, `taxRule`, `bookingCategory`, `invoiceType`.
+  - `Order`: `addressCountry`, `taxRule`, `version`.
+  - `Voucher`: `taxRule`. `VoucherPos` does not map `sumNet`/`sumGross` when writing and has no `accountDatev`, and `voucherPosSave` requires a reference to the voucher, which a new voucher does not have yet.
+- The `Contacts.CreateAsync` fix is covered by tests, but not yet verified against the live API.
 
 ## [3.1.0] - 2026-08-16
 

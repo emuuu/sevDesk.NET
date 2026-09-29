@@ -31,6 +31,11 @@ public interface ICreditNotePosClient
     /// <param name="position">The credit note position to create.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>The created credit note position.</returns>
+    /// <remarks>
+    /// The sevDesk API documents no <c>POST /CreditNotePos</c> endpoint; credit note positions are created through the
+    /// factory. Use <see cref="ICreditNoteClient.SaveCreditNoteAsync(CreditNote, IEnumerable{CreditNotePos}, CancellationToken)"/> instead.
+    /// </remarks>
+    [Obsolete("The sevDesk API documents no POST /CreditNotePos endpoint. Use ICreditNoteClient.SaveCreditNoteAsync instead.")]
     Task<CreditNotePos> CreateAsync(CreditNotePos position, CancellationToken ct = default);
 
     /// <summary>

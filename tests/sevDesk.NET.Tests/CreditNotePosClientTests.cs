@@ -71,12 +71,14 @@ public class CreditNotePosClientTests
             Content = JsonContent.Create(responseBody)
         });
 
+#pragma warning disable CS0618 // Obsolete: tests the deprecated member
         var result = await client.CreditNotePositions.CreateAsync(new CreditNotePos
         {
             Name = "New CN Pos",
             Quantity = 1,
             Price = 30.00m
         });
+#pragma warning restore CS0618
 
         result.Id.ShouldBe(10);
         result.Name.ShouldBe("New CN Pos");

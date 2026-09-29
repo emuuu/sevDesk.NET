@@ -9,9 +9,11 @@ using Xunit;
 namespace sevDesk.NET.Tests;
 
 /// <summary>
-/// The request bodies sent to the <c>Factory</c> save endpoints, checked against the fields the
-/// sevDesk API requires. A body with <c>"id":0</c> and without <c>objectName</c>/<c>mapAll</c>
-/// is rejected by the live API with 400.
+/// The request bodies sent to the <c>Factory</c> save endpoints. A body with <c>"id":0</c> and
+/// without <c>objectName</c>/<c>mapAll</c> is rejected by the live API with 400. The fixed body is
+/// accepted live, but still omits fields the specification lists as required
+/// (<c>addressCountry</c>, <c>contactPerson</c>, <c>taxRule</c>, <c>taxText</c>) when the caller
+/// does not set them.
 /// </summary>
 public class FactoryRequestBodyTests
 {
@@ -61,7 +63,7 @@ public class FactoryRequestBodyTests
             .Replace("ü", "\\u00FC");
 
     [Fact]
-    public async Task SaveInvoice_NewInvoice_SendsTheSpecConformantBody()
+    public async Task SaveInvoice_NewInvoice_SendsTheBodyTheLiveApiAccepts()
     {
         var (client, handler) = CreateClient(Json(HttpStatusCode.OK, FactoryResponse));
 
@@ -230,7 +232,7 @@ public class OtherWriteRequestBodyTests
         body.RootElement.GetProperty("id").GetInt32().ShouldBe(7);
     }
 
-    public static TheoryData<string> RestCreates => ["Part", "CommunicationWay", "ContactAddress", "CheckAccountTransaction"];
+    public static TheoryData<string> RestCreates => ["Part", "CommunicationWay", "ContactAddress", "CheckAccountTransaction", "Category", "Tag", "CheckAccount"];
 
     [Theory]
     [MemberData(nameof(RestCreates))]
@@ -244,6 +246,11 @@ public class OtherWriteRequestBodyTests
             "CommunicationWay" => (Task)client.CommunicationWays.CreateAsync(new CommunicationWay { Value = "mail@example.com" }),
             "ContactAddress" => client.ContactAddresses.CreateAsync(new ContactAddress { City = "Münster" }),
             "CheckAccountTransaction" => client.CheckAccountTransactions.CreateAsync(new CheckAccountTransaction { Amount = 1 }),
+#pragma warning disable CS0618 // Obsolete: the request body is still tested
+            "Category" => client.Categories.CreateAsync(new Category { Name = "Category" }),
+            "CheckAccount" => client.CheckAccounts.CreateAsync(new CheckAccount { Name = "Account" }),
+#pragma warning restore CS0618
+            "Tag" => client.Tags.CreateAsync(new Tag { Name = "Tag" }),
             var other => throw new ArgumentOutOfRangeException(nameof(objectName), other, null)
         });
 

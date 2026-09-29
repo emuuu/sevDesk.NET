@@ -72,11 +72,13 @@ public class CategoryClientTests
             Content = JsonContent.Create(responseBody)
         });
 
+#pragma warning disable CS0618 // Obsolete: tests the deprecated member
         var result = await client.Categories.CreateAsync(new Category
         {
             Name = "New Category",
             ObjectType = "Contact"
         });
+#pragma warning restore CS0618
 
         result.Id.ShouldBe(10);
         result.Name.ShouldBe("New Category");

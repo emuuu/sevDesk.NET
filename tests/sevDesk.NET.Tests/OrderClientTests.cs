@@ -79,11 +79,13 @@ public class OrderClientTests
             Content = JsonContent.Create(responseBody)
         });
 
+#pragma warning disable CS0618 // Obsolete: tests the deprecated member
         var result = await client.Orders.CreateAsync(new Order
         {
             OrderNumber = "AN-010",
             Currency = "EUR"
         });
+#pragma warning restore CS0618
 
         result.Id.ShouldBe(10);
         result.OrderNumber.ShouldBe("AN-010");

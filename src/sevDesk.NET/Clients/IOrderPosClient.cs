@@ -31,6 +31,11 @@ public interface IOrderPosClient
     /// <param name="position">The order position to create.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>The created order position.</returns>
+    /// <remarks>
+    /// The sevDesk API documents no <c>POST /OrderPos</c> endpoint; order positions are created through the
+    /// factory. Use <see cref="IOrderClient.SaveOrderAsync(Order, IEnumerable{OrderPos}, CancellationToken)"/> instead.
+    /// </remarks>
+    [Obsolete("The sevDesk API documents no POST /OrderPos endpoint. Use IOrderClient.SaveOrderAsync instead.")]
     Task<OrderPos> CreateAsync(OrderPos position, CancellationToken ct = default);
 
     /// <summary>
