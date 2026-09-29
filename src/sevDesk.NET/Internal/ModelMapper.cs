@@ -206,6 +206,18 @@ internal static class ModelMapper
         PropertyIsEInvoice = FormatBool(model.PropertyIsEInvoice)
     };
 
+    /// <summary>
+    /// Maps an invoice for the <c>invoice</c> member of <c>Invoice/Factory/saveInvoice</c>, which,
+    /// unlike the plain REST endpoints, requires <c>objectName</c> and <c>mapAll</c>.
+    /// </summary>
+    internal static ApiInvoice ToApiFactory(Invoice model)
+    {
+        var api = ToApi(model);
+        api.ObjectName = "Invoice";
+        api.MapAll = true;
+        return api;
+    }
+
     // --- InvoicePos ---
 
     internal static InvoicePos ToPublic(ApiInvoicePos api) => new()
@@ -246,6 +258,7 @@ internal static class ModelMapper
         Text = model.Text,
         Discount = model.Discount,
         Optional = FormatBool(model.Optional),
+        ObjectName = "InvoicePos",
         MapAll = true
     };
 
