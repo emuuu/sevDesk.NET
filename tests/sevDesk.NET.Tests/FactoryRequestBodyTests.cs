@@ -127,3 +127,128 @@ public class FactoryRequestBodyTests
         }
     }
 }
+
+/// <summary>
+/// The same defect on the other write paths: the <c>CreditNote</c>, <c>Order</c> and
+/// <c>Voucher</c> factories, and the plain REST creates the API documents.
+/// </summary>
+public class OtherWriteRequestBodyTests
+{
+    private static (SevDeskClient Client, RecordingHttpMessageHandler Handler) CreateClient(string response)
+    {
+        var handler = new RecordingHttpMessageHandler(
+            new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(response, System.Text.Encoding.UTF8, "application/json") });
+        var client = new SevDeskClient(new HttpClient(handler)
+        {
+            BaseAddress = new Uri("https://my.sevdesk.de/api/v1/")
+        });
+        return (client, handler);
+    }
+
+    private static Task SaveAsync(SevDeskClient client, string objectName, int id, int positionId) => objectName switch
+    {
+        "CreditNote" => client.CreditNotes.SaveCreditNoteReferenceAsync(
+            new CreditNote { Id = id, CreditNoteNumber = "GS-099" },
+            [new CreditNotePos { Id = positionId, Name = "Position 1", Quantity = 1, Price = 100 }]),
+        "Order" => client.Orders.SaveOrderReferenceAsync(
+            new Order { Id = id, OrderNumber = "AN-099" },
+            [new OrderPos { Id = positionId, Name = "Position 1", Quantity = 1, Price = 100 }]),
+        "Voucher" => client.Vouchers.SaveVoucherReferenceAsync(
+            new Voucher { Id = id, Description = "Voucher 99" },
+            [new VoucherPos { Id = positionId, Net = 100, TaxRate = 19 }]),
+        var other => throw new ArgumentOutOfRangeException(nameof(objectName), other, null)
+    };
+
+    private static string Member(string objectName) => char.ToLowerInvariant(objectName[0]) + objectName[1..];
+
+    private static string FactoryResponse(string objectName, int id) =>
+        "{\"objects\":{\"" + Member(objectName) + "\":{\"id\":" + id + "}}}";
+
+    [Theory]
+    [InlineData("CreditNote")]
+    [InlineData("Order")]
+    [InlineData("Voucher")]
+    public async Task Factory_NewDocument_SendsObjectNameAndMapAllButNoId(string objectName)
+    {
+        var (client, handler) = CreateClient(FactoryResponse(objectName, 99));
+
+        await SaveAsync(client, objectName, id: 0, positionId: 0);
+
+        using var body = JsonDocument.Parse(handler.Requests[0].Body!);
+        var document = body.RootElement.GetProperty(Member(objectName));
+        document.TryGetProperty("id", out _).ShouldBeFalse();
+        document.GetProperty("objectName").GetString().ShouldBe(objectName);
+        document.GetProperty("mapAll").GetBoolean().ShouldBeTrue();
+        var position = body.RootElement.GetProperty(Member(objectName) + "PosSave")[0];
+        position.TryGetProperty("id", out _).ShouldBeFalse();
+        position.GetProperty("objectName").GetString().ShouldBe(objectName + "Pos");
+        position.GetProperty("mapAll").GetBoolean().ShouldBeTrue();
+    }
+
+    [Theory]
+    [InlineData("CreditNote")]
+    [InlineData("Order")]
+    [InlineData("Voucher")]
+    public async Task Factory_ExistingDocument_SendsTheRealIds(string objectName)
+    {
+        var (client, handler) = CreateClient(FactoryResponse(objectName, 4711));
+
+        await SaveAsync(client, objectName, id: 4711, positionId: 815);
+
+        using var body = JsonDocument.Parse(handler.Requests[0].Body!);
+        body.RootElement.GetProperty(Member(objectName)).GetProperty("id").GetInt32().ShouldBe(4711);
+        body.RootElement.GetProperty(Member(objectName) + "PosSave")[0].GetProperty("id").GetInt32().ShouldBe(815);
+    }
+
+    [Fact]
+    public async Task ContactCreate_SendsNoIdAndTheCategory()
+    {
+        var (client, handler) = CreateClient("""{"objects":{"id":1,"objectName":"Contact"}}""");
+
+        await client.Contacts.CreateAsync(new Contact
+        {
+            Name = "Dummy",
+            Category = new SevDeskObjectReference { Id = 3, ObjectName = "Category" }
+        });
+
+        handler.Requests[0].Uri!.AbsolutePath.ShouldBe("/api/v1/Contact");
+        using var body = JsonDocument.Parse(handler.Requests[0].Body!);
+        body.RootElement.TryGetProperty("id", out _).ShouldBeFalse();
+        body.RootElement.GetProperty("name").GetString().ShouldBe("Dummy");
+        body.RootElement.GetProperty("category").GetProperty("id").GetInt32().ShouldBe(3);
+        body.RootElement.GetProperty("category").GetProperty("objectName").GetString().ShouldBe("Category");
+    }
+
+    [Fact]
+    public async Task ContactUpdate_SendsTheRealId()
+    {
+        var (client, handler) = CreateClient("""{"objects":{"id":7,"objectName":"Contact"}}""");
+
+        await client.Contacts.UpdateAsync(7, new Contact { Id = 7, Name = "Dummy" });
+
+        using var body = JsonDocument.Parse(handler.Requests[0].Body!);
+        body.RootElement.GetProperty("id").GetInt32().ShouldBe(7);
+    }
+
+    public static TheoryData<string> RestCreates => ["Part", "CommunicationWay", "ContactAddress", "CheckAccountTransaction"];
+
+    [Theory]
+    [MemberData(nameof(RestCreates))]
+    public async Task RestCreate_NewObject_SendsNoId(string objectName)
+    {
+        var (client, handler) = CreateClient("""{"objects":{"id":1}}""");
+
+        await (objectName switch
+        {
+            "Part" => client.Parts.CreateAsync(new Part { Name = "Part" }),
+            "CommunicationWay" => (Task)client.CommunicationWays.CreateAsync(new CommunicationWay { Value = "mail@example.com" }),
+            "ContactAddress" => client.ContactAddresses.CreateAsync(new ContactAddress { City = "Münster" }),
+            "CheckAccountTransaction" => client.CheckAccountTransactions.CreateAsync(new CheckAccountTransaction { Amount = 1 }),
+            var other => throw new ArgumentOutOfRangeException(nameof(objectName), other, null)
+        });
+
+        handler.Requests[0].Uri!.AbsolutePath.ShouldBe("/api/v1/" + objectName);
+        using var body = JsonDocument.Parse(handler.Requests[0].Body!);
+        body.RootElement.TryGetProperty("id", out _).ShouldBeFalse();
+    }
+}

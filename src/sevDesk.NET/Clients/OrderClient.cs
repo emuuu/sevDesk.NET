@@ -58,7 +58,7 @@ internal class OrderClient : IOrderClient
     {
         var request = new ApiSaveOrderRequest
         {
-            Order = ModelMapper.ToApi(order),
+            Order = ModelMapper.ToApiFactory(order),
             OrderPosSave = positions.Select(ModelMapper.ToApi).ToList()
         };
         return _client.PostFactoryAsync("Order/Factory/saveOrder", request,
